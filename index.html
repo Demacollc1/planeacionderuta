@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Demaco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; padding: 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Demaco</h1>
+
+    <!-- Librería Tableau Embedding API -->
+    <script type='module' src='https://us-east-1.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script>
+
+    <!-- Dashboard Tableau -->
+    <tableau-viz
+        id='tableau-viz'
+        src='https://us-east-1.online.tableau.com/t/bidemacocialtda/views/PlanificacindeRutas_17472402497870/ReporteDetalleOrdenesenEstados600'
+        width='1566'
+        height='808'
+        hide-tabs
+        toolbar='bottom'>
+    </tableau-viz>
+</body>
+</html>
