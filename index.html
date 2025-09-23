@@ -2,25 +2,1237 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Demaco</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planeación Inteligente de Rutas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-sA+e2atTYM8HkWpUfbf3VkTxJlrDXe4sdRQ4xKuX3sI5Gucs5cjox96D65Vb1GPLtfRVPC5zsXPr2D2g6rpDiA==" crossorigin="" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0; padding: 0;
-            text-align: center;
+        :root {
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-strong: #1d4ed8;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
         }
-        h1 {
-            margin: 20px 0;
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: #fff;
+            padding: 32px 24px 28px;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 2.1rem;
+            font-weight: 700;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        main.layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            padding: 24px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 1100px) {
+            main.layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px 20px 24px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(15, 23, 42, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .card h2,
+        .card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .card h2 span,
+        .card h3 span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: inline-block;
+        }
+
+        form {
+            display: grid;
+            gap: 12px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        input,
+        select,
+        textarea {
+            font: inherit;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            transition: border 0.2s ease, background 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        button {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        button:hover {
+            background: var(--primary-strong);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 20px rgba(37, 99, 235, 0.18);
+        }
+
+        button.secondary {
+            background: #e2e8f0;
+            color: var(--text-secondary);
+        }
+
+        button.secondary:hover {
+            background: #cbd5f5;
+        }
+
+        button.icon {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        fieldset:disabled {
+            opacity: 0.6;
+            filter: grayscale(0.2);
+        }
+
+        #plan-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .plan-pill {
+            border-radius: 999px;
+            background: #eef2ff;
+            padding: 8px 14px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .plan-pill.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.18);
+        }
+
+        .plan-pill:hover {
+            border-color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 12px;
+        }
+
+        #map {
+            width: 100%;
+            height: 520px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+        }
+
+        .status-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+        }
+
+        .status-chip {
+            background: #f1f5f9;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+        }
+
+        .status-chip strong {
+            display: block;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .status-chip span {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.02em;
+        }
+
+        .status-planificado {
+            background: rgba(37, 99, 235, 0.15);
+            color: #1d4ed8;
+        }
+
+        .status-en-ruta {
+            background: rgba(245, 158, 11, 0.16);
+            color: #b45309;
+        }
+
+        .status-completado {
+            background: rgba(22, 163, 74, 0.18);
+            color: #047857;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: -6px;
+        }
+
+        .vehicle-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .vehicle-card {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            display: grid;
+            gap: 4px;
+            position: relative;
+        }
+
+        .vehicle-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: var(--vehicle-color, rgba(37, 99, 235, 0.15));
+            opacity: 0.08;
+        }
+
+        .vehicle-card > * {
+            position: relative;
+        }
+
+        .vehicle-card strong {
+            font-size: 1rem;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.06);
+            font-size: 0.75rem;
+        }
+
+        .progress-card {
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .progress-row {
+            display: grid;
+            gap: 8px;
+        }
+
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar span {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .empty-state {
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px dashed var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+            background: rgba(226, 232, 240, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .map-helper {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline {
+            display: grid;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .timeline-item {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            background: #f8fafc;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .timeline-item::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--dot-color, var(--primary));
+        }
+
+        .timeline-item strong {
+            font-size: 0.95rem;
+        }
+
+        .timeline-item span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .badge {
+            border-radius: 999px;
+            padding: 4px 8px;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+            font-size: 0.75rem;
         }
     </style>
 </head>
 <body>
-    <h1>Dashboard Demaco</h1>
+<header>
+    <h1>Planeación Inteligente de Rutas</h1>
+    <p>Organice sus planes de transporte, asigne recursos y supervise el cumplimiento en tiempo real.</p>
+</header>
+<main class="layout">
+    <aside class="sidebar">
+        <section class="card">
+            <h2><span></span>Nuevo plan de transporte</h2>
+            <form id="plan-form">
+                <label for="plan-name">Nombre del plan</label>
+                <input id="plan-name" name="plan-name" placeholder="Ej. Entregas zona norte" required>
 
-    <!-- Librería Tableau Embedding API -->
-    <script type='module' src='https://us-east-1.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script>
+                <label for="plan-date">Fecha de ejecución</label>
+                <input id="plan-date" name="plan-date" type="date" required>
 
-    <!-- Dashboard Tableau -->
-    <script type='module' src='https://us-east-1.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script><tableau-viz id='tableau-viz' src='https://us-east-1.online.tableau.com/t/bidemacocialtda/views/PlanificacindeRutas_17472402497870/ControlOrdenesEmbalaje' width='1566' height='808' hide-tabs toolbar='bottom' ></tableau-viz>
+                <label for="plan-start">Hora de inicio</label>
+                <input id="plan-start" name="plan-start" type="time" value="07:00" required>
+
+                <button type="submit">Crear plan</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h3><span></span>Planes creados</h3>
+            <div id="plan-list" class="pill-list empty-state">Aún no hay planes registrados.</div>
+        </section>
+
+        <section class="card">
+            <h3><span></span>Registrar vehículo</h3>
+            <fieldset id="vehicle-fieldset" disabled>
+                <form id="vehicle-form">
+                    <label for="vehicle-code">Identificador del camión</label>
+                    <input id="vehicle-code" name="vehicle-code" placeholder="Ej. Camión 32" required>
+
+                    <label for="vehicle-driver">Conductor</label>
+                    <input id="vehicle-driver" name="vehicle-driver" placeholder="Nombre del conductor" required>
+
+                    <label for="vehicle-helper">Ayudante</label>
+                    <input id="vehicle-helper" name="vehicle-helper" placeholder="Nombre del ayudante">
+
+                    <button type="submit">Agregar vehículo</button>
+                    <p class="helper-text">Los vehículos disponibles se mostrarán en la tabla de asignaciones.</p>
+                </form>
+            </fieldset>
+        </section>
+
+        <section class="card">
+            <h3><span></span>Registrar punto</h3>
+            <fieldset id="stop-fieldset" disabled>
+                <form id="stop-form">
+                    <label for="stop-type">Tipo de atención</label>
+                    <select id="stop-type" name="stop-type" required>
+                        <option value="Entrega">Entrega</option>
+                        <option value="Retiro">Retiro</option>
+                        <option value="Visita">Visita técnica</option>
+                    </select>
+
+                    <label for="stop-name">Orden / Punto</label>
+                    <input id="stop-name" name="stop-name" placeholder="Ej. OV-1045 - Cliente Andina" required>
+
+                    <label for="stop-time">Hora planificada</label>
+                    <input id="stop-time" name="stop-time" type="time" required>
+
+                    <label for="stop-lat">Coordenadas</label>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+                        <input id="stop-lat" name="stop-lat" type="number" step="any" placeholder="Latitud" required>
+                        <input id="stop-lng" name="stop-lng" type="number" step="any" placeholder="Longitud" required>
+                    </div>
+                    <p class="helper-text">Haga clic en el mapa para completar automáticamente las coordenadas.</p>
+
+                    <label for="stop-notes">Notas</label>
+                    <textarea id="stop-notes" name="stop-notes" rows="2" placeholder="Indicaciones, contacto, ventanas horarias..."></textarea>
+
+                    <button type="submit">Agregar punto al plan</button>
+                </form>
+            </fieldset>
+        </section>
+
+        <section class="card">
+            <h3><span></span>Vehículos asignados</h3>
+            <div id="vehicle-list" class="vehicle-list"></div>
+        </section>
+    </aside>
+
+    <section class="workspace">
+        <section class="card">
+            <h2 class="section-title">Resumen del plan activo <span id="plan-active" class="badge" style="margin-left:8px;">Sin seleccionar</span></h2>
+            <div class="status-board" id="summary-board"></div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">Asignación y seguimiento de entregas</h2>
+            <div id="stop-table-wrapper"></div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">Progreso por vehículo</h2>
+            <div id="vehicle-progress" class="progress-card"></div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">Mapa operativo</h2>
+            <div id="map"></div>
+            <div class="map-helper">Haga clic en el mapa para capturar la ubicación de un nuevo punto o seleccione un marcador para consultar sus detalles.</div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">Bitácora en tiempo real</h2>
+            <div id="timeline" class="timeline"></div>
+        </section>
+    </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha512-1w1JQnA6Vj1yFDUZIr05oig3NbS1RyCBj8TDIrS9KuX3sI5Yucs5cjox96D65Vb1GPLtfRVPC5zsXPr2D2g6rpw==" crossorigin=""></script>
+<script>
+    const state = {
+        plans: [],
+        currentPlanId: null
+    };
+
+    const palette = [
+        "#3b82f6",
+        "#f97316",
+        "#10b981",
+        "#6366f1",
+        "#ef4444",
+        "#14b8a6",
+        "#a855f7"
+    ];
+
+    const markers = new Map();
+    const polylines = [];
+    const map = L.map("map", { zoomControl: true }).setView([4.65, -74.1], 11);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    map.on("click", (event) => {
+        document.getElementById("stop-lat").value = event.latlng.lat.toFixed(6);
+        document.getElementById("stop-lng").value = event.latlng.lng.toFixed(6);
+        flashTimeline(`Coordenadas ${event.latlng.lat.toFixed(4)}, ${event.latlng.lng.toFixed(4)} listas para un nuevo punto.`);
+    });
+
+    const planForm = document.getElementById("plan-form");
+    const vehicleForm = document.getElementById("vehicle-form");
+    const stopForm = document.getElementById("stop-form");
+    const planList = document.getElementById("plan-list");
+    const vehicleList = document.getElementById("vehicle-list");
+    const vehicleFieldset = document.getElementById("vehicle-fieldset");
+    const stopFieldset = document.getElementById("stop-fieldset");
+    const summaryBoard = document.getElementById("summary-board");
+    const stopTableWrapper = document.getElementById("stop-table-wrapper");
+    const vehicleProgress = document.getElementById("vehicle-progress");
+    const timeline = document.getElementById("timeline");
+    const planActiveBadge = document.getElementById("plan-active");
+
+    planForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const plan = {
+            id: createId("plan"),
+            name: planForm["plan-name"].value.trim(),
+            date: planForm["plan-date"].value,
+            startTime: planForm["plan-start"].value,
+            vehicles: [],
+            stops: [],
+            timeline: []
+        };
+        state.plans.push(plan);
+        state.currentPlanId = plan.id;
+        planForm.reset();
+        document.getElementById("plan-start").value = "07:00";
+        flashTimeline(`Plan "${plan.name}" creado para el ${formatDate(plan.date)}.`);
+        renderAll();
+    });
+
+    vehicleForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const plan = getCurrentPlan();
+        if (!plan) return;
+        const vehicle = {
+            id: createId("veh"),
+            code: vehicleForm["vehicle-code"].value.trim(),
+            driver: vehicleForm["vehicle-driver"].value.trim(),
+            helper: vehicleForm["vehicle-helper"].value.trim(),
+            color: palette[plan.vehicles.length % palette.length]
+        };
+        plan.vehicles.push(vehicle);
+        vehicleForm.reset();
+        flashTimeline(`Vehículo ${vehicle.code} asignado al plan.`);
+        renderAll();
+    });
+
+    stopForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const plan = getCurrentPlan();
+        if (!plan) return;
+        const lat = parseFloat(stopForm["stop-lat"].value);
+        const lng = parseFloat(stopForm["stop-lng"].value);
+        if (Number.isNaN(lat) || Number.isNaN(lng)) {
+            alert("Debe indicar coordenadas válidas para el punto.");
+            return;
+        }
+        const stop = {
+            id: createId("stop"),
+            type: stopForm["stop-type"].value,
+            name: stopForm["stop-name"].value.trim(),
+            plannedTime: stopForm["stop-time"].value,
+            lat,
+            lng,
+            notes: stopForm["stop-notes"].value.trim(),
+            vehicleId: "",
+            status: "Planificado",
+            actualStart: null,
+            actualEnd: null,
+            createdAt: new Date().toISOString()
+        };
+        plan.stops.push(stop);
+        stopForm.reset();
+        flashTimeline(`Nuevo punto ${stop.name} registrado en el plan.`);
+        renderAll();
+        focusOnStop(stop);
+    });
+
+    function renderAll() {
+        renderPlanList();
+        renderPlanInfo();
+        renderVehicles();
+        renderStops();
+        renderSummary();
+        renderVehicleProgress();
+        renderTimeline();
+        refreshMap();
+        updateFormAvailability();
+    }
+
+    function renderPlanList() {
+        if (state.plans.length === 0) {
+            planList.classList.add("empty-state");
+            planList.textContent = "Aún no hay planes registrados.";
+            return;
+        }
+        planList.classList.remove("empty-state");
+        planList.innerHTML = "";
+        state.plans.forEach((plan) => {
+            const pill = document.createElement("button");
+            pill.type = "button";
+            pill.className = "plan-pill" + (plan.id === state.currentPlanId ? " active" : "");
+            pill.textContent = `${plan.name} (${formatDate(plan.date)})`;
+            pill.addEventListener("click", () => {
+                state.currentPlanId = plan.id;
+                flashTimeline(`Visualizando el plan ${plan.name}.`);
+                renderAll();
+            });
+            planList.appendChild(pill);
+        });
+    }
+
+    function renderPlanInfo() {
+        const plan = getCurrentPlan();
+        if (!plan) {
+            planActiveBadge.textContent = "Sin seleccionar";
+            planActiveBadge.style.background = "#e2e8f0";
+            planActiveBadge.style.color = "var(--text-secondary)";
+            return;
+        }
+        planActiveBadge.textContent = plan.name;
+        planActiveBadge.style.background = "rgba(37, 99, 235, 0.12)";
+        planActiveBadge.style.color = "var(--primary-strong)";
+    }
+
+    function renderVehicles() {
+        const plan = getCurrentPlan();
+        vehicleList.innerHTML = "";
+        if (!plan || plan.vehicles.length === 0) {
+            vehicleList.innerHTML = '<div class="empty-state">Registre camiones, conductores y ayudantes para comenzar las asignaciones.</div>';
+            return;
+        }
+        plan.vehicles.forEach((vehicle) => {
+            const card = document.createElement("div");
+            card.className = "vehicle-card";
+            card.style.setProperty("--vehicle-color", vehicle.color);
+            card.innerHTML = `
+                <strong>${vehicle.code}</strong>
+                <span class="pill" style="background:${vehicle.color}20;color:${vehicle.color};">${vehicle.driver}</span>
+                <span class="pill">Ayudante: ${vehicle.helper || "—"}</span>
+                <span class="helper-text">${countStopsForVehicle(vehicle.id)} puntos asignados</span>
+            `;
+            vehicleList.appendChild(card);
+        });
+    }
+
+    function renderStops() {
+        const plan = getCurrentPlan();
+        if (!plan || plan.stops.length === 0) {
+            stopTableWrapper.innerHTML = '<div class="empty-state">Aún no hay puntos planificados. Agregue órdenes o retiros para comenzar.</div>';
+            return;
+        }
+        const table = document.createElement("table");
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Punto</th>
+                    <th>Tipo</th>
+                    <th>Vehículo</th>
+                    <th>Hora planificada</th>
+                    <th>Seguimiento</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        `;
+        const tbody = table.querySelector("tbody");
+        plan.stops
+            .slice()
+            .sort((a, b) => a.plannedTime.localeCompare(b.plannedTime))
+            .forEach((stop) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>
+                        <div style="font-weight:600;">${stop.name}</div>
+                        <div class="helper-text">${stop.notes || "Sin notas"}</div>
+                    </td>
+                    <td>${stop.type}</td>
+                    <td>${buildVehicleSelector(plan, stop)}</td>
+                    <td>${formatPlanTime(stop.plannedTime)}</td>
+                    <td>${buildTrackingInfo(plan, stop)}</td>
+                    <td>${buildStatusPill(stop.status)}</td>
+                    <td>${buildActions(stop)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        stopTableWrapper.innerHTML = "";
+        stopTableWrapper.appendChild(table);
+        attachStopEvents(plan);
+    }
+
+    function renderSummary() {
+        const plan = getCurrentPlan();
+        summaryBoard.innerHTML = "";
+        if (!plan) {
+            summaryBoard.innerHTML = '<div class="empty-state">Seleccione un plan para ver su resumen operativo.</div>';
+            return;
+        }
+        const total = plan.stops.length;
+        const assigned = plan.stops.filter((stop) => stop.vehicleId).length;
+        const completed = plan.stops.filter((stop) => stop.status === "Completado").length;
+        const inProgress = plan.stops.filter((stop) => stop.status === "En ruta").length;
+        const delayed = plan.stops.filter((stop) => isDelayed(plan, stop)).length;
+
+        const metrics = [
+            { label: "Puntos planificados", value: total, color: varPrimary() },
+            { label: "Asignados a vehículo", value: `${assigned}/${total}` },
+            { label: "En ruta", value: inProgress, color: "#b45309" },
+            { label: "Completados", value: completed, color: "#047857" },
+            { label: "Con retraso", value: delayed, color: delayed > 0 ? "#dc2626" : "#16a34a" }
+        ];
+
+        metrics.forEach((metric) => {
+            const chip = document.createElement("div");
+            chip.className = "status-chip";
+            chip.innerHTML = `
+                <strong style="color:${metric.color || "inherit"};">${metric.value}</strong>
+                <span>${metric.label}</span>
+            `;
+            summaryBoard.appendChild(chip);
+        });
+    }
+
+    function renderVehicleProgress() {
+        const plan = getCurrentPlan();
+        vehicleProgress.innerHTML = "";
+        if (!plan || plan.vehicles.length === 0) {
+            vehicleProgress.innerHTML = '<div class="empty-state">El progreso por vehículo aparecerá cuando registre recursos y asignaciones.</div>';
+            return;
+        }
+        plan.vehicles.forEach((vehicle) => {
+            const assignedStops = plan.stops.filter((stop) => stop.vehicleId === vehicle.id);
+            const completed = assignedStops.filter((stop) => stop.status === "Completado").length;
+            const percent = assignedStops.length ? Math.round((completed / assignedStops.length) * 100) : 0;
+            const row = document.createElement("div");
+            row.className = "progress-row";
+            row.innerHTML = `
+                <div class="progress-meta">
+                    <strong>${vehicle.code}</strong>
+                    <span>${completed}/${assignedStops.length || 0} completados (${percent}% )</span>
+                </div>
+                <div class="progress-bar">
+                    <span style="width:${percent}%;background:${vehicle.color};"></span>
+                </div>
+            `;
+            vehicleProgress.appendChild(row);
+        });
+    }
+
+    function renderTimeline() {
+        const plan = getCurrentPlan();
+        timeline.innerHTML = "";
+        if (!plan) {
+            timeline.innerHTML = '<div class="empty-state">Cree o seleccione un plan para iniciar la bitácora.</div>';
+            return;
+        }
+        if (plan.timeline.length === 0) {
+            timeline.innerHTML = '<div class="empty-state">Aquí verá los eventos y actualizaciones importantes del plan en curso.</div>';
+            return;
+        }
+        plan.timeline
+            .slice()
+            .reverse()
+            .forEach((entry) => {
+                const item = document.createElement("div");
+                item.className = "timeline-item";
+                item.style.setProperty("--dot-color", entry.color || varPrimary());
+                item.innerHTML = `
+                    <div>
+                        <strong>${entry.title}</strong>
+                        <div style="font-size:0.8rem;color:var(--text-secondary);">${entry.description}</div>
+                    </div>
+                    <span>${formatDateTime(entry.timestamp)}</span>
+                `;
+                timeline.appendChild(item);
+            });
+    }
+
+    function attachStopEvents(plan) {
+        stopTableWrapper.querySelectorAll("select[data-stop]").forEach((select) => {
+            select.addEventListener("change", () => {
+                const stop = plan.stops.find((s) => s.id === select.dataset.stop);
+                stop.vehicleId = select.value;
+                flashTimeline(`El punto ${stop.name} se asignó a ${getVehicleName(plan, stop.vehicleId)}.`);
+                renderAll();
+            });
+        });
+
+        stopTableWrapper.querySelectorAll("button[data-action]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const stop = plan.stops.find((s) => s.id === button.dataset.stop);
+                if (!stop) return;
+                if (button.dataset.action === "start") {
+                    stop.status = "En ruta";
+                    stop.actualStart = new Date().toISOString();
+                    flashTimeline(`El vehículo inició la atención del punto ${stop.name}.`, "#f59e0b");
+                }
+                if (button.dataset.action === "complete") {
+                    stop.status = "Completado";
+                    stop.actualEnd = new Date().toISOString();
+                    flashTimeline(`Punto ${stop.name} completado por ${getVehicleName(plan, stop.vehicleId)}.`, "#16a34a");
+                }
+                renderAll();
+            });
+        });
+    }
+
+    function buildVehicleSelector(plan, stop) {
+        const options = plan.vehicles
+            .map((vehicle) => `<option value="${vehicle.id}" ${vehicle.id === stop.vehicleId ? "selected" : ""}>${vehicle.code}</option>`)
+            .join("");
+        const placeholder = `<option value="" ${stop.vehicleId ? "" : "selected"}>Sin asignar</option>`;
+        return `<select data-stop="${stop.id}">${placeholder}${options}</select>`;
+    }
+
+    function buildTrackingInfo(plan, stop) {
+        const plannedLabel = stop.plannedTime ? `Plan: ${formatPlanTime(stop.plannedTime)}` : "Sin hora";
+        const delay = describeDelay(plan, stop);
+        const actualStart = stop.actualStart ? `Inicio ${formatTime(stop.actualStart)}` : "";
+        const actualEnd = stop.actualEnd ? `Fin ${formatTime(stop.actualEnd)}` : "";
+        return `
+            <div style="display:grid;gap:2px;">
+                <span>${plannedLabel}</span>
+                ${actualStart ? `<span>${actualStart}</span>` : ""}
+                ${actualEnd ? `<span>${actualEnd}</span>` : ""}
+                <strong style="color:${delay.includes("Retraso") || delay.startsWith("+") ? "#dc2626" : "#047857"};">${delay}</strong>
+            </div>
+        `;
+    }
+
+    function buildStatusPill(status) {
+        const map = {
+            "Planificado": "status-planificado",
+            "En ruta": "status-en-ruta",
+            "Completado": "status-completado"
+        };
+        return `<span class="status-pill ${map[status] || ""}">${status}</span>`;
+    }
+
+    function buildActions(stop) {
+        const actions = [];
+        if (stop.status === "Planificado") {
+            actions.push(`<button class="icon" data-stop="${stop.id}" data-action="start">Iniciar</button>`);
+        }
+        if (stop.status === "En ruta") {
+            actions.push(`<button class="icon" data-stop="${stop.id}" data-action="complete">Completar</button>`);
+        }
+        if (stop.status === "Completado") {
+            actions.push(`<button class="icon secondary" data-stop="${stop.id}" data-action="start" disabled>Finalizado</button>`);
+        }
+        return `<div class="actions">${actions.join("")}</div>`;
+    }
+
+    function refreshMap() {
+        markers.forEach((marker) => marker.remove());
+        markers.clear();
+        while (polylines.length) {
+            const layer = polylines.pop();
+            layer.remove();
+        }
+        const plan = getCurrentPlan();
+        if (!plan) return;
+        const bounds = [];
+        plan.stops.forEach((stop) => {
+            const marker = createMarker(plan, stop);
+            marker.addTo(map);
+            markers.set(stop.id, marker);
+            bounds.push([stop.lat, stop.lng]);
+        });
+        renderVehicleRoutes(plan);
+        if (bounds.length) {
+            map.fitBounds(bounds, { padding: [40, 40] });
+        }
+    }
+
+    function createMarker(plan, stop) {
+        const color = markerColor(plan, stop);
+        const statusClass = stop.status === "Completado" ? "completado" : stop.status === "En ruta" ? "en-ruta" : "planificado";
+        const icon = L.divIcon({
+            className: "custom-marker",
+            html: `<div class="marker marker-${statusClass}" style="background:${color};border-color:${shade(color, -20)}"></div>`
+        });
+        const marker = L.marker([stop.lat, stop.lng], { icon });
+        marker.bindPopup(`
+            <strong>${stop.name}</strong><br>
+            Tipo: ${stop.type}<br>
+            ${stop.vehicleId ? `Vehículo: ${getVehicleName(plan, stop.vehicleId)}<br>` : ""}
+            Estado: ${stop.status}<br>
+            Plan: ${formatPlanTime(stop.plannedTime)}<br>
+            ${stop.notes ? `Notas: ${stop.notes}` : ""}
+        `);
+        return marker;
+    }
+
+    function renderVehicleRoutes(plan) {
+        plan.vehicles.forEach((vehicle) => {
+            const assignedStops = plan.stops
+                .filter((stop) => stop.vehicleId === vehicle.id)
+                .sort((a, b) => a.plannedTime.localeCompare(b.plannedTime));
+            if (assignedStops.length < 2) return;
+            const line = L.polyline(
+                assignedStops.map((stop) => [stop.lat, stop.lng]),
+                {
+                    color: vehicle.color,
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: "6 6"
+                }
+            );
+            line.addTo(map);
+            polylines.push(line);
+        });
+    }
+
+    function focusOnStop(stop) {
+        if (!stop) return;
+        map.flyTo([stop.lat, stop.lng], 14, { duration: 0.8 });
+    }
+
+    function flashTimeline(message, color = varPrimary()) {
+        const plan = getCurrentPlan();
+        if (!plan) return;
+        plan.timeline.push({
+            title: "Actualización",
+            description: message,
+            timestamp: new Date().toISOString(),
+            color
+        });
+        if (plan.timeline.length > 50) {
+            plan.timeline.splice(0, plan.timeline.length - 50);
+        }
+        renderTimeline();
+    }
+
+    function getCurrentPlan() {
+        return state.plans.find((plan) => plan.id === state.currentPlanId) || null;
+    }
+
+    function updateFormAvailability() {
+        const enabled = Boolean(getCurrentPlan());
+        vehicleFieldset.disabled = !enabled;
+        stopFieldset.disabled = !enabled;
+    }
+
+    function countStopsForVehicle(vehicleId) {
+        const plan = getCurrentPlan();
+        if (!plan) return 0;
+        return plan.stops.filter((stop) => stop.vehicleId === vehicleId).length;
+    }
+
+    function markerColor(plan, stop) {
+        if (stop.status === "Completado") return "#16a34a";
+        if (stop.status === "En ruta") return "#f59e0b";
+        if (!stop.vehicleId) return "#94a3b8";
+        const vehicle = plan.vehicles.find((v) => v.id === stop.vehicleId);
+        return vehicle ? vehicle.color : "#3b82f6";
+    }
+
+    function getVehicleName(plan, vehicleId) {
+        if (!vehicleId) return "Sin asignar";
+        const vehicle = plan.vehicles.find((v) => v.id === vehicleId);
+        return vehicle ? vehicle.code : "Sin asignar";
+    }
+
+    function describeDelay(plan, stop) {
+        if (!plan.date || !stop.plannedTime) return "Sin hora";
+        const planned = new Date(`${plan.date}T${stop.plannedTime}`);
+        const now = new Date();
+        if (stop.status === "Planificado") {
+            const diff = Math.round((planned - now) / 60000);
+            if (diff > 0) return `Faltan ${diff} min`;
+            if (diff === 0) return "A tiempo";
+            return `Retraso ${Math.abs(diff)} min`;
+        }
+        if (stop.status === "En ruta") {
+            const diff = Math.round((now - planned) / 60000);
+            if (diff <= 0) return "Dentro del horario";
+            return `+${diff} min`;
+        }
+        if (stop.status === "Completado") {
+            if (!stop.actualEnd) return "Sin información";
+            const end = new Date(stop.actualEnd);
+            const diff = Math.round((end - planned) / 60000);
+            if (diff === 0) return "A tiempo";
+            return diff > 0 ? `+${diff} min` : `${diff} min`;
+        }
+        return "";
+    }
+
+    function isDelayed(plan, stop) {
+        const label = describeDelay(plan, stop);
+        return label.includes("+") || label.includes("Retraso");
+    }
+
+    function formatPlanTime(time) {
+        if (!time) return "Sin hora";
+        return `${time} h`;
+    }
+
+    function formatTime(value) {
+        const date = new Date(value);
+        return date.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function formatDate(date) {
+        if (!date) return "Sin fecha";
+        const formatter = new Intl.DateTimeFormat("es-CO", { weekday: "short", day: "2-digit", month: "short" });
+        return formatter.format(new Date(`${date}T00:00`));
+    }
+
+    function formatDateTime(value) {
+        const date = new Date(value);
+        return date.toLocaleString("es-CO", {
+            hour: "2-digit",
+            minute: "2-digit",
+            day: "2-digit",
+            month: "short"
+        });
+    }
+
+    function varPrimary() {
+        return getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#2563eb";
+    }
+
+    function createId(prefix) {
+        return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function shade(color, percent) {
+        const f = parseInt(color.slice(1), 16);
+        const t = percent < 0 ? 0 : 255;
+        const p = Math.abs(percent) / 100;
+        const R = f >> 16;
+        const G = (f >> 8) & 0x00ff;
+        const B = f & 0x0000ff;
+        const newColor = "#" + (
+            (0x1000000 +
+                (Math.round((t - R) * p) + R) * 0x10000 +
+                (Math.round((t - G) * p) + G) * 0x100 +
+                (Math.round((t - B) * p) + B))
+                .toString(16)
+                .slice(1)
+        );
+        return newColor;
+    }
+
+    function seedExampleData() {
+        const today = new Date();
+        const date = today.toISOString().slice(0, 10);
+        const plan = {
+            id: createId("plan"),
+            name: "Distribución Bogotá AM",
+            date,
+            startTime: "07:00",
+            vehicles: [],
+            stops: [],
+            timeline: []
+        };
+        const veh1 = {
+            id: createId("veh"),
+            code: "Camión 12",
+            driver: "Carlos Ruiz",
+            helper: "Luis Pardo",
+            color: palette[0]
+        };
+        const veh2 = {
+            id: createId("veh"),
+            code: "Camión 18",
+            driver: "María López",
+            helper: "Andrea Díaz",
+            color: palette[1]
+        };
+        plan.vehicles.push(veh1, veh2);
+        const baseLat = 4.65;
+        const baseLng = -74.1;
+        const sampleStops = [
+            {
+                type: "Entrega",
+                name: "OV-1023 - Almacenes Centro",
+                plannedTime: "08:00",
+                lat: baseLat + 0.05,
+                lng: baseLng - 0.01,
+                notes: "Ventana 8:00-9:00",
+                vehicleId: veh1.id
+            },
+            {
+                type: "Retiro",
+                name: "RT-209 - Cliente Cedritos",
+                plannedTime: "09:00",
+                lat: baseLat + 0.08,
+                lng: baseLng - 0.04,
+                notes: "Contactar a recepción",
+                vehicleId: veh1.id
+            },
+            {
+                type: "Entrega",
+                name: "OV-1045 - Zona Industrial",
+                plannedTime: "10:15",
+                lat: baseLat - 0.02,
+                lng: baseLng + 0.03,
+                notes: "Descarga lateral",
+                vehicleId: veh2.id
+            },
+            {
+                type: "Visita",
+                name: "VT-305 - Cliente Norte",
+                plannedTime: "11:30",
+                lat: baseLat + 0.03,
+                lng: baseLng + 0.05,
+                notes: "Revisión técnica",
+                vehicleId: ""
+            }
+        ];
+        sampleStops.forEach((s) => {
+            plan.stops.push({
+                id: createId("stop"),
+                status: "Planificado",
+                actualStart: null,
+                actualEnd: null,
+                createdAt: new Date().toISOString(),
+                ...s
+            });
+        });
+        state.plans.push(plan);
+        state.currentPlanId = plan.id;
+        flashTimeline(`Plan "${plan.name}" listo para operar el ${formatDate(plan.date)}.`);
+        renderAll();
+    }
+
+    seedExampleData();
+    setInterval(() => {
+        renderStops();
+        renderSummary();
+        renderVehicleProgress();
+    }, 60000);
+
+    const markerStyles = document.createElement("style");
+    markerStyles.textContent = `
+        .custom-marker .marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid #ffffff;
+            box-shadow: 0 10px 16px rgba(15, 23, 42, 0.18);
+        }
+        .custom-marker .marker-planificado {
+            opacity: 0.85;
+        }
+        .custom-marker .marker-en-ruta {
+            animation: pulse 1.4s infinite;
+        }
+        .custom-marker .marker-completado {
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+        }
+        @keyframes pulse {
+            0% { transform: rotate(-45deg) scale(1); }
+            50% { transform: rotate(-45deg) scale(1.08); }
+            100% { transform: rotate(-45deg) scale(1); }
+        }
+    `;
+    document.head.appendChild(markerStyles);
+</script>
 </body>
 </html>
