@@ -1115,7 +1115,9 @@ function renderPlan(plan, cfg) {
   <div class="route-money">💰 Compra 2026 en ruta: <b>${fmtMoney(totalVenta)}</b> · <span style="color:#16a34a">✓ ${nAten} atendidos</span> · <span style="color:#dc2626">✕ ${nNoAten} no atendidos</span></div>
   <div class="edit-hint">✏️ Puedes reordenar (▲▼) o quitar (✕) clientes de la ruta; los tiempos se recalculan al instante.</div>`;
 
+  const dayColors = ['#2563eb', '#16a34a', '#9333ea', '#ea580c', '#0891b2', '#db2777'];
   plan.days.forEach((d, di) => {
+    const dcol = dayColors[di % dayColors.length];
     html += `<div class="day"><div class="day-head">${escapeHtml(d.label)} <span class="day-sub">${d.visited.length} visitas · termina ${fromMin(d.endTime)}</span></div><div class="timeline">`;
     const nVis = d.order ? d.order.length : d.visited.length;
     let vi = 0;
@@ -1132,7 +1134,7 @@ function renderPlan(plan, cfg) {
           <button class="del" title="Quitar de la ruta" onclick="removeStop(${di},'${cid}')">✕</button>
         </div>`;
         const cl = t.client;
-        html += `<div class="tl-row visit"><div class="tl-ico">📍</div><div class="tl-time">${fromMin(t.arrive)}–${fromMin(t.depart)}</div>` +
+        html += `<div class="tl-row visit"><div class="tl-ico"><span class="stop-num" style="background:${dcol}">${vi + 1}</span></div><div class="tl-time">${fromMin(t.arrive)}–${fromMin(t.depart)}</div>` +
           `<div class="tl-body"><b>${escapeHtml(cl.nombre)}</b> <span class="tag" style="background:${typeColor(cl)}22;color:${typeColor(cl)}">${escapeHtml(cl.tipo)}</span> <span class="tag" style="background:${atenColor(cl)}1a;color:${atenColor(cl)}">${atenSymbol(cl) || '•'} ${atenLabel(cl)}</span>` +
           `<div class="tl-money">💰 Venta 2026: <b>${fmtMoney(cl.venta2026)}</b></div>` +
           `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}${cl.vend && cl.vend !== SIN_VEND ? ' · ' + escapeHtml(cl.vend) : ''}</div></div>${ctrls}</div>`;
