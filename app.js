@@ -692,7 +692,7 @@ function readConfig() {
     entry: toMin($('#entry').value),
     exit: toMin($('#exit').value),
     lunchStart: toMin($('#lunchStart').value),
-    lunchDur: Number($('#lunchDur').value) || 0,
+    lunchDur: $('#lunchOn').checked ? (Number($('#lunchDur').value) || 0) : 0,
     defEstadia: Number($('#defEstadia').value) || 0,
     start: STATE.startPoint,
     end: STATE.endPoint,
@@ -977,6 +977,16 @@ function wireUI() {
   $$('input[name="tipo"]').forEach(r => r.addEventListener('change', () => {
     $('#multiDayFields').style.display = $('input[name="tipo"]:checked').value === 'multi' ? 'block' : 'none';
   }));
+
+  // Interruptor de almuerzo -> habilitar/deshabilitar campos
+  const toggleLunch = () => {
+    const on = $('#lunchOn').checked;
+    $('#lunchFields').style.opacity = on ? '1' : '0.45';
+    $('#lunchStart').disabled = !on;
+    $('#lunchDur').disabled = !on;
+  };
+  $('#lunchOn').addEventListener('change', toggleLunch);
+  toggleLunch();
 
   // Picks
   $$('.pick-btn').forEach(b => b.addEventListener('click', () => {

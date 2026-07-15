@@ -238,9 +238,19 @@
           <div><label>Hora de ingreso</label><input type="time" id="entry" value="08:00"></div>
           <div><label>Hora de salida</label><input type="time" id="exit" value="17:00"></div>
         </div>
-        <div class="row2">
-          <div><label>Inicio almuerzo</label><input type="time" id="lunchStart" value="12:30"></div>
-          <div><label>Duración (min)</label><input type="number" id="lunchDur" value="60" min="0" step="15"></div>
+        <label class="chk" style="margin-top:0"><input type="checkbox" id="lunchOn" checked> 🍽 Incluir hora de almuerzo</label>
+        <div class="row2" id="lunchFields">
+          <div><label>Inicio almuerzo</label><input type="time" id="lunchStart" value="12:30" step="1800"></div>
+          <div><label>Duración del almuerzo</label>
+            <select id="lunchDur">
+              <option value="30">30 min</option>
+              <option value="60" selected>60 min (1 h)</option>
+              <option value="90">90 min (1½ h)</option>
+              <option value="120">120 min (2 h)</option>
+              <option value="150">150 min (2½ h)</option>
+              <option value="180">180 min (3 h)</option>
+            </select>
+          </div>
         </div>
         <label>Tiempo de estadía por cliente por defecto (min)</label>
         <input type="number" id="defEstadia" value="20" min="0" step="5">
