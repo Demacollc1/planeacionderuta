@@ -26,6 +26,7 @@ const STATE = {
   filter: { ciudad: '', tipo: '', q: '', vend: '' },
   colorByVend: false,
   vendInfo: {},         // nombre -> {n, i}
+  showOnlySelected: false, // tras dibujar área: la lista muestra solo seleccionados
 };
 
 const LIST_CAP = 400; // máximo de filas dibujadas en la lista (rendimiento)
@@ -223,7 +224,10 @@ function initMap() {
     STATE.drawnArea = e.layer;
     selectClientsInArea();
   });
-  map.on(L.Draw.Event.DELETED, () => { STATE.drawnArea = null; });
+  map.on(L.Draw.Event.DELETED, () => {
+    STATE.drawnArea = null; STATE.showOnlySelected = false;
+    renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
+  });
   map.on(L.Draw.Event.EDITED, () => { selectClientsInArea(); });
 
   // Click para fijar puntos (inicio/fin/hotel) o agregar cliente
@@ -292,10 +296,21 @@ function selectClientsInArea() {
   // Solo entre los clientes visibles (respeta filtro de ciudad/tipo/búsqueda)
   const ids = visibleClients().filter(pointInArea).map(c => c.id);
   STATE.selectedIds = new Set(ids);
+  STATE.showOnlySelected = true; // el panel muestra solo lo seleccionado en el área
   renderClientMarkers();
   renderClientList();
+  renderVendLegend();
   updateCounts();
 }
+
+function selectedClients() {
+  return STATE.clients.filter(c => STATE.selectedIds.has(c.id));
+}
+
+window.showAllClients = function () {
+  STATE.showOnlySelected = false;
+  renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
+};
 
 /* Clientes visibles según filtros de sector/ciudad, tipo y búsqueda */
 function visibleClients() {
@@ -377,9 +392,15 @@ function escapeHtml(s) {
 
 function renderClientList() {
   const box = $('#clientList');
-  const list = visibleClients();
+  const onlySel = STATE.showOnlySelected;
+  const list = onlySel ? selectedClients() : visibleClients();
   const shown = list.slice(0, LIST_CAP);
-  let html = shown.map(c => {
+  let banner = '';
+  if (onlySel) {
+    banner = `<div class="sel-banner">✅ <b>${list.length}</b> cliente(s) seleccionados en el área
+      <button onclick="showAllClients()">Ver todos</button></div>`;
+  }
+  let html = banner + shown.map(c => {
     const sel = STATE.selectedIds.has(c.id);
     return `<div class="client-row ${sel ? 'sel' : ''}">
       <input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleClient('${c.id}')">
@@ -392,7 +413,9 @@ function renderClientList() {
         onchange="setEstadia('${c.id}', this.value)">
     </div>`;
   }).join('');
-  if (!shown.length) html = '<div class="empty">No hay clientes con estos filtros.</div>';
+  if (!shown.length) html = onlySel
+    ? '<div class="empty">No hay clientes dentro del área dibujada. <button onclick="showAllClients()" style="background:none;border:0;color:var(--brand);cursor:pointer;text-decoration:underline">Ver todos</button></div>'
+    : '<div class="empty">No hay clientes con estos filtros.</div>';
   else if (list.length > LIST_CAP) html += `<div class="empty">Mostrando ${LIST_CAP} de ${list.length}. Afina el filtro de ciudad/búsqueda o dibuja un área en el mapa.</div>`;
   box.innerHTML = html;
 }
@@ -443,12 +466,18 @@ function populateFilters() {
 /* Leyenda de vendedores visibles (solo cuando se colorea por vendedor) */
 function renderVendLegend() {
   const box = $('#vendLegend');
-  if (!STATE.colorByVend) { box.style.display = 'none'; return; }
+  const bySelection = STATE.showOnlySelected && STATE.selectedIds.size > 0;
+  // Se muestra si se colorea por vendedor, o si hay una selección de área
+  if (!STATE.colorByVend && !bySelection) { box.style.display = 'none'; return; }
+  const source = bySelection ? selectedClients() : visibleClients();
   const counts = new Map();
-  visibleClients().forEach(c => { const v = c.vend || SIN_VEND; counts.set(v, (counts.get(v) || 0) + 1); });
+  source.forEach(c => { const v = c.vend || SIN_VEND; counts.set(v, (counts.get(v) || 0) + 1); });
   const rows = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   box.style.display = 'block';
-  box.innerHTML = `<div style="font-size:11px;color:#64748b;padding:2px 4px 5px">${rows.length} vendedor(es) · clic para filtrar</div>` +
+  const title = bySelection
+    ? `Vendedores asignados en la selección (${rows.length})`
+    : `${rows.length} vendedor(es) · clic para filtrar`;
+  box.innerHTML = `<div style="font-size:11px;color:#64748b;padding:2px 4px 5px;font-weight:600">${title}</div>` +
     rows.map(([v, n]) => `<div class="lg-row ${STATE.filter.vend === v ? 'on' : ''}" onclick="filterVend('${v.replace(/'/g, "\\'")}')">
       <span class="sw" style="background:${vendorColor(v)}"></span>
       <span class="lg-name">${escapeHtml(v)}</span><span class="lg-n">${n}</span></div>`).join('');
@@ -1018,15 +1047,17 @@ function wireUI() {
   $('#btnSelectAll').addEventListener('click', () => {
     // Selecciona solo los visibles según el filtro actual (sector/ciudad/tipo/búsqueda)
     visibleClients().forEach(c => STATE.selectedIds.add(c.id));
-    renderClientMarkers(); renderClientList(); updateCounts();
+    renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
   });
   $('#btnSelectNone').addEventListener('click', () => {
     STATE.selectedIds = new Set();
+    STATE.showOnlySelected = false;
     if (STATE.drawnArea) { STATE.layers.drawn.clearLayers(); STATE.drawnArea = null; }
-    renderClientMarkers(); renderClientList(); updateCounts();
+    renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
   });
   $('#btnClearArea').addEventListener('click', () => {
-    STATE.layers.drawn.clearLayers(); STATE.drawnArea = null;
+    STATE.layers.drawn.clearLayers(); STATE.drawnArea = null; STATE.showOnlySelected = false;
+    renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
   });
 
   $('#btnPlan').addEventListener('click', planRoute);
