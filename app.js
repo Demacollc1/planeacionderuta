@@ -1134,7 +1134,8 @@ function renderPlan(plan, cfg) {
         const cl = t.client;
         html += `<div class="tl-row visit"><div class="tl-ico">📍</div><div class="tl-time">${fromMin(t.arrive)}–${fromMin(t.depart)}</div>` +
           `<div class="tl-body"><b>${escapeHtml(cl.nombre)}</b> <span class="tag" style="background:${typeColor(cl)}22;color:${typeColor(cl)}">${escapeHtml(cl.tipo)}</span> <span class="tag" style="background:${atenColor(cl)}1a;color:${atenColor(cl)}">${atenSymbol(cl) || '•'} ${atenLabel(cl)}</span>` +
-          `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)} · 💰 ${fmtMoney(cl.venta2026)}${cl.vend && cl.vend !== SIN_VEND ? ' · ' + escapeHtml(cl.vend) : ''}</div></div>${ctrls}</div>`;
+          `<div class="tl-money">💰 Venta 2026: <b>${fmtMoney(cl.venta2026)}</b></div>` +
+          `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}${cl.vend && cl.vend !== SIN_VEND ? ' · ' + escapeHtml(cl.vend) : ''}</div></div>${ctrls}</div>`;
         vi++;
       } else if (t.type === 'wait') {
         html += tlRow('⏸', `${fromMin(t.from)}–${fromMin(t.to)}`, `<b>${escapeHtml(t.label)}</b>`, 'lunch');
