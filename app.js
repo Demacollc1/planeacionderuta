@@ -22,7 +22,11 @@ const STATE = {
   routeLayer: null,
   lastPlan: null,
   distCache: new Map(), // "aLat,aLon|bLat,bLon" -> minutos
+  canvas: null,         // renderer canvas para rendimiento
+  filter: { ciudad: '', tipo: '', q: '' },
 };
+
+const LIST_CAP = 400; // máximo de filas dibujadas en la lista (rendimiento)
 
 /* --------------------------------- Utils ---------------------------------- */
 const $ = (sel) => document.querySelector(sel);
@@ -177,11 +181,12 @@ function importCSV(text) {
 
 /* ---------------------------- Mapa (Leaflet) ------------------------------ */
 function initMap() {
-  const map = L.map('map', { zoomControl: true }).setView([6.2518, -75.5636], 12);
+  const map = L.map('map', { zoomControl: true, preferCanvas: true }).setView([-1.5, -78.5], 7);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19, attribution: '© OpenStreetMap',
   }).addTo(map);
   STATE.map = map;
+  STATE.canvas = L.canvas({ padding: 0.5 });
 
   // Grupo de dibujo de área
   const drawn = new L.FeatureGroup();
@@ -271,31 +276,44 @@ function rayCast(lat, lon, poly) {
 
 function selectClientsInArea() {
   if (!STATE.drawnArea) return;
-  STATE.selectedIds = new Set(STATE.clients.filter(pointInArea).map(c => c.id));
+  // Solo entre los clientes visibles (respeta filtro de ciudad/tipo/búsqueda)
+  const ids = visibleClients().filter(pointInArea).map(c => c.id);
+  STATE.selectedIds = new Set(ids);
   renderClientMarkers();
   renderClientList();
   updateCounts();
 }
 
-/* Marcadores de clientes */
-function clientIcon(c, selected) {
-  const color = selected ? '#16a34a' : '#94a3b8';
-  return L.divIcon({
-    className: 'client-div-icon',
-    html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 3px rgba(0,0,0,.4)"></div>`,
-    iconSize: [14, 14], iconAnchor: [7, 7],
+/* Clientes visibles según filtros de sector/ciudad, tipo y búsqueda */
+function visibleClients() {
+  const f = STATE.filter;
+  const q = (f.q || '').toLowerCase();
+  return STATE.clients.filter(c => {
+    if (f.ciudad && (c.ciudad || '') !== f.ciudad) return false;
+    if (f.tipo && (c.tipo || '') !== f.tipo) return false;
+    if (q && !(`${c.nombre} ${c.dir} ${c.tipo} ${c.ruc || ''} ${c.ciudad || ''}`.toLowerCase().includes(q))) return false;
+    return true;
   });
 }
 
+/* Marcadores de clientes (circleMarker sobre canvas = fluido con miles de puntos) */
 function renderClientMarkers() {
   STATE.markers.forEach(m => STATE.map.removeLayer(m));
   STATE.markers.clear();
-  STATE.clients.forEach(c => {
+  const vis = visibleClients();
+  vis.forEach(c => {
     const selected = STATE.selectedIds.has(c.id);
-    const m = L.marker([c.lat, c.lon], { icon: clientIcon(c, selected) });
-    m.bindPopup(`<b>${escapeHtml(c.nombre)}</b><br>${escapeHtml(c.tipo)}<br>${escapeHtml(c.dir)}<br>` +
-      `<button onclick="toggleClient('${c.id}')">${selected ? 'Quitar de la ruta' : 'Agregar a la ruta'}</button>`);
-    m.on('click', () => {});
+    const m = L.circleMarker([c.lat, c.lon], {
+      renderer: STATE.canvas,
+      radius: selected ? 6 : 4,
+      color: '#fff', weight: selected ? 1.5 : 0.5,
+      fillColor: selected ? '#16a34a' : (c.tipo === 'Proveedor' ? '#f59e0b' : '#3b82f6'),
+      fillOpacity: selected ? 0.95 : 0.7,
+    });
+    m.bindPopup(() => `<b>${escapeHtml(c.nombre)}</b><br>` +
+      `<span style="color:#64748b">${escapeHtml(c.tipo)}${c.ruc ? ' · RUC ' + escapeHtml(c.ruc) : ''}</span><br>` +
+      `${escapeHtml(c.dir)}${c.ciudad ? '<br>' + escapeHtml(c.ciudad) : ''}<br>` +
+      `<button onclick="toggleClient('${c.id}')">${STATE.selectedIds.has(c.id) ? '➖ Quitar de la ruta' : '➕ Agregar a la ruta'}</button>`);
     m.addTo(STATE.map);
     STATE.markers.set(c.id, m);
   });
@@ -340,22 +358,24 @@ function escapeHtml(s) {
 
 function renderClientList() {
   const box = $('#clientList');
-  const q = ($('#clientSearch').value || '').toLowerCase();
-  const list = STATE.clients.filter(c =>
-    !q || c.nombre.toLowerCase().includes(q) || (c.dir || '').toLowerCase().includes(q) || (c.tipo || '').toLowerCase().includes(q));
-  box.innerHTML = list.map(c => {
+  const list = visibleClients();
+  const shown = list.slice(0, LIST_CAP);
+  let html = shown.map(c => {
     const sel = STATE.selectedIds.has(c.id);
     return `<div class="client-row ${sel ? 'sel' : ''}">
       <input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleClient('${c.id}')">
       <div class="client-meta" onclick="flyTo('${c.id}')">
         <div class="cn">${escapeHtml(c.nombre)}</div>
-        <div class="cd">${escapeHtml(c.tipo)}${c.dir ? ' · ' + escapeHtml(c.dir) : ''}</div>
+        <div class="cd">${escapeHtml(c.tipo)}${c.ciudad ? ' · ' + escapeHtml(c.ciudad) : ''}${c.dir ? ' · ' + escapeHtml(c.dir) : ''}</div>
       </div>
       <input class="estadia-in" type="number" min="0" step="5" placeholder="def"
         value="${c.estadia ?? ''}" title="Tiempo de estadía (min) para este cliente"
         onchange="setEstadia('${c.id}', this.value)">
     </div>`;
-  }).join('') || '<div class="empty">No hay clientes cargados.</div>';
+  }).join('');
+  if (!shown.length) html = '<div class="empty">No hay clientes con estos filtros.</div>';
+  else if (list.length > LIST_CAP) html += `<div class="empty">Mostrando ${LIST_CAP} de ${list.length}. Afina el filtro de ciudad/búsqueda o dibuja un área en el mapa.</div>`;
+  box.innerHTML = html;
 }
 
 window.flyTo = function (id) {
@@ -374,15 +394,54 @@ function updateCounts() {
   if (tb) tb.textContent = STATE.selectedIds.size;
 }
 
+/* Poblar selects de ciudad y tipo a partir de los datos */
+function populateFilters() {
+  const cities = new Map(); // ciudad -> conteo
+  const tipos = new Map();
+  STATE.clients.forEach(c => {
+    const ci = c.ciudad || '';
+    if (ci) cities.set(ci, (cities.get(ci) || 0) + 1);
+    const t = c.tipo || '';
+    if (t) tipos.set(t, (tipos.get(t) || 0) + 1);
+  });
+  const citySel = $('#cityFilter');
+  const sortedCities = Array.from(cities.entries()).sort((a, b) => b[1] - a[1]);
+  citySel.innerHTML = '<option value="">Todas las ciudades (' + STATE.clients.length + ')</option>' +
+    sortedCities.map(([c, n]) => `<option value="${escapeHtml(c)}">${escapeHtml(c)} (${n})</option>`).join('');
+  const tipoSel = $('#tipoFilter');
+  tipoSel.innerHTML = '<option value="">Todos</option>' +
+    Array.from(tipos.entries()).sort((a, b) => b[1] - a[1])
+      .map(([t, n]) => `<option value="${escapeHtml(t)}">${escapeHtml(t)} (${n})</option>`).join('');
+}
+
 function afterClientsLoaded() {
+  populateFilters();
   renderClientMarkers();
   renderSpecialMarkers();
   renderClientList();
   updateCounts();
-  if (STATE.clients.length) {
-    const grp = L.featureGroup(STATE.clients.map(c => L.marker([c.lat, c.lon])));
-    try { STATE.map.fitBounds(grp.getBounds().pad(0.2)); } catch (e) {}
-  }
+  fitToClients(visibleClients());
+}
+
+function fitToClients(list) {
+  if (!list || !list.length) return;
+  let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+  list.forEach(c => {
+    minLat = Math.min(minLat, c.lat); maxLat = Math.max(maxLat, c.lat);
+    minLon = Math.min(minLon, c.lon); maxLon = Math.max(maxLon, c.lon);
+  });
+  try { STATE.map.fitBounds([[minLat, minLon], [maxLat, maxLon]], { padding: [30, 30] }); } catch (e) {}
+}
+
+/* Se llama al cambiar cualquier filtro */
+function applyFilters() {
+  STATE.filter.ciudad = $('#cityFilter').value;
+  STATE.filter.tipo = $('#tipoFilter').value;
+  STATE.filter.q = $('#clientSearch').value || '';
+  renderClientMarkers();
+  renderClientList();
+  updateCounts();
+  if (STATE.filter.ciudad) fitToClients(visibleClients());
 }
 
 /* ====================== Motor de optimización de rutas ===================== */
@@ -424,7 +483,7 @@ function buildDaySegment(opts) {
     const serviceEnd = effArrival + stay;
 
     // reservar regreso al punto de cierre del tramo (fin del día / hotel / punto final)
-    const backT = travelMin(cand, mustEndAt);
+    const backT = opts.reserveReturnTravel === false ? 0 : travelMin(cand, mustEndAt);
     const reserve = opts.forceReserveReturn || 0;
     if (serviceEnd + backT + reserve > opts.dayEnd) {
       // no cabe este cliente -> como es el más cercano, intentamos con el resto
@@ -453,13 +512,18 @@ function buildDaySegment(opts) {
     pool.splice(best, 1);
   }
 
-  // cierre del tramo
+  // cierre del tramo. Si hay hora de inicio de retorno, el viaje de vuelta
+  // arranca a esa hora (se espera si se terminó antes).
+  let departTime = time;
+  if (opts.closeDepartAt != null && departTime < opts.closeDepartAt) {
+    timeline.push({ type: 'wait', from: departTime, to: opts.closeDepartAt, label: 'Espera / cierre de visitas' });
+    departTime = opts.closeDepartAt;
+  }
   const backTravel = travelMin(pos, mustEndAt);
   const backKm = travelKm(pos, mustEndAt);
-  time += backTravel;
-  timeline.push({ type: 'end', time, travel: backTravel, km: backKm, label: opts.endLabel || 'Fin', pos: mustEndAt });
+  timeline.push({ type: 'end', time: departTime + backTravel, depart: departTime, travel: backTravel, km: backKm, label: opts.endLabel || 'Fin', pos: mustEndAt });
 
-  return { visited, timeline, endTime: time, lunchTaken, remainingPool: pool };
+  return { visited, timeline, endTime: departTime + backTravel, lunchTaken, remainingPool: pool };
 }
 
 /* 2-opt para reducir distancia sobre el conjunto ya elegido (mejora estética) */
@@ -563,7 +627,7 @@ function simulateFixedOrder(opts) {
     const effArrival = lunchInsert != null ? arrival + opts.lunch.dur : arrival;
     const stay = (cand.estadia != null ? cand.estadia : opts.defEstadia);
     const serviceEnd = effArrival + stay;
-    const backT = travelMin(cand, opts.mustEndAt);
+    const backT = opts.reserveReturnTravel === false ? 0 : travelMin(cand, opts.mustEndAt);
     const reserve = opts.forceReserveReturn || 0;
     if (serviceEnd + backT + reserve > opts.dayEnd) continue; // no alcanza -> saltar
     if (lunchInsert != null) {
@@ -573,10 +637,14 @@ function simulateFixedOrder(opts) {
     timeline.push({ type: 'visit', client: cand, arrive: arrival, depart: arrival + stay, travel, stay, km: travelKm(pos, cand) });
     visited.push(cand); time = arrival + stay; pos = cand;
   }
+  let departTime = time;
+  if (opts.closeDepartAt != null && departTime < opts.closeDepartAt) {
+    timeline.push({ type: 'wait', from: departTime, to: opts.closeDepartAt, label: 'Espera / cierre de visitas' });
+    departTime = opts.closeDepartAt;
+  }
   const backTravel = travelMin(pos, opts.mustEndAt);
-  time += backTravel;
-  timeline.push({ type: 'end', time, travel: backTravel, km: travelKm(pos, opts.mustEndAt), label: opts.endLabel, pos: opts.mustEndAt });
-  return { visited, timeline, endTime: time, remainingPool: opts.order.filter(c => !visited.includes(c)) };
+  timeline.push({ type: 'end', time: departTime + backTravel, depart: departTime, travel: backTravel, km: travelKm(pos, opts.mustEndAt), label: opts.endLabel, pos: opts.mustEndAt });
+  return { visited, timeline, endTime: departTime + backTravel, remainingPool: opts.order.filter(c => !visited.includes(c)) };
 }
 
 function planMultiDay(cfg, pool) {
@@ -623,20 +691,23 @@ function planMultiDay(cfg, pool) {
     dayNum++;
   }
 
-  // Último día (retorno): hotel -> zona -> punto final. El retorno empieza a returnStart.
+  // Último día (retorno): hotel -> zona -> punto final.
+  // Se visita hasta la hora de inicio de retorno; a esa hora arranca el viaje de vuelta.
   {
-    const retStart = cfg.returnStart;
+    const retStart = cfg.returnStart != null ? cfg.returnStart : cfg.exit;
     const seg = buildDaySegment({
       origin: cfg.hotel, originLabel: 'Hotel',
       mustEndAt: cfg.end, endLabel: 'Punto final (retorno)',
-      startTime: cfg.entry, dayEnd: retStart != null ? retStart : cfg.exit,
+      startTime: cfg.entry, dayEnd: retStart,
       pool: remaining, defEstadia: cfg.defEstadia, lunch: lunchDef(),
+      reserveReturnTravel: false, closeDepartAt: retStart,
     });
     const refined = twoOpt(seg.visited, cfg.hotel, cfg.end);
     const s = simulateFixedOrder({
       origin: cfg.hotel, originLabel: 'Hotel', mustEndAt: cfg.end, endLabel: 'Punto final (retorno)',
-      startTime: cfg.entry, dayEnd: retStart != null ? retStart : cfg.exit,
+      startTime: cfg.entry, dayEnd: retStart,
       order: refined, defEstadia: cfg.defEstadia, lunch: lunchDef(),
+      reserveReturnTravel: false, closeDepartAt: retStart,
     });
     // El tramo de retorno agrega el viaje hotel/última visita -> punto final (ya incluido en 'end')
     days.push({
@@ -683,8 +754,11 @@ function renderPlan(plan, cfg) {
         html += tlRow('📍', `${fromMin(t.arrive)}–${fromMin(t.depart)}`,
           `<b>${escapeHtml(t.client.nombre)}</b> <span class="tag">${escapeHtml(t.client.tipo)}</span>` +
           `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}</div>`, 'visit');
+      } else if (t.type === 'wait') {
+        html += tlRow('⏸', `${fromMin(t.from)}–${fromMin(t.to)}`, `<b>${escapeHtml(t.label)}</b>`, 'lunch');
       } else if (t.type === 'end') {
-        html += tlRow('🏁', fromMin(t.time), `<b>${escapeHtml(t.label)}</b><div class="tl-sub">Viaje ${fmtDur(t.travel)} (${(t.km||0).toFixed(1)} km)</div>`, 'end');
+        const dep = t.depart != null ? `Sale ${fromMin(t.depart)} · ` : '';
+        html += tlRow('🏁', fromMin(t.time), `<b>${escapeHtml(t.label)}</b><div class="tl-sub">${dep}Viaje ${fmtDur(t.travel)} (${(t.km||0).toFixed(1)} km)</div>`, 'end');
       }
     });
     html += `</div></div>`;
@@ -800,9 +874,12 @@ function wireUI() {
     const t = $('#pasteArea').value.trim();
     if (t) importCSV(t);
   });
-  $('#clientSearch').addEventListener('input', renderClientList);
+  $('#clientSearch').addEventListener('input', applyFilters);
+  $('#cityFilter').addEventListener('change', applyFilters);
+  $('#tipoFilter').addEventListener('change', applyFilters);
   $('#btnSelectAll').addEventListener('click', () => {
-    STATE.selectedIds = new Set(STATE.clients.map(c => c.id));
+    // Selecciona solo los visibles según el filtro actual (sector/ciudad/tipo/búsqueda)
+    visibleClients().forEach(c => STATE.selectedIds.add(c.id));
     renderClientMarkers(); renderClientList(); updateCounts();
   });
   $('#btnSelectNone').addEventListener('click', () => {
@@ -839,8 +916,16 @@ function setPointFromText(which) {
 window.addEventListener('DOMContentLoaded', () => {
   wireUI();
   initMap();
-  // Carga inicial de ejemplo para que se vea funcionando
-  STATE.clients = makeSample();
-  STATE.selectedIds = new Set(STATE.clients.map(c => c.id));
+  // Carga los clientes reales geolocalizados (data/clientes.js). Si no existen, usa ejemplo.
+  if (Array.isArray(window.CLIENTES) && window.CLIENTES.length) {
+    STATE.clients = window.CLIENTES.map(c => ({
+      id: String(c.id), nombre: c.nombre, lat: c.lat, lon: c.lon,
+      tipo: c.tipo || 'Cliente', dir: c.dir || '', ruc: c.ruc || '',
+      ciudad: c.ciudad || '', estadia: null,
+    }));
+  } else {
+    STATE.clients = makeSample();
+  }
+  STATE.selectedIds = new Set(); // arranca sin selección; el usuario elige sector/área
   afterClientsLoaded();
 });

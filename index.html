@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planificador de Rutas de Venta — Demaco</title>
 
-<!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<!-- Leaflet (local, autocontenido) -->
+<link rel="stylesheet" href="vendor/leaflet.css"/>
+<link rel="stylesheet" href="vendor/leaflet.draw.css"/>
+<script src="vendor/leaflet.js"></script>
+<script src="vendor/leaflet.draw.js"></script>
 
 <style>
   :root{
@@ -134,8 +134,9 @@
   <aside class="sidebar">
 
     <div class="hint-box">
-      Carga tus clientes (exporta el CSV desde Tableau con <b>latitud/longitud</b>, pégalo, o usa el ejemplo),
-      selecciona un <b>área en el mapa</b>, configura los horarios y presiona <b>Calcular ruta</b>.
+      <b>7.737 clientes reales</b> cargados desde el maestro (geolocalización de <code>ALADD4</code>).
+      Elige un <b>sector/ciudad</b>, dibuja un <b>área</b> o marca clientes en el mapa, configura horarios
+      y presiona <b>Calcular ruta</b>. También puedes cargar otro CSV.
     </div>
 
     <!-- Datos -->
@@ -152,8 +153,18 @@
         <textarea id="pasteArea" placeholder="nombre,latitud,longitud,tipo&#10;Tienda La 80,6.2518,-75.5636,Cliente"></textarea>
         <button class="btn ghost" id="btnPaste" style="margin-top:6px">Importar pegado</button>
 
-        <label>Buscar</label>
-        <input type="text" id="clientSearch" placeholder="Filtrar por nombre, tipo o zona…">
+        <label>Sector / Ciudad</label>
+        <select id="cityFilter"><option value="">Todas las ciudades</option></select>
+        <div class="row2" style="margin-top:6px">
+          <div>
+            <label style="margin-top:0">Tipo</label>
+            <select id="tipoFilter"><option value="">Todos</option></select>
+          </div>
+          <div>
+            <label style="margin-top:0">Buscar</label>
+            <input type="text" id="clientSearch" placeholder="nombre, RUC, zona…">
+          </div>
+        </div>
         <div id="clientList"></div>
         <div class="btnrow">
           <button class="btn ghost" id="btnSelectAll">Seleccionar todos</button>
@@ -262,6 +273,7 @@
     width='100%' height='820' hide-tabs toolbar='bottom'></tableau-viz>
 </div>
 
+<script src="data/clientes.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
