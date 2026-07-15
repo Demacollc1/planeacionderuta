@@ -26,7 +26,7 @@ const STATE = {
   roadMode: false,      // true si se obtuvo matriz OSRM para este plan
   planNote: '',         // aviso mostrado en resultados
   canvas: null,         // renderer canvas para rendimiento
-  filter: { ciudad: '', tipo: '', q: '', vend: '' },
+  filter: { ciudad: '', tipo: '', q: '', vend: '', aten: '' },
   colorByVend: false,
   vendInfo: {},         // nombre -> {n, i}
   showOnlySelected: false, // tras dibujar área: la lista muestra solo seleccionados
@@ -41,6 +41,28 @@ const TYPE_COLORS = {
   INA: '#94a3b8', X: '#64748b', CT: '#0ea5e9', F: '#e11d48',
 };
 function typeColor(c) { return TYPE_COLORS[c.abat1] || '#64748b'; }
+
+/* Formato de moneda USD (Ecuador) */
+function fmtMoney(n) {
+  if (n == null) return '—';
+  return '$' + Number(n).toLocaleString('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+/* Estado de atención: true=atendido, false=no atendido, null=sin dato */
+function atenLabel(c) {
+  if (c.atendido === true) return 'Atendido';
+  if (c.atendido === false) return 'No atendido';
+  return 'Sin dato';
+}
+function atenSymbol(c) {
+  if (c.atendido === true) return '✓';
+  if (c.atendido === false) return '✕';
+  return '';
+}
+function atenColor(c) {
+  if (c.atendido === true) return '#16a34a';
+  if (c.atendido === false) return '#dc2626';
+  return '#94a3b8';
+}
 
 /* Color estable por vendedor (ángulo áureo sobre la rueda de tono) */
 function vendorColor(vend) {
@@ -373,35 +395,61 @@ function visibleClients() {
     if (f.ciudad && (c.ciudad || '') !== f.ciudad) return false;
     if (f.tipo && (c.tipo || '') !== f.tipo) return false;
     if (f.vend && (c.vend || SIN_VEND) !== f.vend) return false;
+    if (f.aten === 'si' && c.atendido !== true) return false;
+    if (f.aten === 'no' && c.atendido !== false) return false;
+    if (f.aten === 'sd' && c.atendido !== null) return false;
     if (q && !(`${c.nombre} ${c.dir} ${c.tipo} ${c.ruc || ''} ${c.ciudad || ''} ${c.vend || ''}`.toLowerCase().includes(q))) return false;
     return true;
   });
 }
 
-/* Marcadores de clientes (circleMarker sobre canvas = fluido con miles de puntos) */
+const ICON_CAP = 1800; // sobre este número de visibles, se usa canvas (rendimiento)
+
+function clientPopupHtml(c) {
+  return `<b>${escapeHtml(c.nombre)}</b><br>` +
+    `<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:50%;background:${typeColor(c)};display:inline-block"></span><b>${escapeHtml(c.tipo)}</b>${c.abat1 ? ' <span style="color:#94a3b8">('+escapeHtml(c.abat1)+')</span>' : ''}</span>` +
+    `${c.ruc ? ' <span style="color:#64748b">· RUC ' + escapeHtml(c.ruc) + '</span>' : ''}<br>` +
+    `${escapeHtml(c.dir)}${c.ciudad ? '<br>' + escapeHtml(c.ciudad) : ''}<br>` +
+    `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:${vendorColor(c.vend)};display:inline-block"></span><b>${escapeHtml(c.vend || SIN_VEND)}</b></span><br>` +
+    `<span style="display:inline-flex;align-items:center;gap:5px;margin-top:2px"><b style="color:${atenColor(c)}">${atenSymbol(c) || '•'} ${atenLabel(c)}</b> · Compra 2026: <b>${fmtMoney(c.venta2026)}</b></span><br>` +
+    `<button onclick="toggleClient('${c.id}')">${STATE.selectedIds.has(c.id) ? '➖ Quitar de la ruta' : '➕ Agregar a la ruta'}</button>`;
+}
+
+/* Marcadores de clientes. Si hay pocos visibles usa iconos (✓ atendido / ✕ no atendido);
+   si hay miles usa circleMarker sobre canvas (fluido) diferenciando atención por relleno. */
 function renderClientMarkers() {
   STATE.markers.forEach(m => STATE.map.removeLayer(m));
   STATE.markers.clear();
   const vis = visibleClients();
+  const useIcons = vis.length <= ICON_CAP;
+  const hint = $('#iconHint');
+  if (hint) hint.style.display = useIcons ? 'none' : 'block';
+
   vis.forEach(c => {
     const selected = STATE.selectedIds.has(c.id);
-    let fill;
-    if (STATE.colorByVend) fill = vendorColor(c.vend);
-    else fill = selected ? '#16a34a' : typeColor(c);
-    const m = L.circleMarker([c.lat, c.lon], {
-      renderer: STATE.canvas,
-      radius: selected ? 6 : 4,
-      color: selected ? '#0f172a' : '#fff',
-      weight: selected ? 2 : 0.5,
-      fillColor: fill,
-      fillOpacity: selected ? 0.95 : 0.75,
-    });
-    m.bindPopup(() => `<b>${escapeHtml(c.nombre)}</b><br>` +
-      `<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:50%;background:${typeColor(c)};display:inline-block"></span><b>${escapeHtml(c.tipo)}</b>${c.abat1 ? ' <span style="color:#94a3b8">('+escapeHtml(c.abat1)+')</span>' : ''}</span>` +
-      `${c.ruc ? ' <span style="color:#64748b">· RUC ' + escapeHtml(c.ruc) + '</span>' : ''}<br>` +
-      `${escapeHtml(c.dir)}${c.ciudad ? '<br>' + escapeHtml(c.ciudad) : ''}<br>` +
-      `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:${vendorColor(c.vend)};display:inline-block"></span><b>${escapeHtml(c.vend || SIN_VEND)}</b></span><br>` +
-      `<button onclick="toggleClient('${c.id}')">${STATE.selectedIds.has(c.id) ? '➖ Quitar de la ruta' : '➕ Agregar a la ruta'}</button>`);
+    const fill = STATE.colorByVend ? vendorColor(c.vend) : (selected ? '#16a34a' : typeColor(c));
+    let m;
+    if (useIcons) {
+      const sym = atenSymbol(c);                 // ✓ / ✕ / ''
+      const size = selected ? 22 : 18;
+      const ring = c.atendido === false ? '#dc2626' : (c.atendido === true ? '#16a34a' : '#fff');
+      const html = `<div class="cm-ic${selected ? ' sel' : ''}" style="width:${size}px;height:${size}px;background:${fill};border-color:${selected ? '#0f172a' : ring}">${sym}</div>`;
+      m = L.marker([c.lat, c.lon], {
+        icon: L.divIcon({ className: 'cm-wrap', html, iconSize: [size, size], iconAnchor: [size / 2, size / 2] }),
+      });
+    } else {
+      // canvas: atendido = relleno sólido; no atendido = anillo hueco; sin dato = punto tenue
+      const noAt = c.atendido === false;
+      m = L.circleMarker([c.lat, c.lon], {
+        renderer: STATE.canvas,
+        radius: selected ? 6 : 4,
+        color: noAt ? '#dc2626' : (selected ? '#0f172a' : '#fff'),
+        weight: noAt ? 2 : (selected ? 2 : 0.5),
+        fillColor: fill,
+        fillOpacity: noAt ? 0.1 : (selected ? 0.95 : 0.75),
+      });
+    }
+    m.bindPopup(() => clientPopupHtml(c));
     m.addTo(STATE.map);
     STATE.markers.set(c.id, m);
   });
@@ -459,8 +507,9 @@ function renderClientList() {
     return `<div class="client-row ${sel ? 'sel' : ''}">
       <input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleClient('${c.id}')">
       <div class="client-meta" onclick="flyTo('${c.id}')">
-        <div class="cn">${escapeHtml(c.nombre)}</div>
+        <div class="cn">${escapeHtml(c.nombre)} <span class="aten-badge" style="background:${atenColor(c)}1a;color:${atenColor(c)}">${atenSymbol(c) || '•'} ${atenLabel(c)}</span></div>
         <div class="cd"><span style="color:${typeColor(c)}">●</span> ${escapeHtml(c.tipo)} · <span style="color:${vendorColor(c.vend)}">●</span> ${escapeHtml(c.vend || SIN_VEND)}${c.ciudad ? ' · ' + escapeHtml(c.ciudad) : ''}</div>
+        <div class="cd">💰 Compra 2026: <b style="color:#0f172a">${fmtMoney(c.venta2026)}</b></div>
       </div>
       <input class="estadia-in" type="number" min="0" step="5" placeholder="def"
         value="${c.estadia ?? ''}" title="Tiempo de estadía (min) para este cliente"
@@ -650,6 +699,7 @@ function applyFilters() {
   STATE.filter.ciudad = $('#cityFilter').value;
   STATE.filter.tipo = $('#tipoFilter').value;
   STATE.filter.vend = $('#vendFilter').value;
+  STATE.filter.aten = $('#atenFilter').value;
   STATE.filter.q = $('#clientSearch').value || '';
   STATE.colorByVend = $('#colorByVend').checked;
   renderClientMarkers();
@@ -1026,7 +1076,15 @@ function renderPlan(plan, cfg) {
   });
   // recomputar km total limpio
   totalKm = 0;
-  plan.days.forEach(d => d.timeline.forEach(t => { if (t.km && (t.type === 'visit' || t.type === 'end')) totalKm += t.km; }));
+  let totalVenta = 0, nAten = 0, nNoAten = 0;
+  plan.days.forEach(d => d.timeline.forEach(t => {
+    if (t.km && (t.type === 'visit' || t.type === 'end')) totalKm += t.km;
+    if (t.type === 'visit') {
+      if (t.client.venta2026 != null) totalVenta += t.client.venta2026;
+      if (t.client.atendido === true) nAten++;
+      else if (t.client.atendido === false) nNoAten++;
+    }
+  }));
 
   let html = '';
   if (STATE.planNote) html += `<div class="plan-note">${escapeHtml(STATE.planNote)}</div>`;
@@ -1036,6 +1094,7 @@ function renderPlan(plan, cfg) {
     <div class="stat"><div class="num">${totalKm.toFixed(1)}</div><div class="lbl">km ${STATE.roadMode ? 'reales' : 'aprox.'}</div></div>
     <div class="stat"><div class="num">${plan.notVisited.length}</div><div class="lbl">Sin alcanzar</div></div>
   </div>
+  <div class="route-money">💰 Compra 2026 en ruta: <b>${fmtMoney(totalVenta)}</b> · <span style="color:#16a34a">✓ ${nAten} atendidos</span> · <span style="color:#dc2626">✕ ${nNoAten} no atendidos</span></div>
   <div class="edit-hint">✏️ Puedes reordenar (▲▼) o quitar (✕) clientes de la ruta; los tiempos se recalculan al instante.</div>`;
 
   plan.days.forEach((d, di) => {
@@ -1054,9 +1113,10 @@ function renderPlan(plan, cfg) {
           <button ${vi === nVis - 1 ? 'disabled' : ''} title="Bajar" onclick="moveStop(${di},'${cid}',1)">▼</button>
           <button class="del" title="Quitar de la ruta" onclick="removeStop(${di},'${cid}')">✕</button>
         </div>`;
+        const cl = t.client;
         html += `<div class="tl-row visit"><div class="tl-ico">📍</div><div class="tl-time">${fromMin(t.arrive)}–${fromMin(t.depart)}</div>` +
-          `<div class="tl-body"><b>${escapeHtml(t.client.nombre)}</b> <span class="tag" style="background:${typeColor(t.client)}22;color:${typeColor(t.client)}">${escapeHtml(t.client.tipo)}</span>` +
-          `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}${t.client.vend && t.client.vend !== SIN_VEND ? ' · ' + escapeHtml(t.client.vend) : ''}</div></div>${ctrls}</div>`;
+          `<div class="tl-body"><b>${escapeHtml(cl.nombre)}</b> <span class="tag" style="background:${typeColor(cl)}22;color:${typeColor(cl)}">${escapeHtml(cl.tipo)}</span> <span class="tag" style="background:${atenColor(cl)}1a;color:${atenColor(cl)}">${atenSymbol(cl) || '•'} ${atenLabel(cl)}</span>` +
+          `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)} · 💰 ${fmtMoney(cl.venta2026)}${cl.vend && cl.vend !== SIN_VEND ? ' · ' + escapeHtml(cl.vend) : ''}</div></div>${ctrls}</div>`;
         vi++;
       } else if (t.type === 'wait') {
         html += tlRow('⏸', `${fromMin(t.from)}–${fromMin(t.to)}`, `<b>${escapeHtml(t.label)}</b>`, 'lunch');
@@ -1135,18 +1195,20 @@ async function drawRouteOnMap(plan, useGeometry) {
 window.exportPlan = function () {
   const plan = STATE.lastPlan;
   if (!plan) return;
-  const rows = [['Día', 'Orden', 'Hora llegada', 'Hora salida', 'Cliente', 'Tipo', 'Lat', 'Lon', 'Viaje (min)', 'km', 'Estadía (min)']];
+  const rows = [['Día', 'Orden', 'Hora llegada', 'Hora salida', 'Cliente', 'Tipo', 'Vendedor', 'Atención', 'Compra 2026', 'Lat', 'Lon', 'Viaje (min)', 'km', 'Estadía (min)']];
   plan.days.forEach(d => {
     let order = 0;
     d.timeline.forEach(t => {
       if (t.type === 'visit') {
         order++;
-        rows.push([d.label, order, fromMin(t.arrive), fromMin(t.depart), t.client.nombre, t.client.tipo,
-          t.client.lat.toFixed(6), t.client.lon.toFixed(6), Math.round(t.travel), t.km.toFixed(2), Math.round(t.stay)]);
+        const cl = t.client;
+        rows.push([d.label, order, fromMin(t.arrive), fromMin(t.depart), cl.nombre, cl.tipo,
+          cl.vend || '', atenLabel(cl), cl.venta2026 != null ? cl.venta2026.toFixed(2) : '',
+          cl.lat.toFixed(6), cl.lon.toFixed(6), Math.round(t.travel), t.km.toFixed(2), Math.round(t.stay)]);
       } else if (t.type === 'lunch') {
-        rows.push([d.label, '', fromMin(t.time), fromMin(t.endTime), 'ALMUERZO', '', '', '', '', '', t.endTime - t.time]);
+        rows.push([d.label, '', fromMin(t.time), fromMin(t.endTime), 'ALMUERZO', '', '', '', '', '', '', '', '', t.endTime - t.time]);
       } else if (t.type === 'end') {
-        rows.push([d.label, '', '', fromMin(t.time), t.label, '', '', '', Math.round(t.travel || 0), (t.km || 0).toFixed(2), '']);
+        rows.push([d.label, '', '', fromMin(t.time), t.label, '', '', '', '', '', '', Math.round(t.travel || 0), (t.km || 0).toFixed(2), '']);
       }
     });
   });
@@ -1222,6 +1284,7 @@ function wireUI() {
   $('#cityFilter').addEventListener('change', applyFilters);
   $('#tipoFilter').addEventListener('change', applyFilters);
   $('#vendFilter').addEventListener('change', applyFilters);
+  $('#atenFilter').addEventListener('change', applyFilters);
   $('#colorByVend').addEventListener('change', applyFilters);
   const traffic = $('#traffic');
   if (traffic) {
@@ -1276,6 +1339,8 @@ window.addEventListener('DOMContentLoaded', () => {
       id: String(c.id), nombre: c.nombre, lat: c.lat, lon: c.lon,
       tipo: c.tipo || 'Cliente', abat1: c.abat1 || '', dir: c.dir || '', ruc: c.ruc || '',
       ciudad: c.ciudad || '', vend: c.vend || SIN_VEND, codVend: c.codVend || '',
+      venta2026: (typeof c.venta2026 === 'number') ? c.venta2026 : null,
+      atendido: (typeof c.atendido === 'boolean') ? c.atendido : null, // null = sin dato
       estadia: null,
     }));
   } else {

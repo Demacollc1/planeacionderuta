@@ -64,8 +64,14 @@
   .radio-opt input{display:none}
   .radio-opt.on{border-color:var(--brand);background:#eff6ff;font-weight:600;color:var(--brand-d)}
 
-  .toolbar{position:absolute;top:10px;left:50px;z-index:500;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);display:flex;gap:12px;align-items:center}
+  .toolbar{position:absolute;top:10px;left:50px;z-index:500;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);display:flex;gap:12px;align-items:center;flex-wrap:wrap;max-width:calc(100% - 70px)}
   .toolbar b{color:var(--brand-d)}
+  .toolbar .lg{display:inline-flex;align-items:center;gap:4px;color:var(--muted)}
+  .toolbar .lg .cm-ic{position:relative;transform:none}
+  /* Iconos de marcador (atención) */
+  .cm-wrap{background:transparent;border:0}
+  .cm-ic{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);color:#fff;font-size:11px;font-weight:bold;line-height:1;box-sizing:border-box}
+  .cm-ic.sel{box-shadow:0 0 0 2px #16a34a,0 1px 3px rgba(0,0,0,.5)}
 
   #clientList{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:8px}
   .client-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid #f1f5f9}
@@ -73,6 +79,7 @@
   .client-row .client-meta{flex:1;cursor:pointer;min-width:0}
   .client-row .cn{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .client-row .cd{font-size:11px;color:var(--muted)}
+  .aten-badge{font-size:9.5px;font-weight:700;border-radius:9px;padding:1px 6px;white-space:nowrap}
   .estadia-in{width:52px!important;padding:4px!important;font-size:11px!important}
   .empty{padding:14px;text-align:center;color:var(--muted);font-size:12px}
   .sel-banner{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:7px 9px;margin:2px 0 6px;font-size:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -120,6 +127,8 @@
   .btn-export{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:10px;width:100%;font-weight:600}
   .plan-note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:10px}
   .edit-hint{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+  .route-money{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 10px;font-size:12.5px;margin-bottom:8px}
+  .route-money b{color:#15803d;font-size:14px}
   .tl-row .tl-edit{display:flex;gap:2px;align-items:center;margin-left:4px}
   .tl-row .tl-edit button{width:22px;height:22px;border:1px solid var(--line);background:#fff;border-radius:5px;font-size:11px;cursor:pointer;color:#475569;padding:0;line-height:1}
   .tl-row .tl-edit button:hover:not(:disabled){background:#f1f5f9}
@@ -204,6 +213,13 @@
         <select id="cityFilter"><option value="">Todas las ciudades</option></select>
         <label>Vendedor</label>
         <select id="vendFilter"><option value="">Todos los vendedores</option></select>
+        <label>Atención (2026)</label>
+        <select id="atenFilter">
+          <option value="">Todos</option>
+          <option value="si">✓ Atendido</option>
+          <option value="no">✕ No atendido</option>
+          <option value="sd">Sin dato</option>
+        </select>
         <label class="chk"><input type="checkbox" id="colorByVend"> 🎨 Colorear puntos por vendedor</label>
         <div class="row2" style="margin-top:6px">
           <div>
@@ -312,7 +328,9 @@
   <div class="mapwrap">
     <div class="toolbar">
       <span>Seleccionados: <b id="tbSel">—</b></span>
-      <span>Modo: dibuja área o marca clientes</span>
+      <span class="lg"><span class="cm-ic" style="width:16px;height:16px;background:#3b82f6;border-color:#16a34a">✓</span> Atendido</span>
+      <span class="lg"><span class="cm-ic" style="width:16px;height:16px;background:#3b82f6;border-color:#dc2626">✕</span> No atendido</span>
+      <span id="iconHint" style="display:none;color:#b45309">🔎 Acércate o filtra para ver los iconos ✓/✕ (hay muchos puntos)</span>
     </div>
     <div id="map"></div>
 
