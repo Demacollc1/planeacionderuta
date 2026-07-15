@@ -475,13 +475,31 @@ function renderVendLegend() {
   const rows = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   box.style.display = 'block';
   const title = bySelection
-    ? `Vendedores asignados en la selección (${rows.length})`
+    ? `Vendedores en la selección (${rows.length}) · elige uno para su ruta`
     : `${rows.length} vendedor(es) · clic para filtrar`;
   box.innerHTML = `<div style="font-size:11px;color:#64748b;padding:2px 4px 5px;font-weight:600">${title}</div>` +
-    rows.map(([v, n]) => `<div class="lg-row ${STATE.filter.vend === v ? 'on' : ''}" onclick="filterVend('${v.replace(/'/g, "\\'")}')">
-      <span class="sw" style="background:${vendorColor(v)}"></span>
-      <span class="lg-name">${escapeHtml(v)}</span><span class="lg-n">${n}</span></div>`).join('');
+    rows.map(([v, n]) => {
+      const vv = v.replace(/'/g, "\\'");
+      if (bySelection) {
+        return `<div class="lg-row">
+          <span class="sw" style="background:${vendorColor(v)}"></span>
+          <span class="lg-name">${escapeHtml(v)}</span><span class="lg-n">${n}</span>
+          <button class="lg-only" title="Dejar solo este vendedor en la selección" onclick="keepOnlyVendorInSelection('${vv}')">Solo este ▸</button></div>`;
+      }
+      return `<div class="lg-row ${STATE.filter.vend === v ? 'on' : ''}" onclick="filterVend('${vv}')">
+        <span class="sw" style="background:${vendorColor(v)}"></span>
+        <span class="lg-name">${escapeHtml(v)}</span><span class="lg-n">${n}</span></div>`;
+    }).join('');
 }
+
+/* Deja en la selección solo los clientes de un vendedor (dentro del área) */
+window.keepOnlyVendorInSelection = function (v) {
+  const keep = selectedClients().filter(c => (c.vend || SIN_VEND) === v).map(c => c.id);
+  STATE.selectedIds = new Set(keep);
+  STATE.showOnlySelected = true;
+  renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
+  fitToClients(selectedClients());
+};
 
 window.filterVend = function (v) {
   const cur = $('#vendFilter').value;
