@@ -130,7 +130,17 @@
   .tag{font-size:10px;background:#e0e7ff;color:var(--brand-d);border-radius:10px;padding:1px 6px;margin-left:4px}
   .notvisited{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:12px;margin-bottom:12px}
   .notvisited .hint{color:var(--muted);margin-top:4px;font-size:11px}
-  .btn-export{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:10px;width:100%;font-weight:600}
+  .nv-list{display:flex;flex-direction:column;gap:4px;margin-top:6px;max-height:220px;overflow-y:auto}
+  .nv-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #fecaca;border-radius:7px;padding:3px 5px 3px 9px;font-size:11.5px}
+  .nv-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nv-chip button{flex:none;background:#16a34a;color:#fff;border:0;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:600;cursor:pointer}
+  .nv-chip button:hover{background:#15803d}
+  .over-tag{background:#fef3c7;color:#b45309;border-radius:8px;padding:1px 7px;font-size:10.5px;font-weight:700}
+  .export-row{display:flex;gap:8px}
+  .btn-export{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:10px;flex:1;font-weight:600;cursor:pointer}
+  .btn-export.alt{background:#fff;border:1px solid var(--line);color:var(--ink);flex:0 0 90px}
+  .go-link{display:inline-block;margin-left:6px;background:#2563eb;color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;text-decoration:none}
+  .go-link:hover{background:#1d4ed8}
   .plan-note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:10px}
   .edit-hint{font-size:11.5px;color:var(--muted);margin-bottom:10px}
   .route-money{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 10px;font-size:12.5px;margin-bottom:8px}
@@ -398,7 +408,7 @@
     width='100%' height='820' hide-tabs toolbar='bottom'></tableau-viz>
 </div>
 
-<script src="data/clientes.js?v=20260715c"></script>
-<script src="app.js?v=20260715c"></script>
+<script src="data/clientes.js?v=20260715d"></script>
+<script src="app.js?v=20260715d"></script>
 </body>
 </html>

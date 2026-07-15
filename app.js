@@ -64,6 +64,10 @@ function atenColor(c) {
   if (c.atendido === false) return '#dc2626';
   return '#94a3b8';
 }
+/* URL de Google Maps con destino a las coordenadas del cliente */
+function gmapsUrl(lat, lon) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=driving`;
+}
 
 /* Color estable por vendedor (ángulo áureo sobre la rueda de tono) */
 function vendorColor(vend) {
@@ -942,7 +946,8 @@ function simulateFixedOrder(opts) {
     const serviceEnd = effArrival + stay;
     const backT = opts.reserveReturnTravel === false ? 0 : travelMin(cand, opts.mustEndAt);
     const reserve = opts.forceReserveReturn || 0;
-    if (serviceEnd + backT + reserve > opts.dayEnd) continue; // no alcanza -> saltar
+    // forceAll: incluir todas las paradas del orden aunque excedan el horario (edición manual)
+    if (!opts.forceAll && serviceEnd + backT + reserve > opts.dayEnd) continue; // no alcanza -> saltar
     if (lunchInsert != null) {
       timeline.push({ type: 'lunch', time: lunchInsert, endTime: lunchInsert + opts.lunch.dur, label: 'Almuerzo' });
       lunchTaken = true; time = lunchInsert + opts.lunch.dur; arrival = time + travel;
@@ -1035,9 +1040,10 @@ function planMultiDay(cfg, pool) {
   return { tipo: 'multi', days, notVisited: remaining, removed: [], cfg };
 }
 
-/* Re-simula un día tras editar su orden (mover/eliminar puntos), sin re-optimizar */
+/* Re-simula un día tras editar su orden (mover/eliminar/agregar puntos).
+   forceAll: incluye todas las paradas del orden aunque excedan el horario. */
 function resimulateDay(day) {
-  const s = simulateFixedOrder({ ...day.simOpts, order: day.order });
+  const s = simulateFixedOrder({ ...day.simOpts, order: day.order, forceAll: true });
   day.timeline = s.timeline; day.visited = s.visited; day.endTime = s.endTime;
 }
 
@@ -1080,6 +1086,18 @@ window.restoreStop = function (id) {
   refreshEditedPlan();
 };
 
+/* Agrega un cliente "no alcanza" al itinerario (forzado, al final del día indicado) */
+window.addStop = function (id, dayIdx) {
+  const plan = STATE.lastPlan; if (!plan) return;
+  const idx = plan.notVisited.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  const c = plan.notVisited.splice(idx, 1)[0];
+  const di = (dayIdx != null && plan.days[dayIdx]) ? dayIdx : 0;
+  plan.days[di].order.push(c);
+  resimulateDay(plan.days[di]);
+  refreshEditedPlan();
+};
+
 /* ------------------------------ Render plan ------------------------------- */
 function renderPlan(plan, cfg) {
   if (!plan) return;
@@ -1118,7 +1136,9 @@ function renderPlan(plan, cfg) {
   const dayColors = ['#2563eb', '#16a34a', '#9333ea', '#ea580c', '#0891b2', '#db2777'];
   plan.days.forEach((d, di) => {
     const dcol = dayColors[di % dayColors.length];
-    html += `<div class="day"><div class="day-head">${escapeHtml(d.label)} <span class="day-sub">${d.visited.length} visitas · termina ${fromMin(d.endTime)}</span></div><div class="timeline">`;
+    const over = d.simOpts && !d.isReturn && d.endTime > d.simOpts.dayEnd;
+    const overTag = over ? ` <span class="over-tag">⚠ excede la hora de salida</span>` : '';
+    html += `<div class="day"><div class="day-head">${escapeHtml(d.label)} <span class="day-sub">${d.visited.length} visitas · termina ${fromMin(d.endTime)}</span>${overTag}</div><div class="timeline">`;
     const nVis = d.order ? d.order.length : d.visited.length;
     let vi = 0;
     d.timeline.forEach(t => {
@@ -1136,7 +1156,7 @@ function renderPlan(plan, cfg) {
         const cl = t.client;
         html += `<div class="tl-row visit"><div class="tl-ico"><span class="stop-num" style="background:${dcol}">${vi + 1}</span></div><div class="tl-time">${fromMin(t.arrive)}–${fromMin(t.depart)}</div>` +
           `<div class="tl-body"><b>${escapeHtml(cl.nombre)}</b> <span class="tag" style="background:${typeColor(cl)}22;color:${typeColor(cl)}">${escapeHtml(cl.tipo)}</span> <span class="tag" style="background:${atenColor(cl)}1a;color:${atenColor(cl)}">${atenSymbol(cl) || '•'} ${atenLabel(cl)}</span>` +
-          `<div class="tl-money">💰 Venta 2026: <b>${fmtMoney(cl.venta2026)}</b></div>` +
+          `<div class="tl-money">💰 Venta 2026: <b>${fmtMoney(cl.venta2026)}</b> <a class="go-link" href="${gmapsUrl(cl.lat, cl.lon)}" target="_blank" rel="noopener">🧭 Ir</a></div>` +
           `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}${cl.vend && cl.vend !== SIN_VEND ? ' · ' + escapeHtml(cl.vend) : ''}</div></div>${ctrls}</div>`;
         vi++;
       } else if (t.type === 'wait') {
@@ -1156,12 +1176,19 @@ function renderPlan(plan, cfg) {
   }
 
   if (plan.notVisited.length) {
-    html += `<div class="notvisited"><b>No alcanzan (${plan.notVisited.length}):</b> ` +
-      plan.notVisited.slice(0, 40).map(c => escapeHtml(c.nombre)).join(', ') + (plan.notVisited.length > 40 ? '…' : '') +
-      `<div class="hint">Sugerencia: amplía horario, reduce estadía, o agrega días.</div></div>`;
+    const addBtns = (id) => plan.days.length > 1
+      ? plan.days.map((d, di) => `<button title="Agregar a ${escapeHtml(d.label)}" onclick="addStop('${id}',${di})">+D${di + 1}</button>`).join('')
+      : `<button onclick="addStop('${id}',0)">+ Agregar</button>`;
+    html += `<div class="notvisited"><b>No alcanzan (${plan.notVisited.length})</b> — clic para agregarlos al itinerario:<div class="nv-list">` +
+      plan.notVisited.slice(0, 60).map(c => `<span class="nv-chip"><span class="nv-name">${escapeHtml(c.nombre)}${c.venta2026 != null ? ' · ' + fmtMoney(c.venta2026) : ''}</span>${addBtns(c.id)}</span>`).join('') +
+      (plan.notVisited.length > 60 ? `<div class="hint">…y ${plan.notVisited.length - 60} más (filtra o reduce la selección)</div>` : '') +
+      `<div class="hint">Al agregar se incluye aunque exceda la hora de salida (el día se marca ⚠).</div></div></div>`;
   }
 
-  html += `<button class="btn-export" onclick="exportPlan()">⬇ Exportar itinerario (CSV)</button>`;
+  html += `<div class="export-row">
+    <button class="btn-export" onclick="exportPlanPDF()">⬇ Descargar PDF</button>
+    <button class="btn-export alt" onclick="exportPlan()">⬇ CSV</button>
+  </div>`;
   box.innerHTML = html;
   $('#resultsPanel').classList.add('open');
 }
@@ -1211,6 +1238,71 @@ async function drawRouteOnMap(plan, useGeometry) {
     } catch (e) { /* mantiene la línea recta si falla */ }
   }
 }
+
+/* Exportar itinerario a PDF (abre vista imprimible → Guardar como PDF).
+   Incluye número de parada, horarios, datos del cliente, venta y link "Ir" a Google Maps. */
+window.exportPlanPDF = function () {
+  const plan = STATE.lastPlan;
+  if (!plan) { alert('Primero calcula una ruta.'); return; }
+  const dayColors = ['#2563eb', '#16a34a', '#9333ea', '#ea580c', '#0891b2', '#db2777'];
+  const cfg = plan.cfg || {};
+  const fecha = new Date().toLocaleDateString('es-EC');
+  let body = `<h1>Itinerario de ruta de venta</h1>
+    <div class="meta">Generado: ${fecha} · Ingreso ${fromMin(cfg.entry)} · Salida ${fromMin(cfg.exit)}${cfg.lunchDur ? ' · Almuerzo ' + fromMin(cfg.lunchStart) + ' (' + cfg.lunchDur + ' min)' : ''}${STATE.roadMode ? ' · Rutas reales (tráfico ×' + trafficFactor().toFixed(1) + ')' : ''}</div>`;
+
+  plan.days.forEach((d, di) => {
+    const col = dayColors[di % dayColors.length];
+    body += `<div class="day"><h2 style="border-color:${col}">${escapeHtml(d.label)} · ${d.visited.length} visitas · termina ${fromMin(d.endTime)}</h2>
+      <table><thead><tr><th>#</th><th>Horario</th><th>Cliente</th><th>Tipo</th><th>Atención</th><th>Venta 2026</th><th>Dirección</th><th>Ir</th></tr></thead><tbody>`;
+    let n = 0;
+    d.timeline.forEach(t => {
+      if (t.type === 'start') {
+        body += `<tr class="pt"><td>▶</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b></td></tr>`;
+      } else if (t.type === 'lunch') {
+        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="6">Almuerzo</td></tr>`;
+      } else if (t.type === 'wait') {
+        body += `<tr class="pt"><td>⏸</td><td>${fromMin(t.from)}–${fromMin(t.to)}</td><td colspan="6">${escapeHtml(t.label)}</td></tr>`;
+      } else if (t.type === 'visit') {
+        n++;
+        const cl = t.client;
+        body += `<tr><td><span class="num" style="background:${col}">${n}</span></td>` +
+          `<td>${fromMin(t.arrive)}–${fromMin(t.depart)}</td>` +
+          `<td><b>${escapeHtml(cl.nombre)}</b>${cl.vend && cl.vend !== SIN_VEND ? '<br><span class="sub">' + escapeHtml(cl.vend) + '</span>' : ''}</td>` +
+          `<td>${escapeHtml(cl.tipo)}</td>` +
+          `<td style="color:${atenColor(cl)}">${atenSymbol(cl) || '•'} ${atenLabel(cl)}</td>` +
+          `<td class="r">${fmtMoney(cl.venta2026)}</td>` +
+          `<td class="sub">${escapeHtml(cl.dir || '')}${cl.ciudad ? '<br>' + escapeHtml(cl.ciudad) : ''}</td>` +
+          `<td><a href="${gmapsUrl(cl.lat, cl.lon)}">🧭 Ir</a></td></tr>`;
+      } else if (t.type === 'end') {
+        body += `<tr class="pt"><td>🏁</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b> — viaje ${fmtDur(t.travel)} (${(t.km || 0).toFixed(1)} km)</td></tr>`;
+      }
+    });
+    body += `</tbody></table></div>`;
+  });
+
+  if (plan.notVisited && plan.notVisited.length) {
+    body += `<div class="nv"><b>No alcanzan (${plan.notVisited.length}):</b> ` +
+      plan.notVisited.slice(0, 80).map(c => escapeHtml(c.nombre)).join(' · ') + '</div>';
+  }
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Itinerario de ruta</title>
+    <style>
+      *{box-sizing:border-box} body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0f172a;margin:24px;font-size:12px}
+      h1{font-size:20px;margin:0 0 4px} .meta{color:#64748b;font-size:12px;margin-bottom:16px}
+      .day{margin-bottom:22px} h2{font-size:14px;border-left:5px solid #2563eb;padding-left:8px;margin:0 0 8px}
+      table{width:100%;border-collapse:collapse} th,td{border:1px solid #e2e8f0;padding:5px 7px;text-align:left;vertical-align:top}
+      th{background:#f8fafc;font-size:11px} td.r{text-align:right;font-weight:bold} .sub{color:#64748b;font-size:10.5px}
+      tr.pt td{background:#f8fafc;color:#334155} .num{display:inline-block;min-width:18px;text-align:center;color:#fff;border-radius:50%;padding:1px 5px;font-weight:bold}
+      a{color:#2563eb;text-decoration:none;font-weight:600;white-space:nowrap} .nv{margin-top:10px;color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px;font-size:11px}
+      @media print{ body{margin:10px} .day{page-break-inside:avoid} }
+    </style></head><body>${body}
+    <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
+    </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Permite las ventanas emergentes para descargar el PDF.'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+};
 
 /* Exportar CSV del itinerario */
 window.exportPlan = function () {
