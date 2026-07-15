@@ -26,7 +26,8 @@ const STATE = {
   roadMode: false,      // true si se obtuvo matriz OSRM para este plan
   planNote: '',         // aviso mostrado en resultados
   canvas: null,         // renderer canvas para rendimiento
-  filter: { ciudad: '', tipo: '', q: '', vend: '', aten: '' },
+  filter: { ciudad: '', tipo: '', q: '', vend: '', aten: '', montoMin: null, montoMax: null },
+  ordenarMonto: false,
   colorByVend: false,
   vendInfo: {},         // nombre -> {n, i}
   showOnlySelected: false, // tras dibujar área: la lista muestra solo seleccionados
@@ -398,9 +399,20 @@ function visibleClients() {
     if (f.aten === 'si' && c.atendido !== true) return false;
     if (f.aten === 'no' && c.atendido !== false) return false;
     if (f.aten === 'sd' && c.atendido !== null) return false;
+    if (f.montoMin != null && !(c.venta2026 != null && c.venta2026 >= f.montoMin)) return false;
+    if (f.montoMax != null && !(c.venta2026 != null && c.venta2026 <= f.montoMax)) return false;
     if (q && !(`${c.nombre} ${c.dir} ${c.tipo} ${c.ruc || ''} ${c.ciudad || ''} ${c.vend || ''}`.toLowerCase().includes(q))) return false;
     return true;
   });
+}
+
+/* Lista visible ya ordenada según preferencia (por monto desc si está activo) */
+function visibleForList() {
+  const list = visibleClients();
+  if (STATE.ordenarMonto) {
+    return list.slice().sort((a, b) => (b.venta2026 || 0) - (a.venta2026 || 0));
+  }
+  return list;
 }
 
 const ICON_CAP = 1800; // sobre este número de visibles, se usa canvas (rendimiento)
@@ -495,7 +507,8 @@ function escapeHtml(s) {
 function renderClientList() {
   const box = $('#clientList');
   const onlySel = STATE.showOnlySelected;
-  const list = onlySel ? selectedClients() : visibleClients();
+  let list = onlySel ? selectedClients() : visibleForList();
+  if (onlySel && STATE.ordenarMonto) list = list.slice().sort((a, b) => (b.venta2026 || 0) - (a.venta2026 || 0));
   const shown = list.slice(0, LIST_CAP);
   let banner = '';
   if (onlySel) {
@@ -700,6 +713,11 @@ function applyFilters() {
   STATE.filter.tipo = $('#tipoFilter').value;
   STATE.filter.vend = $('#vendFilter').value;
   STATE.filter.aten = $('#atenFilter').value;
+  const mmin = parseFloat($('#montoMin').value);
+  const mmax = parseFloat($('#montoMax').value);
+  STATE.filter.montoMin = isFinite(mmin) ? mmin : null;
+  STATE.filter.montoMax = isFinite(mmax) ? mmax : null;
+  STATE.ordenarMonto = $('#ordenarMonto').checked;
   STATE.filter.q = $('#clientSearch').value || '';
   STATE.colorByVend = $('#colorByVend').checked;
   renderClientMarkers();
@@ -1285,6 +1303,9 @@ function wireUI() {
   $('#tipoFilter').addEventListener('change', applyFilters);
   $('#vendFilter').addEventListener('change', applyFilters);
   $('#atenFilter').addEventListener('change', applyFilters);
+  $('#montoMin').addEventListener('input', applyFilters);
+  $('#montoMax').addEventListener('input', applyFilters);
+  $('#ordenarMonto').addEventListener('change', applyFilters);
   $('#colorByVend').addEventListener('change', applyFilters);
   const traffic = $('#traffic');
   if (traffic) {
