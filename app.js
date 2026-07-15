@@ -460,6 +460,71 @@ window.filterVend = function (v) {
   applyFilters();
 };
 
+/* ---------------------- Resumen por vendedor (pestaña) -------------------- */
+let VS_SORT = { key: 'n', dir: -1 };
+
+function computeVendorSummary() {
+  const by = new Map();
+  STATE.clients.forEach(c => {
+    const v = c.vend || SIN_VEND;
+    if (!by.has(v)) by.set(v, { vend: v, n: 0, cities: new Map() });
+    const o = by.get(v); o.n++;
+    if (c.ciudad) o.cities.set(c.ciudad, (o.cities.get(c.ciudad) || 0) + 1);
+  });
+  return Array.from(by.values()).map(o => {
+    const cs = Array.from(o.cities.entries()).sort((a, b) => b[1] - a[1]);
+    return { vend: o.vend, n: o.n, nc: cs.length, top: cs[0] ? cs[0][0] : '—', color: vendorColor(o.vend) };
+  });
+}
+
+function renderVendorSummary() {
+  const rows = computeVendorSummary();
+  const q = ($('#vsSearch').value || '').toLowerCase();
+  let list = q ? rows.filter(r => r.vend.toLowerCase().includes(q)) : rows;
+  const k = VS_SORT.key, dir = VS_SORT.dir;
+  list = list.slice().sort((a, b) => {
+    let av = a[k], bv = b[k];
+    if (typeof av === 'string') return dir * av.localeCompare(bv);
+    return dir * (av - bv);
+  });
+  const totCli = rows.reduce((s, r) => s + r.n, 0);
+  $('#vsSub').textContent = `${rows.length} vendedores · ${totCli} clientes geolocalizados`;
+  const tb = $('#vsTable tbody');
+  tb.innerHTML = list.map(r => `<tr>
+    <td><span class="vs-sw" style="background:${r.color}"></span></td>
+    <td class="txt">${escapeHtml(r.vend)}</td>
+    <td class="num">${r.n}</td>
+    <td>${r.nc}</td>
+    <td class="txt">${escapeHtml(r.top)}</td>
+    <td><button class="vs-plan-btn" onclick="planVendor('${r.vend.replace(/'/g, "\\'")}')">Planear ruta ▸</button></td>
+  </tr>`).join('');
+}
+
+/* Ir al planificador con ese vendedor seleccionado */
+window.planVendor = function (vend) {
+  $('#vendFilter').value = vend;
+  $('#colorByVend').checked = true;
+  applyFilters();
+  visibleClients().forEach(c => STATE.selectedIds.add(c.id));
+  renderClientMarkers(); renderClientList(); updateCounts();
+  // cambiar a la pestaña Planificador
+  $$('.tab-btn').forEach(x => x.classList.remove('active'));
+  $$('.tab-panel').forEach(x => x.classList.remove('active'));
+  $('.tab-btn[data-tab="tab-plan"]').classList.add('active');
+  $('#tab-plan').classList.add('active');
+  setTimeout(() => { STATE.map.invalidateSize(); fitToClients(visibleClients()); }, 60);
+};
+
+window.exportVendorSummary = function () {
+  const rows = computeVendorSummary().sort((a, b) => b.n - a.n);
+  const out = [['Vendedor', 'Clientes', 'Ciudades', 'Ciudad principal']];
+  rows.forEach(r => out.push([r.vend, r.n, r.nc, r.top]));
+  const csv = out.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'resumen_por_vendedor.csv'; a.click();
+};
+
 function afterClientsLoaded() {
   populateFilters();
   renderClientMarkers();
@@ -894,7 +959,19 @@ function wireUI() {
     b.classList.add('active');
     $('#' + b.dataset.tab).classList.add('active');
     if (b.dataset.tab === 'tab-plan' && STATE.map) setTimeout(() => STATE.map.invalidateSize(), 50);
+    if (b.dataset.tab === 'tab-vendors') renderVendorSummary();
   }));
+
+  // Resumen por vendedor: ordenar por columna, buscar, exportar
+  $$('#vsTable thead th[data-sort]').forEach(th => th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (key === 'color') return;
+    VS_SORT.dir = (VS_SORT.key === key) ? -VS_SORT.dir : (key === 'vend' || key === 'top' ? 1 : -1);
+    VS_SORT.key = key;
+    renderVendorSummary();
+  }));
+  $('#vsSearch').addEventListener('input', renderVendorSummary);
+  $('#vsExport').addEventListener('click', exportVendorSummary);
 
   // Tipo de ruta -> mostrar/ocultar campos multi-día
   $$('input[name="tipo"]').forEach(r => r.addEventListener('change', () => {
