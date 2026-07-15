@@ -77,6 +77,15 @@
   .empty{padding:14px;text-align:center;color:var(--muted);font-size:12px}
   .counts{font-size:12px;color:var(--muted);margin-top:6px}
   .counts b{color:var(--ink)}
+  label.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink);margin-top:8px;cursor:pointer}
+  label.chk input{width:auto}
+  .vend-legend{max-height:150px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:8px;padding:6px}
+  .vend-legend .lg-row{display:flex;align-items:center;gap:7px;padding:3px 4px;font-size:11.5px;cursor:pointer;border-radius:5px}
+  .vend-legend .lg-row:hover{background:#f1f5f9}
+  .vend-legend .lg-row.on{background:#eff6ff;font-weight:600}
+  .vend-legend .sw{width:12px;height:12px;border-radius:50%;border:1px solid #fff;box-shadow:0 0 0 1px #cbd5e1;flex:none}
+  .vend-legend .lg-n{margin-left:auto;color:var(--muted)}
+  .vend-legend .lg-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
   /* Panel de resultados */
   .results-panel{position:absolute;top:0;right:0;bottom:0;width:420px;background:#fff;border-left:1px solid var(--line);transform:translateX(100%);transition:transform .25s;z-index:600;display:flex;flex-direction:column;box-shadow:-4px 0 16px rgba(0,0,0,.08)}
@@ -155,6 +164,9 @@
 
         <label>Sector / Ciudad</label>
         <select id="cityFilter"><option value="">Todas las ciudades</option></select>
+        <label>Vendedor</label>
+        <select id="vendFilter"><option value="">Todos los vendedores</option></select>
+        <label class="chk"><input type="checkbox" id="colorByVend"> 🎨 Colorear puntos por vendedor</label>
         <div class="row2" style="margin-top:6px">
           <div>
             <label style="margin-top:0">Tipo</label>
@@ -165,6 +177,7 @@
             <input type="text" id="clientSearch" placeholder="nombre, RUC, zona…">
           </div>
         </div>
+        <div id="vendLegend" class="vend-legend" style="display:none"></div>
         <div id="clientList"></div>
         <div class="btnrow">
           <button class="btn ghost" id="btnSelectAll">Seleccionar todos</button>

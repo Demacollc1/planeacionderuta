@@ -23,10 +23,23 @@ const STATE = {
   lastPlan: null,
   distCache: new Map(), // "aLat,aLon|bLat,bLon" -> minutos
   canvas: null,         // renderer canvas para rendimiento
-  filter: { ciudad: '', tipo: '', q: '' },
+  filter: { ciudad: '', tipo: '', q: '', vend: '' },
+  colorByVend: false,
+  vendInfo: {},         // nombre -> {n, i}
 };
 
 const LIST_CAP = 400; // máximo de filas dibujadas en la lista (rendimiento)
+const SIN_VEND = '(Sin vendedor)';
+
+/* Color estable por vendedor (ángulo áureo sobre la rueda de tono) */
+function vendorColor(vend) {
+  if (!vend || vend === SIN_VEND) return '#94a3b8';
+  const info = STATE.vendInfo[vend];
+  const i = info ? info.i : 0;
+  const hue = (i * 137.508) % 360;
+  const light = 42 + (i % 3) * 7; // variar un poco la luminosidad
+  return `hsl(${hue.toFixed(1)}, 68%, ${light}%)`;
+}
 
 /* --------------------------------- Utils ---------------------------------- */
 const $ = (sel) => document.querySelector(sel);
@@ -291,7 +304,8 @@ function visibleClients() {
   return STATE.clients.filter(c => {
     if (f.ciudad && (c.ciudad || '') !== f.ciudad) return false;
     if (f.tipo && (c.tipo || '') !== f.tipo) return false;
-    if (q && !(`${c.nombre} ${c.dir} ${c.tipo} ${c.ruc || ''} ${c.ciudad || ''}`.toLowerCase().includes(q))) return false;
+    if (f.vend && (c.vend || SIN_VEND) !== f.vend) return false;
+    if (q && !(`${c.nombre} ${c.dir} ${c.tipo} ${c.ruc || ''} ${c.ciudad || ''} ${c.vend || ''}`.toLowerCase().includes(q))) return false;
     return true;
   });
 }
@@ -303,16 +317,21 @@ function renderClientMarkers() {
   const vis = visibleClients();
   vis.forEach(c => {
     const selected = STATE.selectedIds.has(c.id);
+    let fill;
+    if (STATE.colorByVend) fill = vendorColor(c.vend);
+    else fill = selected ? '#16a34a' : (c.tipo === 'Proveedor' ? '#f59e0b' : '#3b82f6');
     const m = L.circleMarker([c.lat, c.lon], {
       renderer: STATE.canvas,
       radius: selected ? 6 : 4,
-      color: '#fff', weight: selected ? 1.5 : 0.5,
-      fillColor: selected ? '#16a34a' : (c.tipo === 'Proveedor' ? '#f59e0b' : '#3b82f6'),
-      fillOpacity: selected ? 0.95 : 0.7,
+      color: selected ? '#0f172a' : '#fff',
+      weight: selected ? 2 : 0.5,
+      fillColor: fill,
+      fillOpacity: selected ? 0.95 : 0.75,
     });
     m.bindPopup(() => `<b>${escapeHtml(c.nombre)}</b><br>` +
       `<span style="color:#64748b">${escapeHtml(c.tipo)}${c.ruc ? ' · RUC ' + escapeHtml(c.ruc) : ''}</span><br>` +
       `${escapeHtml(c.dir)}${c.ciudad ? '<br>' + escapeHtml(c.ciudad) : ''}<br>` +
+      `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:${vendorColor(c.vend)};display:inline-block"></span><b>${escapeHtml(c.vend || SIN_VEND)}</b></span><br>` +
       `<button onclick="toggleClient('${c.id}')">${STATE.selectedIds.has(c.id) ? '➖ Quitar de la ruta' : '➕ Agregar a la ruta'}</button>`);
     m.addTo(STATE.map);
     STATE.markers.set(c.id, m);
@@ -366,7 +385,7 @@ function renderClientList() {
       <input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleClient('${c.id}')">
       <div class="client-meta" onclick="flyTo('${c.id}')">
         <div class="cn">${escapeHtml(c.nombre)}</div>
-        <div class="cd">${escapeHtml(c.tipo)}${c.ciudad ? ' · ' + escapeHtml(c.ciudad) : ''}${c.dir ? ' · ' + escapeHtml(c.dir) : ''}</div>
+        <div class="cd"><span style="color:${vendorColor(c.vend)}">●</span> ${escapeHtml(c.vend || SIN_VEND)}${c.ciudad ? ' · ' + escapeHtml(c.ciudad) : ''}</div>
       </div>
       <input class="estadia-in" type="number" min="0" step="5" placeholder="def"
         value="${c.estadia ?? ''}" title="Tiempo de estadía (min) para este cliente"
@@ -412,7 +431,34 @@ function populateFilters() {
   tipoSel.innerHTML = '<option value="">Todos</option>' +
     Array.from(tipos.entries()).sort((a, b) => b[1] - a[1])
       .map(([t, n]) => `<option value="${escapeHtml(t)}">${escapeHtml(t)} (${n})</option>`).join('');
+  // Vendedores (ordenados por # de clientes; el índice de color viene de VENDEDORES)
+  const vends = new Map();
+  STATE.clients.forEach(c => { const v = c.vend || SIN_VEND; vends.set(v, (vends.get(v) || 0) + 1); });
+  const vendSel = $('#vendFilter');
+  const sortedV = Array.from(vends.entries()).sort((a, b) => b[1] - a[1]);
+  vendSel.innerHTML = '<option value="">Todos los vendedores (' + STATE.clients.length + ')</option>' +
+    sortedV.map(([v, n]) => `<option value="${escapeHtml(v)}">${escapeHtml(v)} (${n})</option>`).join('');
 }
+
+/* Leyenda de vendedores visibles (solo cuando se colorea por vendedor) */
+function renderVendLegend() {
+  const box = $('#vendLegend');
+  if (!STATE.colorByVend) { box.style.display = 'none'; return; }
+  const counts = new Map();
+  visibleClients().forEach(c => { const v = c.vend || SIN_VEND; counts.set(v, (counts.get(v) || 0) + 1); });
+  const rows = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  box.style.display = 'block';
+  box.innerHTML = `<div style="font-size:11px;color:#64748b;padding:2px 4px 5px">${rows.length} vendedor(es) · clic para filtrar</div>` +
+    rows.map(([v, n]) => `<div class="lg-row ${STATE.filter.vend === v ? 'on' : ''}" onclick="filterVend('${v.replace(/'/g, "\\'")}')">
+      <span class="sw" style="background:${vendorColor(v)}"></span>
+      <span class="lg-name">${escapeHtml(v)}</span><span class="lg-n">${n}</span></div>`).join('');
+}
+
+window.filterVend = function (v) {
+  const cur = $('#vendFilter').value;
+  $('#vendFilter').value = (cur === v) ? '' : v; // clic de nuevo = quitar filtro
+  applyFilters();
+};
 
 function afterClientsLoaded() {
   populateFilters();
@@ -437,11 +483,14 @@ function fitToClients(list) {
 function applyFilters() {
   STATE.filter.ciudad = $('#cityFilter').value;
   STATE.filter.tipo = $('#tipoFilter').value;
+  STATE.filter.vend = $('#vendFilter').value;
   STATE.filter.q = $('#clientSearch').value || '';
+  STATE.colorByVend = $('#colorByVend').checked;
   renderClientMarkers();
   renderClientList();
+  renderVendLegend();
   updateCounts();
-  if (STATE.filter.ciudad) fitToClients(visibleClients());
+  if (STATE.filter.ciudad || STATE.filter.vend) fitToClients(visibleClients());
 }
 
 /* ====================== Motor de optimización de rutas ===================== */
@@ -877,6 +926,8 @@ function wireUI() {
   $('#clientSearch').addEventListener('input', applyFilters);
   $('#cityFilter').addEventListener('change', applyFilters);
   $('#tipoFilter').addEventListener('change', applyFilters);
+  $('#vendFilter').addEventListener('change', applyFilters);
+  $('#colorByVend').addEventListener('change', applyFilters);
   $('#btnSelectAll').addEventListener('click', () => {
     // Selecciona solo los visibles según el filtro actual (sector/ciudad/tipo/búsqueda)
     visibleClients().forEach(c => STATE.selectedIds.add(c.id));
@@ -918,10 +969,12 @@ window.addEventListener('DOMContentLoaded', () => {
   initMap();
   // Carga los clientes reales geolocalizados (data/clientes.js). Si no existen, usa ejemplo.
   if (Array.isArray(window.CLIENTES) && window.CLIENTES.length) {
+    STATE.vendInfo = window.VENDEDORES || {};
     STATE.clients = window.CLIENTES.map(c => ({
       id: String(c.id), nombre: c.nombre, lat: c.lat, lon: c.lon,
       tipo: c.tipo || 'Cliente', dir: c.dir || '', ruc: c.ruc || '',
-      ciudad: c.ciudad || '', estadia: null,
+      ciudad: c.ciudad || '', vend: c.vend || SIN_VEND, codVend: c.codVend || '',
+      estadia: null,
     }));
   } else {
     STATE.clients = makeSample();
