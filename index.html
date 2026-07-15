@@ -118,6 +118,18 @@
   .notvisited{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:12px;margin-bottom:12px}
   .notvisited .hint{color:var(--muted);margin-top:4px;font-size:11px}
   .btn-export{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:10px;width:100%;font-weight:600}
+  .plan-note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:10px}
+  .edit-hint{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+  .tl-row .tl-edit{display:flex;gap:2px;align-items:center;margin-left:4px}
+  .tl-row .tl-edit button{width:22px;height:22px;border:1px solid var(--line);background:#fff;border-radius:5px;font-size:11px;cursor:pointer;color:#475569;padding:0;line-height:1}
+  .tl-row .tl-edit button:hover:not(:disabled){background:#f1f5f9}
+  .tl-row .tl-edit button:disabled{opacity:.3;cursor:default}
+  .tl-row .tl-edit button.del{color:#dc2626;border-color:#fecaca}
+  .tl-row .tl-edit button.del:hover{background:#fef2f2}
+  .removed{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:9px;font-size:12px;margin-bottom:12px}
+  .removed-list{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+  .rm-chip{background:#fff;border:1px solid #fed7aa;border-radius:12px;padding:2px 6px 2px 9px;font-size:11px;display:inline-flex;align-items:center;gap:4px}
+  .rm-chip button{background:none;border:0;cursor:pointer;color:#16a34a;font-size:13px;padding:0}
 
   .hint-box{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;font-size:11.5px;color:#92400e;margin-bottom:10px}
 
@@ -280,11 +292,16 @@
     <div class="section">
       <h3>5 · Parámetros de viaje</h3>
       <div class="body">
-        <div class="row2">
+        <label class="chk" style="margin-top:0"><input type="checkbox" id="useOSRM" checked> 🛣️ Usar rutas reales por carretera (trayectoria)</label>
+        <div class="counts">Calcula tiempos y dibuja el recorrido siguiendo las calles reales (servicio OSRM). Si falla o hay demasiados puntos, usa la estimación de abajo.</div>
+        <label>Factor de tráfico <span id="trafficVal" style="color:var(--ink);font-weight:700">1.3×</span></label>
+        <input type="range" id="traffic" min="1" max="2" step="0.1" value="1.3" style="width:100%">
+        <div class="counts">Multiplica los tiempos para reflejar congestión (1.0 = libre, 1.5 = pesado, 2.0 = hora pico severa).</div>
+        <div class="row2" style="margin-top:8px">
           <div><label>Velocidad prom. (km/h)</label><input type="number" id="speed" value="30" min="5" step="5"></div>
           <div><label>Factor de vía</label><input type="number" id="roadFactor" value="1.3" min="1" step="0.1"></div>
         </div>
-        <div class="counts">El factor de vía (1.0–1.5) aproxima la distancia real por carretera vs. línea recta.</div>
+        <div class="counts">Se usan solo en modo estimación (cuando las rutas reales están apagadas o no disponibles).</div>
       </div>
     </div>
 

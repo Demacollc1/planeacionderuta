@@ -22,6 +22,9 @@ const STATE = {
   routeLayer: null,
   lastPlan: null,
   distCache: new Map(), // "aLat,aLon|bLat,bLon" -> minutos
+  roadKm: new Map(),    // mismo key -> km reales (OSRM)
+  roadMode: false,      // true si se obtuvo matriz OSRM para este plan
+  planNote: '',         // aviso mostrado en resultados
   canvas: null,         // renderer canvas para rendimiento
   filter: { ciudad: '', tipo: '', q: '', vend: '' },
   colorByVend: false,
@@ -31,6 +34,13 @@ const STATE = {
 
 const LIST_CAP = 400; // máximo de filas dibujadas en la lista (rendimiento)
 const SIN_VEND = '(Sin vendedor)';
+
+/* Color por tipo de contacto (ABAT1) */
+const TYPE_COLORS = {
+  C: '#3b82f6', V: '#f59e0b', E: '#9333ea', LI: '#14b8a6',
+  INA: '#94a3b8', X: '#64748b', CT: '#0ea5e9', F: '#e11d48',
+};
+function typeColor(c) { return TYPE_COLORS[c.abat1] || '#64748b'; }
 
 /* Color estable por vendedor (ángulo áureo sobre la rueda de tono) */
 function vendorColor(vend) {
@@ -79,21 +89,64 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-/* Tiempo de viaje en minutos entre dos puntos (haversine + factor vía + velocidad) */
+function cacheKey(a, b) {
+  return `${a.lat.toFixed(5)},${a.lon.toFixed(5)}|${b.lat.toFixed(5)},${b.lon.toFixed(5)}`;
+}
+function trafficFactor() { return Number($('#traffic') && $('#traffic').value) || 1; }
+
+/* Tiempo de viaje en minutos. Usa la matriz OSRM (real) si está en caché;
+   si no, estima con haversine + factor de vía + velocidad. En ambos casos
+   multiplica por el factor de tráfico. */
 function travelMin(a, b) {
   if (!a || !b) return 0;
-  const key = `${a.lat.toFixed(5)},${a.lon.toFixed(5)}|${b.lat.toFixed(5)},${b.lon.toFixed(5)}`;
-  if (STATE.distCache.has(key)) return STATE.distCache.get(key);
-  const speed = Number($('#speed').value) || 30;       // km/h
-  const factor = Number($('#roadFactor').value) || 1.3; // factor de vía
+  const key = cacheKey(a, b);
+  if (STATE.distCache.has(key)) return STATE.distCache.get(key); // ya incluye tráfico
+  const speed = Number($('#speed').value) || 30;
+  const factor = Number($('#roadFactor').value) || 1.3;
   const km = haversineKm(a, b) * factor;
-  const min = (km / speed) * 60;
+  const min = (km / speed) * 60 * trafficFactor();
   STATE.distCache.set(key, min);
   return min;
 }
 function travelKm(a, b) {
+  const key = cacheKey(a, b);
+  if (STATE.roadKm.has(key)) return STATE.roadKm.get(key); // km reales OSRM
   const factor = Number($('#roadFactor').value) || 1.3;
   return haversineKm(a, b) * factor;
+}
+
+/* Obtiene la matriz de tiempos/distancias reales por carretera (OSRM table).
+   Rellena distCache (min, con tráfico) y roadKm (km reales). */
+async function ensureRoadMatrix(points) {
+  const coords = points.map(p => `${p.lon},${p.lat}`).join(';');
+  const url = `https://router.project-osrm.org/table/v1/driving/${coords}?annotations=duration,distance`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  if (data.code !== 'Ok' || !data.durations) throw new Error(data.code || 'sin datos');
+  const tf = trafficFactor();
+  for (let i = 0; i < points.length; i++) {
+    for (let j = 0; j < points.length; j++) {
+      if (i === j) continue;
+      const dur = data.durations[i][j];
+      if (dur == null) continue;
+      const key = cacheKey(points[i], points[j]);
+      STATE.distCache.set(key, (dur / 60) * tf);
+      const dist = data.distances && data.distances[i][j];
+      if (dist != null) STATE.roadKm.set(key, dist / 1000);
+    }
+  }
+}
+
+/* Geometría real (calles) de una secuencia ordenada de puntos (OSRM route). */
+async function fetchRoadGeometry(seq) {
+  const coords = seq.map(p => `${p.lon},${p.lat}`).join(';');
+  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  if (data.code !== 'Ok' || !data.routes || !data.routes[0]) throw new Error(data.code || 'sin ruta');
+  return data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]); // a [lat,lon]
 }
 
 /* --------------------------- Datos de ejemplo ----------------------------- */
@@ -334,7 +387,7 @@ function renderClientMarkers() {
     const selected = STATE.selectedIds.has(c.id);
     let fill;
     if (STATE.colorByVend) fill = vendorColor(c.vend);
-    else fill = selected ? '#16a34a' : (c.tipo === 'Proveedor' ? '#f59e0b' : '#3b82f6');
+    else fill = selected ? '#16a34a' : typeColor(c);
     const m = L.circleMarker([c.lat, c.lon], {
       renderer: STATE.canvas,
       radius: selected ? 6 : 4,
@@ -344,7 +397,8 @@ function renderClientMarkers() {
       fillOpacity: selected ? 0.95 : 0.75,
     });
     m.bindPopup(() => `<b>${escapeHtml(c.nombre)}</b><br>` +
-      `<span style="color:#64748b">${escapeHtml(c.tipo)}${c.ruc ? ' · RUC ' + escapeHtml(c.ruc) : ''}</span><br>` +
+      `<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:50%;background:${typeColor(c)};display:inline-block"></span><b>${escapeHtml(c.tipo)}</b>${c.abat1 ? ' <span style="color:#94a3b8">('+escapeHtml(c.abat1)+')</span>' : ''}</span>` +
+      `${c.ruc ? ' <span style="color:#64748b">· RUC ' + escapeHtml(c.ruc) + '</span>' : ''}<br>` +
       `${escapeHtml(c.dir)}${c.ciudad ? '<br>' + escapeHtml(c.ciudad) : ''}<br>` +
       `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:${vendorColor(c.vend)};display:inline-block"></span><b>${escapeHtml(c.vend || SIN_VEND)}</b></span><br>` +
       `<button onclick="toggleClient('${c.id}')">${STATE.selectedIds.has(c.id) ? '➖ Quitar de la ruta' : '➕ Agregar a la ruta'}</button>`);
@@ -406,7 +460,7 @@ function renderClientList() {
       <input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleClient('${c.id}')">
       <div class="client-meta" onclick="flyTo('${c.id}')">
         <div class="cn">${escapeHtml(c.nombre)}</div>
-        <div class="cd"><span style="color:${vendorColor(c.vend)}">●</span> ${escapeHtml(c.vend || SIN_VEND)}${c.ciudad ? ' · ' + escapeHtml(c.ciudad) : ''}</div>
+        <div class="cd"><span style="color:${typeColor(c)}">●</span> ${escapeHtml(c.tipo)} · <span style="color:${vendorColor(c.vend)}">●</span> ${escapeHtml(c.vend || SIN_VEND)}${c.ciudad ? ' · ' + escapeHtml(c.ciudad) : ''}</div>
       </div>
       <input class="estadia-in" type="number" min="0" step="5" placeholder="def"
         value="${c.estadia ?? ''}" title="Tiempo de estadía (min) para este cliente"
@@ -713,7 +767,7 @@ function twoOpt(points, origin, dest) {
 }
 
 /* ------------------------------ Planificar -------------------------------- */
-function planRoute() {
+async function planRoute() {
   const cfg = readConfig();
   if (!cfg) return;
 
@@ -723,14 +777,40 @@ function planRoute() {
   if (!cfg.end) { alert('Define el punto final.'); return; }
 
   STATE.distCache.clear();
+  STATE.roadKm.clear();
+  STATE.roadMode = false;
+  STATE.planNote = '';
 
-  let plan;
-  if (cfg.tipo === 'local') plan = planLocal(cfg, pool);
-  else plan = planMultiDay(cfg, pool);
+  // Rutas reales por carretera (OSRM) si está activo y la cantidad es razonable
+  if ($('#useOSRM').checked) {
+    const pts = [cfg.start, cfg.end];
+    if (cfg.hotel) pts.push(cfg.hotel);
+    pool.forEach(c => pts.push(c));
+    const uniq = []; const seen = new Set();
+    for (const p of pts) { const k = `${p.lat.toFixed(5)},${p.lon.toFixed(5)}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }
+    if (uniq.length > 90) {
+      STATE.planNote = `⚠ ${uniq.length} puntos: demasiados para ruta real (máx. 90). Se usó estimación. Reduce la selección o usa "Solo este" vendedor.`;
+    } else {
+      setPlanBusy(true);
+      try { await ensureRoadMatrix(uniq); STATE.roadMode = true; }
+      catch (e) { STATE.planNote = `⚠ No se pudo obtener rutas reales (${e.message}). Se usó estimación por distancia.`; }
+      finally { setPlanBusy(false); }
+    }
+  }
 
+  const plan = cfg.tipo === 'local' ? planLocal(cfg, pool) : planMultiDay(cfg, pool);
+  if (!plan) return;
+  if (STATE.roadMode && !STATE.planNote) STATE.planNote = '🛣️ Tiempos y recorrido calculados con rutas reales por carretera (OSRM), tráfico ×' + trafficFactor().toFixed(1) + '.';
   STATE.lastPlan = plan;
   renderPlan(plan, cfg);
-  drawRouteOnMap(plan);
+  await drawRouteOnMap(plan, STATE.roadMode);
+}
+
+function setPlanBusy(busy) {
+  const b = $('#btnPlan');
+  if (!b) return;
+  b.disabled = busy;
+  b.textContent = busy ? '⏳ Calculando rutas reales…' : '🚀 Calcular ruta';
 }
 
 function readConfig() {
@@ -763,15 +843,19 @@ function planLocal(cfg, pool) {
   });
   // refinar orden de los visitados con 2-opt y re-simular
   const refinedOrder = twoOpt(seg.visited, cfg.start, cfg.end);
-  const seg2 = simulateFixedOrder({
+  const simOpts = {
     origin: cfg.start, originLabel: 'Punto de inicio',
     mustEndAt: cfg.end, endLabel: 'Punto final',
-    startTime: cfg.entry, dayEnd: cfg.exit,
-    order: refinedOrder, defEstadia: cfg.defEstadia,
-    lunch: cfg.lunchDur ? { start: cfg.lunchStart, dur: cfg.lunchDur, taken: false } : null,
-  });
+    startTime: cfg.entry, dayEnd: cfg.exit, defEstadia: cfg.defEstadia,
+    lunch: cfg.lunchDur ? { start: cfg.lunchStart, dur: cfg.lunchDur } : null,
+  };
+  const seg2 = simulateFixedOrder({ ...simOpts, order: refinedOrder });
   const notVisited = pool.filter(c => !seg2.visited.includes(c));
-  return { tipo: 'local', days: [{ label: 'Día 1', timeline: seg2.timeline, visited: seg2.visited, endTime: seg2.endTime }], notVisited, cfg };
+  return {
+    tipo: 'local',
+    days: [{ label: 'Día 1', timeline: seg2.timeline, visited: seg2.visited, endTime: seg2.endTime, order: seg2.visited.slice(), simOpts }],
+    notVisited, removed: [], cfg,
+  };
 }
 
 /* Simula un orden fijo respetando presupuesto (recorta lo que no alcanza) */
@@ -814,7 +898,9 @@ function planMultiDay(cfg, pool) {
   let remaining = pool.slice();
   const lunchDef = () => cfg.lunchDur ? { start: cfg.lunchStart, dur: cfg.lunchDur, taken: false } : null;
 
-  // Día 1: desde punto de inicio -> zona -> hotel. Reservamos viaje ida (implícito en travel).
+  const lunchOpt = () => cfg.lunchDur ? { start: cfg.lunchStart, dur: cfg.lunchDur } : null;
+
+  // Día 1: desde punto de inicio -> zona -> hotel.
   {
     const seg = buildDaySegment({
       origin: cfg.start, originLabel: 'Punto de inicio (salida)',
@@ -823,12 +909,13 @@ function planMultiDay(cfg, pool) {
       pool: remaining, defEstadia: cfg.defEstadia, lunch: lunchDef(),
     });
     const refined = twoOpt(seg.visited, cfg.start, cfg.hotel);
-    const s = simulateFixedOrder({
+    const simOpts = {
       origin: cfg.start, originLabel: 'Punto de inicio (salida)',
       mustEndAt: cfg.hotel, endLabel: 'Hotel', startTime: cfg.entry, dayEnd: cfg.exit,
-      order: refined, defEstadia: cfg.defEstadia, lunch: lunchDef(),
-    });
-    days.push({ label: 'Día 1 (salida)', timeline: s.timeline, visited: s.visited, endTime: s.endTime });
+      defEstadia: cfg.defEstadia, lunch: lunchOpt(),
+    };
+    const s = simulateFixedOrder({ ...simOpts, order: refined });
+    days.push({ label: 'Día 1 (salida)', timeline: s.timeline, visited: s.visited, endTime: s.endTime, order: s.visited.slice(), simOpts });
     remaining = remaining.filter(c => !s.visited.includes(c));
   }
 
@@ -842,18 +929,18 @@ function planMultiDay(cfg, pool) {
       pool: remaining, defEstadia: cfg.defEstadia, lunch: lunchDef(),
     });
     const refined = twoOpt(seg.visited, cfg.hotel, cfg.hotel);
-    const s = simulateFixedOrder({
+    const simOpts = {
       origin: cfg.hotel, originLabel: 'Hotel', mustEndAt: cfg.hotel, endLabel: 'Hotel',
-      startTime: cfg.entry, dayEnd: cfg.exit, order: refined, defEstadia: cfg.defEstadia, lunch: lunchDef(),
-    });
+      startTime: cfg.entry, dayEnd: cfg.exit, defEstadia: cfg.defEstadia, lunch: lunchOpt(),
+    };
+    const s = simulateFixedOrder({ ...simOpts, order: refined });
     if (!s.visited.length) break;
-    days.push({ label: `Día ${dayNum}`, timeline: s.timeline, visited: s.visited, endTime: s.endTime });
+    days.push({ label: `Día ${dayNum}`, timeline: s.timeline, visited: s.visited, endTime: s.endTime, order: s.visited.slice(), simOpts });
     remaining = remaining.filter(c => !s.visited.includes(c));
     dayNum++;
   }
 
   // Último día (retorno): hotel -> zona -> punto final.
-  // Se visita hasta la hora de inicio de retorno; a esa hora arranca el viaje de vuelta.
   {
     const retStart = cfg.returnStart != null ? cfg.returnStart : cfg.exit;
     const seg = buildDaySegment({
@@ -864,22 +951,66 @@ function planMultiDay(cfg, pool) {
       reserveReturnTravel: false, closeDepartAt: retStart,
     });
     const refined = twoOpt(seg.visited, cfg.hotel, cfg.end);
-    const s = simulateFixedOrder({
+    const simOpts = {
       origin: cfg.hotel, originLabel: 'Hotel', mustEndAt: cfg.end, endLabel: 'Punto final (retorno)',
-      startTime: cfg.entry, dayEnd: retStart,
-      order: refined, defEstadia: cfg.defEstadia, lunch: lunchDef(),
+      startTime: cfg.entry, dayEnd: retStart, defEstadia: cfg.defEstadia, lunch: lunchOpt(),
       reserveReturnTravel: false, closeDepartAt: retStart,
-    });
-    // El tramo de retorno agrega el viaje hotel/última visita -> punto final (ya incluido en 'end')
+    };
+    const s = simulateFixedOrder({ ...simOpts, order: refined });
     days.push({
       label: `Día ${dayNum} (retorno${retStart != null ? ', inicia ' + fromMin(retStart) : ''})`,
-      timeline: s.timeline, visited: s.visited, endTime: s.endTime, isReturn: true,
+      timeline: s.timeline, visited: s.visited, endTime: s.endTime, isReturn: true, order: s.visited.slice(), simOpts,
     });
     remaining = remaining.filter(c => !s.visited.includes(c));
   }
 
-  return { tipo: 'multi', days, notVisited: remaining, cfg };
+  return { tipo: 'multi', days, notVisited: remaining, removed: [], cfg };
 }
+
+/* Re-simula un día tras editar su orden (mover/eliminar puntos), sin re-optimizar */
+function resimulateDay(day) {
+  const s = simulateFixedOrder({ ...day.simOpts, order: day.order });
+  day.timeline = s.timeline; day.visited = s.visited; day.endTime = s.endTime;
+}
+
+/* Aplica cambios manuales al plan y refresca vista + mapa */
+function refreshEditedPlan() {
+  const plan = STATE.lastPlan;
+  renderPlan(plan, plan.cfg);
+  drawRouteOnMap(plan, false); // recorrido en línea tras editar (los tiempos siguen siendo reales)
+}
+
+window.removeStop = function (dayIdx, id) {
+  const plan = STATE.lastPlan; if (!plan) return;
+  const day = plan.days[dayIdx];
+  const c = day.order.find(x => x.id === id); if (!c) return;
+  day.order = day.order.filter(x => x.id !== id);
+  plan.removed = plan.removed || []; plan.removed.push(c);
+  resimulateDay(day);
+  refreshEditedPlan();
+};
+
+window.moveStop = function (dayIdx, id, dir) {
+  const plan = STATE.lastPlan; if (!plan) return;
+  const day = plan.days[dayIdx];
+  const i = day.order.findIndex(x => x.id === id);
+  if (i < 0) return;
+  const j = i + dir;
+  if (j < 0 || j >= day.order.length) return;
+  const tmp = day.order[i]; day.order[i] = day.order[j]; day.order[j] = tmp;
+  resimulateDay(day);
+  refreshEditedPlan();
+};
+
+window.restoreStop = function (id) {
+  const plan = STATE.lastPlan; if (!plan) return;
+  const idx = (plan.removed || []).findIndex(x => x.id === id);
+  if (idx < 0) return;
+  const c = plan.removed.splice(idx, 1)[0];
+  plan.days[0].order.push(c); // se reincorpora al primer día (al final); reordénalo si hace falta
+  resimulateDay(plan.days[0]);
+  refreshEditedPlan();
+};
 
 /* ------------------------------ Render plan ------------------------------- */
 function renderPlan(plan, cfg) {
@@ -897,24 +1028,36 @@ function renderPlan(plan, cfg) {
   totalKm = 0;
   plan.days.forEach(d => d.timeline.forEach(t => { if (t.km && (t.type === 'visit' || t.type === 'end')) totalKm += t.km; }));
 
-  let html = `<div class="summary">
+  let html = '';
+  if (STATE.planNote) html += `<div class="plan-note">${escapeHtml(STATE.planNote)}</div>`;
+  html += `<div class="summary">
     <div class="stat"><div class="num">${totalVisits}</div><div class="lbl">Clientes en ruta</div></div>
     <div class="stat"><div class="num">${plan.days.length}</div><div class="lbl">${plan.tipo === 'local' ? 'Día' : 'Días'}</div></div>
-    <div class="stat"><div class="num">${totalKm.toFixed(1)}</div><div class="lbl">km aprox.</div></div>
+    <div class="stat"><div class="num">${totalKm.toFixed(1)}</div><div class="lbl">km ${STATE.roadMode ? 'reales' : 'aprox.'}</div></div>
     <div class="stat"><div class="num">${plan.notVisited.length}</div><div class="lbl">Sin alcanzar</div></div>
-  </div>`;
+  </div>
+  <div class="edit-hint">✏️ Puedes reordenar (▲▼) o quitar (✕) clientes de la ruta; los tiempos se recalculan al instante.</div>`;
 
   plan.days.forEach((d, di) => {
     html += `<div class="day"><div class="day-head">${escapeHtml(d.label)} <span class="day-sub">${d.visited.length} visitas · termina ${fromMin(d.endTime)}</span></div><div class="timeline">`;
+    const nVis = d.order ? d.order.length : d.visited.length;
+    let vi = 0;
     d.timeline.forEach(t => {
       if (t.type === 'start') {
         html += tlRow('▶', fromMin(t.time), `<b>${escapeHtml(t.label)}</b>`, 'start');
       } else if (t.type === 'lunch') {
         html += tlRow('🍽', `${fromMin(t.time)}–${fromMin(t.endTime)}`, `<b>Almuerzo</b> (${fmtDur(t.endTime - t.time)})`, 'lunch');
       } else if (t.type === 'visit') {
-        html += tlRow('📍', `${fromMin(t.arrive)}–${fromMin(t.depart)}`,
-          `<b>${escapeHtml(t.client.nombre)}</b> <span class="tag">${escapeHtml(t.client.tipo)}</span>` +
-          `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}</div>`, 'visit');
+        const cid = t.client.id;
+        const ctrls = `<div class="tl-edit">
+          <button ${vi === 0 ? 'disabled' : ''} title="Subir" onclick="moveStop(${di},'${cid}',-1)">▲</button>
+          <button ${vi === nVis - 1 ? 'disabled' : ''} title="Bajar" onclick="moveStop(${di},'${cid}',1)">▼</button>
+          <button class="del" title="Quitar de la ruta" onclick="removeStop(${di},'${cid}')">✕</button>
+        </div>`;
+        html += `<div class="tl-row visit"><div class="tl-ico">📍</div><div class="tl-time">${fromMin(t.arrive)}–${fromMin(t.depart)}</div>` +
+          `<div class="tl-body"><b>${escapeHtml(t.client.nombre)}</b> <span class="tag" style="background:${typeColor(t.client)}22;color:${typeColor(t.client)}">${escapeHtml(t.client.tipo)}</span>` +
+          `<div class="tl-sub">Viaje ${fmtDur(t.travel)} (${t.km.toFixed(1)} km) · Estadía ${fmtDur(t.stay)}${t.client.vend && t.client.vend !== SIN_VEND ? ' · ' + escapeHtml(t.client.vend) : ''}</div></div>${ctrls}</div>`;
+        vi++;
       } else if (t.type === 'wait') {
         html += tlRow('⏸', `${fromMin(t.from)}–${fromMin(t.to)}`, `<b>${escapeHtml(t.label)}</b>`, 'lunch');
       } else if (t.type === 'end') {
@@ -925,9 +1068,15 @@ function renderPlan(plan, cfg) {
     html += `</div></div>`;
   });
 
+  if (plan.removed && plan.removed.length) {
+    html += `<div class="removed"><b>Quitados manualmente (${plan.removed.length}):</b><div class="removed-list">` +
+      plan.removed.map(c => `<span class="rm-chip">${escapeHtml(c.nombre)} <button title="Reincorporar" onclick="restoreStop('${c.id}')">↩</button></span>`).join('') +
+      `</div></div>`;
+  }
+
   if (plan.notVisited.length) {
     html += `<div class="notvisited"><b>No alcanzan (${plan.notVisited.length}):</b> ` +
-      plan.notVisited.map(c => escapeHtml(c.nombre)).join(', ') +
+      plan.notVisited.slice(0, 40).map(c => escapeHtml(c.nombre)).join(', ') + (plan.notVisited.length > 40 ? '…' : '') +
       `<div class="hint">Sugerencia: amplía horario, reduce estadía, o agrega días.</div></div>`;
   }
 
@@ -940,27 +1089,31 @@ function tlRow(icon, time, body, cls) {
   return `<div class="tl-row ${cls}"><div class="tl-ico">${icon}</div><div class="tl-time">${time}</div><div class="tl-body">${body}</div></div>`;
 }
 
-/* Dibuja la ruta en el mapa */
-function drawRouteOnMap(plan) {
+/* Dibuja la ruta en el mapa. Si useGeometry, traza el recorrido real por calles (OSRM). */
+async function drawRouteOnMap(plan, useGeometry) {
   if (STATE.routeLayer) { STATE.map.removeLayer(STATE.routeLayer); STATE.routeLayer = null; }
   if (!plan) return;
   const group = L.featureGroup();
   const colors = ['#2563eb', '#16a34a', '#9333ea', '#ea580c', '#0891b2', '#db2777'];
+  const geomJobs = [];
   plan.days.forEach((d, di) => {
-    const pts = [];
+    const seq = [];   // puntos ordenados: inicio, visitas, fin
     d.timeline.forEach(t => {
-      if (t.type === 'start' && t.pos) pts.push([t.pos.lat, t.pos.lon]);
-      if (t.type === 'visit') pts.push([t.client.lat, t.client.lon]);
-      if (t.type === 'end' && t.pos) pts.push([t.pos.lat, t.pos.lon]);
+      if (t.type === 'start' && t.pos) seq.push({ lat: t.pos.lat, lon: t.pos.lon });
+      if (t.type === 'visit') seq.push({ lat: t.client.lat, lon: t.client.lon });
+      if (t.type === 'end' && t.pos) seq.push({ lat: t.pos.lat, lon: t.pos.lon });
     });
-    if (pts.length > 1) {
-      const line = L.polyline(pts, { color: colors[di % colors.length], weight: 3, opacity: 0.8, dashArray: d.isReturn ? '6 6' : null });
+    const color = colors[di % colors.length];
+    if (seq.length > 1) {
+      const straight = seq.map(p => [p.lat, p.lon]);
+      const line = L.polyline(straight, { color, weight: 3, opacity: 0.85, dashArray: d.isReturn ? '6 6' : null });
       group.addLayer(line);
+      if (useGeometry) geomJobs.push({ seq, line });
       // números de orden
       let order = 0;
       d.timeline.filter(t => t.type === 'visit').forEach(t => {
         order++;
-        const ic = L.divIcon({ className: 'order-ic', html: `<div style="background:${colors[di % colors.length]};color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;border:2px solid #fff">${order}</div>`, iconSize: [20, 20], iconAnchor: [10, 10] });
+        const ic = L.divIcon({ className: 'order-ic', html: `<div style="background:${color};color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;border:2px solid #fff">${order}</div>`, iconSize: [20, 20], iconAnchor: [10, 10] });
         group.addLayer(L.marker([t.client.lat, t.client.lon], { icon: ic }));
       });
     }
@@ -968,6 +1121,14 @@ function drawRouteOnMap(plan) {
   group.addTo(STATE.map);
   STATE.routeLayer = group;
   try { STATE.map.fitBounds(group.getBounds().pad(0.2)); } catch (e) {}
+
+  // Reemplaza las líneas rectas por la geometría real de las calles (best-effort)
+  for (const job of geomJobs) {
+    try {
+      const latlngs = await fetchRoadGeometry(job.seq);
+      if (STATE.routeLayer === group) job.line.setLatLngs(latlngs);
+    } catch (e) { /* mantiene la línea recta si falla */ }
+  }
 }
 
 /* Exportar CSV del itinerario */
@@ -1062,6 +1223,11 @@ function wireUI() {
   $('#tipoFilter').addEventListener('change', applyFilters);
   $('#vendFilter').addEventListener('change', applyFilters);
   $('#colorByVend').addEventListener('change', applyFilters);
+  const traffic = $('#traffic');
+  if (traffic) {
+    const upd = () => { $('#trafficVal').textContent = Number(traffic.value).toFixed(1) + '×'; };
+    traffic.addEventListener('input', upd); upd();
+  }
   $('#btnSelectAll').addEventListener('click', () => {
     // Selecciona solo los visibles según el filtro actual (sector/ciudad/tipo/búsqueda)
     visibleClients().forEach(c => STATE.selectedIds.add(c.id));
@@ -1108,7 +1274,7 @@ window.addEventListener('DOMContentLoaded', () => {
     STATE.vendInfo = window.VENDEDORES || {};
     STATE.clients = window.CLIENTES.map(c => ({
       id: String(c.id), nombre: c.nombre, lat: c.lat, lon: c.lon,
-      tipo: c.tipo || 'Cliente', dir: c.dir || '', ruc: c.ruc || '',
+      tipo: c.tipo || 'Cliente', abat1: c.abat1 || '', dir: c.dir || '', ruc: c.ruc || '',
       ciudad: c.ciudad || '', vend: c.vend || SIN_VEND, codVend: c.codVend || '',
       estadia: null,
     }));
