@@ -124,6 +124,10 @@ function cacheKey(a, b) {
   return `${a.lat.toFixed(5)},${a.lon.toFixed(5)}|${b.lat.toFixed(5)},${b.lon.toFixed(5)}`;
 }
 function trafficFactor() { return Number($('#traffic') && $('#traffic').value) || 1; }
+/* Tiempo mínimo de desplazamiento entre paradas (estacionar/caminar), en minutos */
+function minStopBuffer() { const el = $('#minStop'); return el ? (Number(el.value) || 0) : 0; }
+/* Tiempo de viaje entre paradas con piso mínimo aplicado */
+function legMin(a, b) { return Math.max(travelMin(a, b), minStopBuffer()); }
 
 /* Tiempo de viaje en minutos. Usa la matriz OSRM (real) si está en caché;
    si no, estima con haversine + factor de vía + velocidad. En ambos casos
@@ -767,7 +771,7 @@ function buildDaySegment(opts) {
     }
     if (best < 0) break;
     const cand = pool[best];
-    let travel = travelMin(pos, cand);
+    let travel = legMin(pos, cand);
     let arrival = time + travel;
 
     // ¿almuerzo antes de atender?
@@ -1004,7 +1008,7 @@ function simulateFixedOrder(opts) {
   let lunchTaken = opts.lunch ? false : true;
   timeline.push({ type: 'start', time, label: opts.originLabel, pos });
   for (const cand of opts.order) {
-    const travel = travelMin(pos, cand);
+    const travel = legMin(pos, cand);
     let arrival = time + travel;
     let lunchInsert = null;
     if (!lunchTaken && opts.lunch && arrival >= opts.lunch.start) lunchInsert = Math.max(opts.lunch.start, time);
@@ -1348,6 +1352,7 @@ window.savePlan = function () {
     lunchStart: $('#lunchStart').value, lunchDur: $('#lunchDur').value, defEstadia: $('#defEstadia').value,
     tipo: $('input[name="tipo"]:checked').value, days: $('#days').value, returnStart: $('#returnStart').value,
     useOSRM: $('#useOSRM').checked, traffic: $('#traffic').value, speed: $('#speed').value, roadFactor: $('#roadFactor').value,
+    minStop: $('#minStop').value,
     start: STATE.startPoint, end: STATE.endPoint, hotel: STATE.hotel,
   };
   const filters = { ...STATE.filter, colorByVend: STATE.colorByVend, ordenarMonto: STATE.ordenarMonto };
@@ -1391,6 +1396,7 @@ window.loadPlan = function (id) {
   $('#useOSRM').checked = cfg.useOSRM; $('#traffic').value = cfg.traffic;
   $('#trafficVal').textContent = Number(cfg.traffic).toFixed(1) + '×';
   $('#speed').value = cfg.speed; $('#roadFactor').value = cfg.roadFactor;
+  if (cfg.minStop != null) $('#minStop').value = cfg.minStop;
   STATE.startPoint = cfg.start; STATE.endPoint = cfg.end; STATE.hotel = cfg.hotel;
   if (cfg.start) $('#startLabel').textContent = coordLabel(cfg.start);
   if (cfg.end) $('#endLabel').textContent = coordLabel(cfg.end);
