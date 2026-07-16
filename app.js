@@ -64,9 +64,13 @@ function atenColor(c) {
   if (c.atendido === false) return '#dc2626';
   return '#94a3b8';
 }
-/* URL de Google Maps con destino a las coordenadas del cliente */
+/* URL de Google Maps con destino a las coordenadas del cliente (navegación) */
 function gmapsUrl(lat, lon) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=driving`;
+}
+/* URL de Google Maps para VER el punto (ubicación por coordenadas) */
+function gmapsViewUrl(lat, lon) {
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
 }
 
 /* Color estable por vendedor (ángulo áureo sobre la rueda de tono) */
@@ -1252,29 +1256,28 @@ window.exportPlanPDF = function () {
 
   plan.days.forEach((d, di) => {
     const col = dayColors[di % dayColors.length];
-    body += `<div class="day"><h2 style="border-color:${col}">${escapeHtml(d.label)} · ${d.visited.length} visitas · termina ${fromMin(d.endTime)}</h2>
-      <table><thead><tr><th>#</th><th>Horario</th><th>Cliente</th><th>Tipo</th><th>Atención</th><th>Venta 2026</th><th>Dirección</th><th>Ir</th></tr></thead><tbody>`;
+    body += `<div class="day"><h2 style="border-color:${col}">${escapeHtml(d.label)} · ${d.visited.length} paradas · termina ${fromMin(d.endTime)}</h2>
+      <table><thead><tr><th>Parada</th><th>Hora</th><th>Código</th><th>Cliente</th><th>Tipo</th><th>Venta 2026</th><th>Ubicación</th></tr></thead><tbody>`;
     let n = 0;
     d.timeline.forEach(t => {
       if (t.type === 'start') {
-        body += `<tr class="pt"><td>▶</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b></td></tr>`;
+        body += `<tr class="pt"><td>▶</td><td>${fromMin(t.time)}</td><td colspan="5"><b>${escapeHtml(t.label)}</b></td></tr>`;
       } else if (t.type === 'lunch') {
-        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="6">Almuerzo</td></tr>`;
+        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="5">Almuerzo</td></tr>`;
       } else if (t.type === 'wait') {
-        body += `<tr class="pt"><td>⏸</td><td>${fromMin(t.from)}–${fromMin(t.to)}</td><td colspan="6">${escapeHtml(t.label)}</td></tr>`;
+        body += `<tr class="pt"><td>⏸</td><td>${fromMin(t.from)}–${fromMin(t.to)}</td><td colspan="5">${escapeHtml(t.label)}</td></tr>`;
       } else if (t.type === 'visit') {
         n++;
         const cl = t.client;
         body += `<tr><td><span class="num" style="background:${col}">${n}</span></td>` +
           `<td>${fromMin(t.arrive)}–${fromMin(t.depart)}</td>` +
+          `<td><b>${escapeHtml(cl.id)}</b></td>` +
           `<td><b>${escapeHtml(cl.nombre)}</b>${cl.vend && cl.vend !== SIN_VEND ? '<br><span class="sub">' + escapeHtml(cl.vend) + '</span>' : ''}</td>` +
-          `<td>${escapeHtml(cl.tipo)}</td>` +
-          `<td style="color:${atenColor(cl)}">${atenSymbol(cl) || '•'} ${atenLabel(cl)}</td>` +
+          `<td>${escapeHtml(cl.tipo)}${cl.abat1 ? ' (' + escapeHtml(cl.abat1) + ')' : ''}</td>` +
           `<td class="r">${fmtMoney(cl.venta2026)}</td>` +
-          `<td class="sub">${escapeHtml(cl.dir || '')}${cl.ciudad ? '<br>' + escapeHtml(cl.ciudad) : ''}</td>` +
-          `<td><a href="${gmapsUrl(cl.lat, cl.lon)}">🧭 Ir</a></td></tr>`;
+          `<td><a href="${gmapsViewUrl(cl.lat, cl.lon)}">📍 Ver en Google</a></td></tr>`;
       } else if (t.type === 'end') {
-        body += `<tr class="pt"><td>🏁</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b> — viaje ${fmtDur(t.travel)} (${(t.km || 0).toFixed(1)} km)</td></tr>`;
+        body += `<tr class="pt"><td>🏁</td><td>${fromMin(t.time)}</td><td colspan="5"><b>${escapeHtml(t.label)}</b> — viaje ${fmtDur(t.travel)} (${(t.km || 0).toFixed(1)} km)</td></tr>`;
       }
     });
     body += `</tbody></table></div>`;
