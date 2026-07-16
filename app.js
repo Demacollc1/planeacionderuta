@@ -1503,6 +1503,37 @@ window.exportPlanPDF = function () {
     body += `</tbody></table></div>`;
   });
 
+  // ---- Resumen consolidado por vendedor (clientes visitados) ----
+  const byVend = new Map();
+  plan.days.forEach((d, di) => {
+    let n = 0;
+    d.timeline.forEach(t => {
+      if (t.type !== 'visit') return;
+      n++;
+      const cl = t.client; const v = cl.vend || SIN_VEND;
+      if (!byVend.has(v)) byVend.set(v, { clients: [], total: 0 });
+      const o = byVend.get(v);
+      o.clients.push({ cl, day: d.label, stop: n });
+      if (cl.venta2026 != null) o.total += cl.venta2026;
+    });
+  });
+  if (byVend.size) {
+    const vsorted = Array.from(byVend.entries()).sort((a, b) => b[1].clients.length - a[1].clients.length);
+    const totVisit = vsorted.reduce((s, [, o]) => s + o.clients.length, 0);
+    const totMoney = vsorted.reduce((s, [, o]) => s + o.total, 0);
+    body += `<div class="day vsum-wrap"><h2>Resumen por vendedor · ${vsorted.length} vendedor(es) · ${totVisit} visitas · ${fmtMoney(totMoney)}</h2>`;
+    vsorted.forEach(([v, o]) => {
+      body += `<div class="vsum"><h3>${escapeHtml(v)} — ${o.clients.length} cliente(s) · ${fmtMoney(o.total)}</h3>
+        <table><thead><tr><th>Jornada</th><th>Parada</th><th>Código</th><th>Cliente</th><th>Tipo</th><th>Venta 2026</th></tr></thead><tbody>`;
+      o.clients.forEach(x => {
+        body += `<tr><td>${escapeHtml(x.day)}</td><td>${x.stop}</td><td><b>${escapeHtml(x.cl.id)}</b></td>` +
+          `<td>${escapeHtml(x.cl.nombre)}</td><td>${escapeHtml(x.cl.tipo)}</td><td class="r">${fmtMoney(x.cl.venta2026)}</td></tr>`;
+      });
+      body += `</tbody></table></div>`;
+    });
+    body += `</div>`;
+  }
+
   if (plan.notVisited && plan.notVisited.length) {
     body += `<div class="nv"><b>No alcanzan (${plan.notVisited.length}):</b> ` +
       plan.notVisited.slice(0, 120).map(c => `[${escapeHtml(c.id)}] ${escapeHtml(c.nombre)}`).join(' · ') + '</div>';
@@ -1517,6 +1548,8 @@ window.exportPlanPDF = function () {
       th{background:#f8fafc;font-size:11px} td.r{text-align:right;font-weight:bold} .sub{color:#64748b;font-size:10.5px}
       tr.pt td{background:#f8fafc;color:#334155} .num{display:inline-block;min-width:18px;text-align:center;color:#fff;border-radius:50%;padding:1px 5px;font-weight:bold}
       td.nota{min-width:120px;color:#334155;font-style:italic}
+      .vsum-wrap h2{border-color:#7c3aed}
+      .vsum{margin:8px 0 12px} .vsum h3{font-size:12.5px;margin:0 0 4px;background:#f5f3ff;border-left:4px solid #7c3aed;padding:4px 8px}
       a{color:#2563eb;text-decoration:none;font-weight:600;white-space:nowrap} .nv{margin-top:10px;color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px;font-size:11px}
       @media print{ body{margin:10px} .day{page-break-inside:avoid} }
     </style></head><body>${body}
