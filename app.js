@@ -1643,19 +1643,24 @@ function wireUI() {
 
   // Datos
   $('#btnSample').addEventListener('click', () => {
+    if (!confirm(`Esto REEMPLAZARÁ los ${STATE.clients.length} clientes actuales por ~30 de ejemplo. ¿Continuar?\n\n(Podrás recuperar los originales con “Restaurar clientes” o recargando la página.)`)) return;
     STATE.clients = makeSample();
     STATE.selectedIds = new Set(STATE.clients.map(c => c.id));
     afterClientsLoaded();
   });
+  $('#btnRestore').addEventListener('click', () => window.restoreOriginalClients());
   $('#csvFile').addEventListener('change', (e) => {
     const f = e.target.files[0]; if (!f) return;
+    if (STATE.clients.length > 100 && !confirm(`Cargar este CSV REEMPLAZARÁ los ${STATE.clients.length} clientes actuales. ¿Continuar?`)) { e.target.value = ''; return; }
     const rd = new FileReader();
     rd.onload = () => importCSV(rd.result);
     rd.readAsText(f, 'utf-8');
   });
   $('#btnPaste').addEventListener('click', () => {
     const t = $('#pasteArea').value.trim();
-    if (t) importCSV(t);
+    if (!t) return;
+    if (STATE.clients.length > 100 && !confirm(`Importar REEMPLAZARÁ los ${STATE.clients.length} clientes actuales. ¿Continuar?`)) return;
+    importCSV(t);
   });
   $('#clientSearch').addEventListener('input', applyFilters);
   $('#cityFilter').addEventListener('change', applyFilters);
@@ -1709,11 +1714,8 @@ function setPointFromText(which) {
   }
 }
 
-/* --------------------------------- Init ----------------------------------- */
-window.addEventListener('DOMContentLoaded', () => {
-  wireUI();
-  initMap();
-  // Carga los clientes reales geolocalizados (data/clientes.js). Si no existen, usa ejemplo.
+/* Carga los clientes reales geolocalizados desde data/clientes.js */
+function loadOriginalClients() {
   if (Array.isArray(window.CLIENTES) && window.CLIENTES.length) {
     STATE.vendInfo = window.VENDEDORES || {};
     STATE.clients = window.CLIENTES.map(c => ({
@@ -1724,9 +1726,26 @@ window.addEventListener('DOMContentLoaded', () => {
       atendido: (typeof c.atendido === 'boolean') ? c.atendido : null, // null = sin dato
       estadia: null,
     }));
-  } else {
-    STATE.clients = makeSample();
+    return true;
   }
+  STATE.clients = makeSample();
+  return false;
+}
+
+window.restoreOriginalClients = function () {
+  loadOriginalClients();
+  STATE.selectedIds = new Set();
+  STATE.showOnlySelected = false;
+  if (STATE.layers.drawn) { STATE.layers.drawn.clearLayers(); STATE.drawnArea = null; }
+  afterClientsLoaded();
+  alert('✅ Se restauraron los ' + STATE.clients.length + ' clientes originales.');
+};
+
+/* --------------------------------- Init ----------------------------------- */
+window.addEventListener('DOMContentLoaded', () => {
+  wireUI();
+  initMap();
+  loadOriginalClients();
   STATE.selectedIds = new Set(); // arranca sin selección; el usuario elige sector/área
   afterClientsLoaded();
 });

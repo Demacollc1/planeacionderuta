@@ -235,11 +235,12 @@
       <h3>1 · Datos de clientes <span class="num-badge"><span id="countSel">0</span>/<span id="countTotal">0</span></span></h3>
       <div class="body">
         <div class="btnrow">
-          <button class="btn sec" id="btnSample">Datos de ejemplo</button>
+          <button class="btn sec" id="btnRestore">🔄 Restaurar clientes</button>
           <label class="btn ghost" style="text-align:center;margin:0">Cargar CSV
             <input type="file" id="csvFile" accept=".csv,.txt" style="display:none">
           </label>
         </div>
+        <button class="btn ghost" id="btnSample" style="margin-top:6px;font-size:11px;padding:5px">Cargar datos de ejemplo (reemplaza)</button>
         <label>O pega datos (CSV con encabezados: nombre, latitud, longitud, tipo, estadia)</label>
         <textarea id="pasteArea" placeholder="nombre,latitud,longitud,tipo&#10;Tienda La 80,6.2518,-75.5636,Cliente"></textarea>
         <button class="btn ghost" id="btnPaste" style="margin-top:6px">Importar pegado</button>
@@ -446,7 +447,7 @@
     width='100%' height='820' hide-tabs toolbar='bottom'></tableau-viz>
 </div>
 
-<script src="data/clientes.js?v=20260715j"></script>
-<script src="app.js?v=20260715j"></script>
+<script src="data/clientes.js?v=20260715k"></script>
+<script src="app.js?v=20260715k"></script>
 </body>
 </html>
