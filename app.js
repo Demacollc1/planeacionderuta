@@ -895,6 +895,63 @@ function setPlanBusy(busy) {
   b.textContent = busy ? '⏳ Calculando rutas reales…' : '🚀 Calcular ruta';
 }
 
+/* Planifica automáticamente varias jornadas (día 1, 2, 3…) desde el mismo punto
+   de inicio/fin, hasta cubrir todos los clientes seleccionados o agotar el máximo. */
+async function planAllDays() {
+  const cfg = readConfig();
+  if (!cfg) return;
+  const pool = STATE.clients.filter(c => STATE.selectedIds.has(c.id));
+  if (!pool.length) { alert('Selecciona al menos un cliente.'); return; }
+  if (!cfg.start || !cfg.end) { alert('Define el punto de inicio y el final.'); return; }
+  if (pool.length > 1200 && !confirm(`Vas a planificar ${pool.length} clientes en varias jornadas (puede generar muchos días y tardar unos segundos). ¿Continuar?`)) return;
+
+  STATE.distCache.clear(); STATE.roadKm.clear(); STATE.roadMode = false; STATE.planNote = '';
+  const btn = $('#btnPlanAll'); if (btn) { btn.disabled = true; btn.textContent = '⏳ Planificando…'; }
+
+  // Rutas reales solo si el conjunto es pequeño (≤90 puntos)
+  if ($('#useOSRM').checked) {
+    const pts = [cfg.start, cfg.end]; pool.forEach(c => pts.push(c));
+    const uniq = []; const seen = new Set();
+    for (const p of pts) { const k = `${p.lat.toFixed(5)},${p.lon.toFixed(5)}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }
+    if (uniq.length <= 90) { try { await ensureRoadMatrix(uniq); STATE.roadMode = true; } catch (e) { STATE.planNote = '⚠ ' + e.message + ' — se usó estimación.'; } }
+    else STATE.planNote = `ℹ ${pool.length} clientes: se usó estimación de distancia (la ruta real por calles aplica solo con ≤90 puntos).`;
+  }
+
+  const lunchObj = () => cfg.lunchDur ? { start: cfg.lunchStart, dur: cfg.lunchDur } : null;
+  const MAX_DAYS = 90;
+  let remaining = pool.slice();
+  const days = [];
+  let dn = 1;
+  // Ceder el hilo un instante para que el botón muestre "Planificando…"
+  await new Promise(r => setTimeout(r, 20));
+  while (remaining.length && dn <= MAX_DAYS) {
+    const seg = buildDaySegment({
+      origin: cfg.start, originLabel: 'Punto de inicio', mustEndAt: cfg.end, endLabel: 'Punto final',
+      startTime: cfg.entry, dayEnd: cfg.exit, pool: remaining, defEstadia: cfg.defEstadia,
+      lunch: cfg.lunchDur ? { start: cfg.lunchStart, dur: cfg.lunchDur, taken: false } : null,
+    });
+    if (!seg.visited.length) break; // ninguno más cabe en la jornada desde este inicio
+    const refined = twoOpt(seg.visited, cfg.start, cfg.end);
+    const simOpts = {
+      origin: cfg.start, originLabel: 'Punto de inicio', mustEndAt: cfg.end, endLabel: 'Punto final',
+      startTime: cfg.entry, dayEnd: cfg.exit, defEstadia: cfg.defEstadia, lunch: lunchObj(),
+    };
+    const s = simulateFixedOrder({ ...simOpts, order: refined });
+    days.push({ label: `Jornada ${dn}`, timeline: s.timeline, visited: s.visited, endTime: s.endTime, order: s.visited.slice(), simOpts });
+    remaining = remaining.filter(c => !s.visited.includes(c));
+    dn++;
+  }
+
+  const plan = { tipo: 'auto', days, notVisited: remaining, removed: [], cfg };
+  if (!STATE.planNote) {
+    STATE.planNote = `📅 ${days.length} jornada(s) planificada(s) automáticamente${remaining.length ? ' · ' + remaining.length + ' cliente(s) no ubicables en el horario' : ' · todos los clientes cubiertos'}.` + (STATE.roadMode ? ' Rutas reales.' : '');
+  }
+  STATE.lastPlan = plan;
+  renderPlan(plan, cfg);
+  await drawRouteOnMap(plan, STATE.roadMode);
+  if (btn) { btn.disabled = false; btn.textContent = '📅 Planificar todos los días (auto)'; }
+}
+
 function readConfig() {
   const cfg = {
     tipo: $('input[name="tipo"]:checked').value,
@@ -1213,7 +1270,8 @@ function renderPlan(plan, cfg) {
   html += `<div class="export-row">
     <button class="btn-export" onclick="exportPlanPDF()">⬇ Descargar PDF</button>
     <button class="btn-export alt" onclick="exportPlan()">⬇ CSV</button>
-  </div>`;
+  </div>
+  <button class="btn-export" style="background:#7c3aed;width:100%;margin-top:8px" onclick="savePlan()">💾 Guardar plan en el historial</button>`;
   box.innerHTML = html;
   $('#resultsPanel').classList.add('open');
 }
@@ -1262,6 +1320,146 @@ async function drawRouteOnMap(plan, useGeometry) {
       if (STATE.routeLayer === group) job.line.setLatLngs(latlngs);
     } catch (e) { /* mantiene la línea recta si falla */ }
   }
+}
+
+/* ===================== Historial de planes (localStorage) ================= */
+const PLAN_STORE_KEY = 'demaco_planes_v1';
+function loadPlanStore() {
+  try { return JSON.parse(localStorage.getItem(PLAN_STORE_KEY) || '[]'); } catch (e) { return []; }
+}
+function savePlanStore(arr) {
+  try { localStorage.setItem(PLAN_STORE_KEY, JSON.stringify(arr)); }
+  catch (e) { alert('No se pudo guardar (almacenamiento lleno o bloqueado).'); }
+}
+function ptKey(p) {
+  if (p === STATE.startPoint) return 'start';
+  if (p === STATE.endPoint) return 'end';
+  if (STATE.hotel && p === STATE.hotel) return 'hotel';
+  return p ? { lat: p.lat, lon: p.lon } : null;
+}
+
+window.savePlan = function () {
+  const plan = STATE.lastPlan;
+  if (!plan) { alert('Primero calcula una ruta.'); return; }
+  const name = prompt('Nombre del plan:', 'Plan ' + new Date().toLocaleDateString('es-EC'));
+  if (!name) return;
+  const cfg = {
+    entry: $('#entry').value, exit: $('#exit').value, lunchOn: $('#lunchOn').checked,
+    lunchStart: $('#lunchStart').value, lunchDur: $('#lunchDur').value, defEstadia: $('#defEstadia').value,
+    tipo: $('input[name="tipo"]:checked').value, days: $('#days').value, returnStart: $('#returnStart').value,
+    useOSRM: $('#useOSRM').checked, traffic: $('#traffic').value, speed: $('#speed').value, roadFactor: $('#roadFactor').value,
+    start: STATE.startPoint, end: STATE.endPoint, hotel: STATE.hotel,
+  };
+  const filters = { ...STATE.filter, colorByVend: STATE.colorByVend, ordenarMonto: STATE.ordenarMonto };
+  const days = plan.days.map(d => ({
+    label: d.label, isReturn: !!d.isReturn, orderIds: d.order.map(c => c.id),
+    sim: {
+      originKey: ptKey(d.simOpts.origin), destKey: ptKey(d.simOpts.mustEndAt),
+      originLabel: d.simOpts.originLabel, endLabel: d.simOpts.endLabel,
+      startTime: d.simOpts.startTime, dayEnd: d.simOpts.dayEnd, defEstadia: d.simOpts.defEstadia,
+      lunch: d.simOpts.lunch, reserveReturnTravel: d.simOpts.reserveReturnTravel, closeDepartAt: d.simOpts.closeDepartAt,
+    },
+  }));
+  const notas = {};
+  STATE.clients.forEach(c => { if (c.nota) notas[c.id] = c.nota; });
+  const rec = {
+    id: 'p' + Date.now(), name, date: new Date().toISOString(), tipo: plan.tipo, cfg, filters,
+    selectedIds: [...STATE.selectedIds], days,
+    notVisitedIds: plan.notVisited.map(c => c.id), removedIds: (plan.removed || []).map(c => c.id), notas,
+  };
+  const all = loadPlanStore(); all.unshift(rec); savePlanStore(all);
+  alert('✅ Plan guardado: ' + name);
+  renderHistory();
+};
+
+window.deletePlan = function (id) {
+  if (!confirm('¿Eliminar este plan guardado?')) return;
+  savePlanStore(loadPlanStore().filter(r => r.id !== id));
+  renderHistory();
+};
+
+window.loadPlan = function (id) {
+  const rec = loadPlanStore().find(r => r.id === id);
+  if (!rec) return;
+  const cfg = rec.cfg;
+  // restaurar formulario
+  $('#entry').value = cfg.entry; $('#exit').value = cfg.exit; $('#lunchOn').checked = cfg.lunchOn;
+  $('#lunchStart').value = cfg.lunchStart; $('#lunchDur').value = cfg.lunchDur; $('#defEstadia').value = cfg.defEstadia;
+  const tr = document.querySelector(`input[name="tipo"][value="${cfg.tipo}"]`); if (tr) tr.checked = true;
+  $('#multiDayFields').style.display = cfg.tipo === 'multi' ? 'block' : 'none';
+  $('#days').value = cfg.days; $('#returnStart').value = cfg.returnStart;
+  $('#useOSRM').checked = cfg.useOSRM; $('#traffic').value = cfg.traffic;
+  $('#trafficVal').textContent = Number(cfg.traffic).toFixed(1) + '×';
+  $('#speed').value = cfg.speed; $('#roadFactor').value = cfg.roadFactor;
+  STATE.startPoint = cfg.start; STATE.endPoint = cfg.end; STATE.hotel = cfg.hotel;
+  if (cfg.start) $('#startLabel').textContent = coordLabel(cfg.start);
+  if (cfg.end) $('#endLabel').textContent = coordLabel(cfg.end);
+  if (cfg.hotel) $('#hotelLabel').textContent = coordLabel(cfg.hotel);
+  renderSpecialMarkers();
+  // filtros
+  const f = rec.filters || {};
+  $('#cityFilter').value = f.ciudad || ''; $('#vendFilter').value = f.vend || '';
+  $('#tipoFilter').value = f.tipo || ''; $('#atenFilter').value = f.aten || '';
+  $('#montoMin').value = f.montoMin != null ? f.montoMin : ''; $('#montoMax').value = f.montoMax != null ? f.montoMax : '';
+  $('#clientSearch').value = f.q || ''; $('#colorByVend').checked = !!f.colorByVend; $('#ordenarMonto').checked = !!f.ordenarMonto;
+  // selección y notas
+  STATE.selectedIds = new Set(rec.selectedIds || []);
+  STATE.showOnlySelected = false;
+  if (rec.notas) STATE.clients.forEach(c => { if (rec.notas[c.id]) c.nota = rec.notas[c.id]; });
+  // reconstruir plan
+  STATE.distCache.clear(); STATE.roadKm.clear(); STATE.roadMode = false;
+  const byId = new Map(STATE.clients.map(c => [c.id, c]));
+  const resolve = (k) => k === 'start' ? STATE.startPoint : k === 'end' ? STATE.endPoint : k === 'hotel' ? STATE.hotel : k;
+  const days = rec.days.map(d => {
+    const simOpts = {
+      origin: resolve(d.sim.originKey), originLabel: d.sim.originLabel,
+      mustEndAt: resolve(d.sim.destKey), endLabel: d.sim.endLabel,
+      startTime: d.sim.startTime, dayEnd: d.sim.dayEnd, defEstadia: d.sim.defEstadia,
+      lunch: d.sim.lunch, reserveReturnTravel: d.sim.reserveReturnTravel, closeDepartAt: d.sim.closeDepartAt,
+    };
+    const order = d.orderIds.map(id => byId.get(id)).filter(Boolean);
+    const s = simulateFixedOrder({ ...simOpts, order, forceAll: true });
+    return { label: d.label, isReturn: d.isReturn, timeline: s.timeline, visited: s.visited, endTime: s.endTime, order: order.slice(), simOpts };
+  });
+  applyFilters(); // aplica filtros y re-dibuja marcadores/lista con la selección
+  const plan = {
+    tipo: rec.tipo, days,
+    notVisited: (rec.notVisitedIds || []).map(id => byId.get(id)).filter(Boolean),
+    removed: (rec.removedIds || []).map(id => byId.get(id)).filter(Boolean),
+    cfg: readConfig(),
+  };
+  STATE.planNote = '📂 Plan cargado: ' + rec.name;
+  STATE.lastPlan = plan;
+  renderPlan(plan, plan.cfg);
+  drawRouteOnMap(plan, false);
+  // ir a la pestaña Planificador
+  $$('.tab-btn').forEach(x => x.classList.remove('active'));
+  $$('.tab-panel').forEach(x => x.classList.remove('active'));
+  $('.tab-btn[data-tab="tab-plan"]').classList.add('active');
+  $('#tab-plan').classList.add('active');
+  setTimeout(() => STATE.map.invalidateSize(), 60);
+};
+
+function renderHistory() {
+  const box = $('#historyList');
+  if (!box) return;
+  const all = loadPlanStore();
+  if (!all.length) { box.innerHTML = '<div class="empty">Aún no has guardado ningún plan. Calcula una ruta y pulsa “💾 Guardar plan”.</div>'; return; }
+  box.innerHTML = all.map(r => {
+    const nDays = r.days ? r.days.length : 0;
+    const nVis = r.days ? r.days.reduce((a, d) => a + (d.orderIds ? d.orderIds.length : 0), 0) : 0;
+    const fecha = new Date(r.date).toLocaleString('es-EC');
+    return `<div class="hist-card">
+      <div class="hist-main">
+        <div class="hist-name">${escapeHtml(r.name)}</div>
+        <div class="hist-meta">${fecha} · ${escapeHtml(r.tipo)} · ${nDays} jornada(s) · ${nVis} en ruta · ${(r.selectedIds || []).length} seleccionados · ${(r.notVisitedIds || []).length} sin alcanzar · ${(r.removedIds || []).length} excluidos</div>
+      </div>
+      <div class="hist-actions">
+        <button class="btn" onclick="loadPlan('${r.id}')">📂 Cargar</button>
+        <button class="btn del" onclick="deletePlan('${r.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* Exportar itinerario a PDF (abre vista imprimible → Guardar como PDF).
@@ -1369,6 +1567,7 @@ function wireUI() {
     $('#' + b.dataset.tab).classList.add('active');
     if (b.dataset.tab === 'tab-plan' && STATE.map) setTimeout(() => STATE.map.invalidateSize(), 50);
     if (b.dataset.tab === 'tab-vendors') renderVendorSummary();
+    if (b.dataset.tab === 'tab-history') renderHistory();
   }));
 
   // Resumen por vendedor: ordenar por columna, buscar, exportar
@@ -1450,6 +1649,7 @@ function wireUI() {
   });
 
   $('#btnPlan').addEventListener('click', planRoute);
+  $('#btnPlanAll').addEventListener('click', planAllDays);
   $('#btnCloseResults').addEventListener('click', () => $('#resultsPanel').classList.remove('open'));
 
   // Config de puntos por texto
