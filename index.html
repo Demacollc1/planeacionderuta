@@ -62,6 +62,11 @@
   .pick-btn .dot{width:12px;height:12px;border-radius:3px}
   .pick-btn .lbl{color:var(--muted);font-size:11px;margin-left:auto}
 
+  .place-sel{margin-top:6px}
+  .place-row{display:flex;align-items:center;gap:6px;padding:4px 6px;border:1px solid var(--line);border-radius:7px;margin-bottom:4px;font-size:12px}
+  .place-row .pl-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .place-row .pl-co{color:var(--muted);font-size:10.5px}
+  .place-row button{background:none;border:0;cursor:pointer;font-size:13px}
   .radio-group{display:flex;gap:8px;margin-top:4px}
   .radio-opt{flex:1;border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;font-size:13px;cursor:pointer}
   .radio-opt input{display:none}
@@ -298,6 +303,7 @@
           <label>📍 Hotel (base de pernocte)</label>
           <button class="pick-btn" data-pick="hotel"><span class="dot" style="background:var(--purple)"></span>Fijar hotel en el mapa <span class="lbl" id="hotelLabel">sin fijar</span></button>
           <input type="text" id="hotelCoords" placeholder="lat, lon (opcional)" style="margin-top:6px">
+          <select id="hotelPlace" class="place-sel"><option value="">— o elige hotel guardado —</option></select>
           <label>🕐 Hora para iniciar el retorno (último día)</label>
           <input type="time" id="returnStart" value="14:00">
         </div>
@@ -326,6 +332,8 @@
             </select>
           </div>
         </div>
+        <label>Restaurante del almuerzo (opcional) · <span id="restLabel" style="color:var(--muted)">—</span></label>
+        <select id="restPlace" class="place-sel"><option value="">— elegir restaurante guardado —</option></select>
         <label>Tiempo de estadía por cliente por defecto (min)</label>
         <input type="number" id="defEstadia" value="20" min="0" step="5">
         <div class="counts">Puedes ajustar la estadía individual en la lista de clientes (columna de minutos).</div>
@@ -339,9 +347,11 @@
         <label>Punto de inicio de la ruta</label>
         <button class="pick-btn" data-pick="start"><span class="dot" style="background:var(--brand)"></span>Fijar inicio en el mapa <span class="lbl" id="startLabel">sin fijar</span></button>
         <input type="text" id="startCoords" placeholder="lat, lon (opcional)" style="margin-top:6px">
+        <select id="startPlace" class="place-sel"><option value="">— o elige lugar guardado —</option></select>
         <label>Punto final de la ruta</label>
         <button class="pick-btn" data-pick="end"><span class="dot" style="background:var(--red)"></span>Fijar final en el mapa <span class="lbl" id="endLabel">sin fijar</span></button>
         <input type="text" id="endCoords" placeholder="lat, lon (opcional)" style="margin-top:6px">
+        <select id="endPlace" class="place-sel"><option value="">— o elige lugar guardado —</option></select>
         <button class="pick-btn" data-pick="addClient" style="margin-top:10px"><span class="dot" style="background:var(--green)"></span>➕ Agregar cliente con clic en el mapa</button>
       </div>
     </div>
@@ -363,6 +373,28 @@
         <label>Desplazamiento mínimo entre paradas (min)</label>
         <input type="number" id="minStop" value="5" min="0" step="1">
         <div class="counts">Tiempo mínimo garantizado entre un cliente y el siguiente aunque estén muy cerca: semáforos, cambios de carril, parqueo, ubicar el local. Por defecto 5 min. Pon 0 para desactivarlo.</div>
+      </div>
+    </div>
+
+    <!-- Lugares frecuentes -->
+    <div class="section">
+      <h3>6 · Lugares frecuentes</h3>
+      <div class="body">
+        <div class="counts" style="margin-top:0">Guarda puntos que usas seguido (oficina, bodega, hoteles, restaurantes) y elígelos arriba como inicio, final, hotel o restaurante.</div>
+        <label>Nombre</label>
+        <input type="text" id="placeName" placeholder="Ej. Oficina Ambato / Hotel Ambato / Rest. La Casa">
+        <div class="row2">
+          <div><label>Tipo</label><select id="placeType">
+            <option value="inicio_fin">🚩 Inicio/Fin</option>
+            <option value="hotel">🏨 Hotel</option>
+            <option value="restaurante">🍽️ Restaurante</option>
+            <option value="otro">📌 Otro</option>
+          </select></div>
+          <div><label>Coordenadas</label><input type="text" id="placeCoords" placeholder="lat, lon"></div>
+        </div>
+        <button class="pick-btn" data-pick="place"><span class="dot" style="background:#0ea5e9"></span>📍 Fijar coordenada en el mapa</button>
+        <button class="btn sec" id="btnAddPlace" style="margin-top:8px">＋ Guardar lugar</button>
+        <div id="placesList" style="margin-top:8px"></div>
       </div>
     </div>
 
@@ -447,7 +479,7 @@
     width='100%' height='820' hide-tabs toolbar='bottom'></tableau-viz>
 </div>
 
-<script src="data/clientes.js?v=20260715k"></script>
-<script src="app.js?v=20260715k"></script>
+<script src="data/clientes.js?v=20260715l"></script>
+<script src="app.js?v=20260715l"></script>
 </body>
 </html>

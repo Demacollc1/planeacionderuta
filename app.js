@@ -14,6 +14,7 @@ const STATE = {
   startPoint: null,     // {lat, lon, label}
   endPoint: null,
   hotel: null,
+  restaurant: null,     // lugar de almuerzo (opcional)
   map: null,
   markers: new Map(),   // id -> marker
   layers: {},
@@ -325,6 +326,7 @@ function initMap() {
     if (STATE.pickMode === 'start') { STATE.startPoint = { ...p, label: 'Inicio' }; $('#startLabel').textContent = coordLabel(p); }
     else if (STATE.pickMode === 'end') { STATE.endPoint = { ...p, label: 'Fin' }; $('#endLabel').textContent = coordLabel(p); }
     else if (STATE.pickMode === 'hotel') { STATE.hotel = { ...p, label: 'Hotel' }; $('#hotelLabel').textContent = coordLabel(p); }
+    else if (STATE.pickMode === 'place') { $('#placeCoords').value = `${p.lat.toFixed(6)}, ${p.lon.toFixed(6)}`; }
     else if (STATE.pickMode === 'addClient') {
       const nombre = prompt('Nombre del cliente:', 'Nuevo cliente');
       if (nombre) {
@@ -1227,7 +1229,8 @@ function renderPlan(plan, cfg) {
       if (t.type === 'start') {
         html += tlRow('▶', fromMin(t.time), `<b>${escapeHtml(t.label)}</b>`, 'start');
       } else if (t.type === 'lunch') {
-        html += tlRow('🍽', `${fromMin(t.time)}–${fromMin(t.endTime)}`, `<b>Almuerzo</b> (${fmtDur(t.endTime - t.time)})`, 'lunch');
+        const rest = STATE.restaurant ? ` en <b>${escapeHtml(STATE.restaurant.name)}</b> <a class="go-link" href="${gmapsUrl(STATE.restaurant.lat, STATE.restaurant.lon)}" target="_blank" rel="noopener">🧭 Ir</a>` : '';
+        html += tlRow('🍽', `${fromMin(t.time)}–${fromMin(t.endTime)}`, `<b>Almuerzo</b>${rest} (${fmtDur(t.endTime - t.time)})`, 'lunch');
       } else if (t.type === 'visit') {
         const cid = t.client.id;
         const ctrls = `<div class="tl-edit">
@@ -1326,6 +1329,51 @@ async function drawRouteOnMap(plan, useGeometry) {
   }
 }
 
+/* ===================== Lugares frecuentes (localStorage) ================== */
+const PLACES_KEY = 'demaco_lugares_v1';
+const PLACE_ICON = { inicio_fin: '🚩', hotel: '🏨', restaurante: '🍽️', otro: '📌' };
+function loadPlaces() { try { return JSON.parse(localStorage.getItem(PLACES_KEY) || '[]'); } catch (e) { return []; } }
+function savePlaces(a) { try { localStorage.setItem(PLACES_KEY, JSON.stringify(a)); } catch (e) { alert('No se pudo guardar el lugar.'); } }
+
+window.addPlace = function () {
+  const name = $('#placeName').value.trim();
+  const type = $('#placeType').value;
+  const parts = ($('#placeCoords').value || '').split(',').map(s => parseFloat(s.trim()));
+  if (!name) { alert('Ponle un nombre al lugar.'); return; }
+  if (parts.length !== 2 || !isFinite(parts[0]) || !isFinite(parts[1])) { alert('Coordenadas inválidas. Escribe "lat, lon" o fija el punto en el mapa.'); return; }
+  const all = loadPlaces();
+  all.push({ id: 'l' + Date.now(), name, type, lat: parts[0], lon: parts[1] });
+  savePlaces(all);
+  $('#placeName').value = ''; $('#placeCoords').value = '';
+  renderPlaces();
+  alert('✅ Lugar guardado: ' + name);
+};
+window.deletePlace = function (id) { savePlaces(loadPlaces().filter(p => p.id !== id)); renderPlaces(); };
+
+function renderPlaces() {
+  const all = loadPlaces();
+  const box = $('#placesList');
+  if (box) box.innerHTML = all.length
+    ? all.map(p => `<div class="place-row"><span class="pl-txt">${PLACE_ICON[p.type] || '📌'} <b>${escapeHtml(p.name)}</b> <span class="pl-co">${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}</span></span><button title="Eliminar" onclick="deletePlace('${p.id}')">🗑</button></div>`).join('')
+    : '<div class="empty">Aún no hay lugares guardados.</div>';
+  const opts = '<option value="">— elegir lugar guardado —</option>' +
+    all.map(p => `<option value="${p.id}">${PLACE_ICON[p.type] || '📌'} ${escapeHtml(p.name)}</option>`).join('');
+  ['startPlace', 'endPlace', 'hotelPlace', 'restPlace'].forEach(id => {
+    const s = $('#' + id); if (s) { const cur = s.value; s.innerHTML = opts; s.value = cur; }
+  });
+}
+
+window.usePlace = function (which) {
+  const sel = $('#' + which + 'Place'); if (!sel) return;
+  const p = loadPlaces().find(x => x.id === sel.value); if (!p) return;
+  const pt = { lat: p.lat, lon: p.lon, label: p.name };
+  if (which === 'start') { STATE.startPoint = pt; $('#startLabel').textContent = p.name; $('#startCoords').value = ''; }
+  else if (which === 'end') { STATE.endPoint = pt; $('#endLabel').textContent = p.name; $('#endCoords').value = ''; }
+  else if (which === 'hotel') { STATE.hotel = pt; $('#hotelLabel').textContent = p.name; $('#hotelCoords').value = ''; }
+  else if (which === 'rest') { STATE.restaurant = p; if ($('#restLabel')) $('#restLabel').textContent = p.name; }
+  renderSpecialMarkers();
+};
+
 /* ===================== Historial de planes (localStorage) ================= */
 const PLAN_STORE_KEY = 'demaco_planes_v1';
 function loadPlanStore() {
@@ -1353,7 +1401,7 @@ window.savePlan = function () {
     tipo: $('input[name="tipo"]:checked').value, days: $('#days').value, returnStart: $('#returnStart').value,
     useOSRM: $('#useOSRM').checked, traffic: $('#traffic').value, speed: $('#speed').value, roadFactor: $('#roadFactor').value,
     minStop: $('#minStop').value,
-    start: STATE.startPoint, end: STATE.endPoint, hotel: STATE.hotel,
+    start: STATE.startPoint, end: STATE.endPoint, hotel: STATE.hotel, restaurant: STATE.restaurant,
   };
   const filters = { ...STATE.filter, colorByVend: STATE.colorByVend, ordenarMonto: STATE.ordenarMonto };
   const days = plan.days.map(d => ({
@@ -1398,6 +1446,8 @@ window.loadPlan = function (id) {
   $('#speed').value = cfg.speed; $('#roadFactor').value = cfg.roadFactor;
   if (cfg.minStop != null) $('#minStop').value = cfg.minStop;
   STATE.startPoint = cfg.start; STATE.endPoint = cfg.end; STATE.hotel = cfg.hotel;
+  STATE.restaurant = cfg.restaurant || null;
+  if ($('#restLabel')) $('#restLabel').textContent = STATE.restaurant ? STATE.restaurant.name : '—';
   if (cfg.start) $('#startLabel').textContent = coordLabel(cfg.start);
   if (cfg.end) $('#endLabel').textContent = coordLabel(cfg.end);
   if (cfg.hotel) $('#hotelLabel').textContent = coordLabel(cfg.hotel);
@@ -1488,7 +1538,7 @@ window.exportPlanPDF = function () {
       if (t.type === 'start') {
         body += `<tr class="pt"><td>▶</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b></td></tr>`;
       } else if (t.type === 'lunch') {
-        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="6">Almuerzo</td></tr>`;
+        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="6">Almuerzo${STATE.restaurant ? ' en <b>' + escapeHtml(STATE.restaurant.name) + '</b> · <a href="' + gmapsViewUrl(STATE.restaurant.lat, STATE.restaurant.lon) + '">📍 Ver</a>' : ''}</td></tr>`;
       } else if (t.type === 'wait') {
         body += `<tr class="pt"><td>⏸</td><td>${fromMin(t.from)}–${fromMin(t.to)}</td><td colspan="6">${escapeHtml(t.label)}</td></tr>`;
       } else if (t.type === 'visit') {
@@ -1692,6 +1742,13 @@ function wireUI() {
     renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
   });
 
+  // Lugares frecuentes
+  $('#btnAddPlace').addEventListener('click', () => window.addPlace());
+  $('#startPlace').addEventListener('change', () => usePlace('start'));
+  $('#endPlace').addEventListener('change', () => usePlace('end'));
+  $('#hotelPlace').addEventListener('change', () => usePlace('hotel'));
+  $('#restPlace').addEventListener('change', () => usePlace('rest'));
+
   $('#btnPlan').addEventListener('click', planRoute);
   $('#btnPlanAll').addEventListener('click', planAllDays);
   $('#btnCloseResults').addEventListener('click', () => $('#resultsPanel').classList.remove('open'));
@@ -1748,4 +1805,5 @@ window.addEventListener('DOMContentLoaded', () => {
   loadOriginalClients();
   STATE.selectedIds = new Set(); // arranca sin selección; el usuario elige sector/área
   afterClientsLoaded();
+  renderPlaces();
 });
