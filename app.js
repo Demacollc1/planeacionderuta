@@ -1096,6 +1096,17 @@ window.restoreStop = function (id) {
   refreshEditedPlan();
 };
 
+/* Crea una ruta nueva usando exactamente los clientes que no alcanzaron en el plan actual */
+window.planLeftovers = function () {
+  const plan = STATE.lastPlan;
+  if (!plan || !plan.notVisited || !plan.notVisited.length) return;
+  const ids = plan.notVisited.map(c => c.id);
+  STATE.selectedIds = new Set(ids);
+  STATE.showOnlySelected = false;
+  renderClientMarkers(); renderClientList(); renderVendLegend(); updateCounts();
+  planRoute(); // recalcula con la configuración actual (horarios, inicio/fin, etc.)
+};
+
 /* Agrega un cliente "no alcanza" al itinerario (forzado, al final del día indicado) */
 window.addStop = function (id, dayIdx) {
   const plan = STATE.lastPlan; if (!plan) return;
@@ -1191,7 +1202,9 @@ function renderPlan(plan, cfg) {
     const addBtns = (id) => plan.days.length > 1
       ? plan.days.map((d, di) => `<button title="Agregar a ${escapeHtml(d.label)}" onclick="addStop('${id}',${di})">+D${di + 1}</button>`).join('')
       : `<button onclick="addStop('${id}',0)">+ Agregar</button>`;
-    html += `<div class="notvisited"><b>No alcanzan (${plan.notVisited.length})</b> — clic para agregarlos al itinerario:<div class="nv-list">` +
+    html += `<div class="notvisited"><div class="nv-head"><b>No alcanzan (${plan.notVisited.length})</b>` +
+      `<button class="nv-plan-btn" onclick="planLeftovers()">🗺️ Crear ruta con estos (${plan.notVisited.length})</button></div>` +
+      `<div class="hint" style="margin-top:2px">Clic en “+ Agregar” para meter uno al itinerario actual, o crea una ruta nueva (p. ej. día 2) con todos los que no alcanzan.</div><div class="nv-list">` +
       plan.notVisited.slice(0, 60).map(c => `<span class="nv-chip"><span class="nv-name"><b>${escapeHtml(c.id)}</b> · ${escapeHtml(c.nombre)}${c.venta2026 != null ? ' · ' + fmtMoney(c.venta2026) : ''}</span>${addBtns(c.id)}</span>`).join('') +
       (plan.notVisited.length > 60 ? `<div class="hint">…y ${plan.notVisited.length - 60} más (filtra o reduce la selección)</div>` : '') +
       `<div class="hint">Al agregar se incluye aunque exceda la hora de salida (el día se marca ⚠).</div></div></div>`;
