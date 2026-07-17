@@ -1275,10 +1275,12 @@ function renderPlan(plan, cfg) {
   }
 
   html += `<div class="export-row">
-    <button class="btn-export" onclick="exportPlanPDF()">⬇ Descargar PDF</button>
+    <button class="btn-export" onclick="exportPlanPDF()">⬇ PDF</button>
+    <button class="btn-export" style="background:#0891b2" onclick="exportPlanHTML()">🔗 HTML (compartir)</button>
     <button class="btn-export alt" onclick="exportPlan()">⬇ CSV</button>
   </div>
-  <button class="btn-export" style="background:#7c3aed;width:100%;margin-top:8px" onclick="savePlan()">💾 Guardar plan en el historial</button>`;
+  <div class="edit-hint" style="margin-top:4px">El <b>HTML</b> conserva los links “Ver en Google” tocables en el celular (el PDF a veces los muestra como texto en Android).</div>
+  <button class="btn-export" style="background:#7c3aed;width:100%;margin-top:6px" onclick="savePlan()">💾 Guardar plan en el historial</button>`;
   box.innerHTML = html;
   $('#resultsPanel').classList.add('open');
 }
@@ -1518,11 +1520,11 @@ function renderHistory() {
   }).join('');
 }
 
-/* Exportar itinerario a PDF (abre vista imprimible → Guardar como PDF).
-   Incluye número de parada, horarios, datos del cliente, venta y link "Ir" a Google Maps. */
-window.exportPlanPDF = function () {
+/* Construye el HTML del reporte de itinerario (usado por PDF y por HTML compartible).
+   Incluye parada, horarios, código/RUC, cliente, tipo, dirección, venta, nota y link Google Maps. */
+function buildPlanReportHTML(autoPrint) {
   const plan = STATE.lastPlan;
-  if (!plan) { alert('Primero calcula una ruta.'); return; }
+  if (!plan) { alert('Primero calcula una ruta.'); return null; }
   const dayColors = ['#2563eb', '#16a34a', '#9333ea', '#ea580c', '#0891b2', '#db2777'];
   const cfg = plan.cfg || {};
   const fecha = new Date().toLocaleDateString('es-EC');
@@ -1532,28 +1534,30 @@ window.exportPlanPDF = function () {
   plan.days.forEach((d, di) => {
     const col = dayColors[di % dayColors.length];
     body += `<div class="day"><h2 style="border-color:${col}">${escapeHtml(d.label)} · ${d.visited.length} paradas · termina ${fromMin(d.endTime)}</h2>
-      <table><thead><tr><th>Parada</th><th>Hora</th><th>Código / RUC</th><th>Cliente</th><th>Tipo</th><th>Venta 2026</th><th>Nota</th><th>Ubicación</th></tr></thead><tbody>`;
+      <table><thead><tr><th>Parada</th><th>Hora</th><th>Código / RUC</th><th>Cliente</th><th>Tipo</th><th>Dirección</th><th>Venta 2026</th><th>Nota</th><th>Ubicación</th></tr></thead><tbody>`;
     let n = 0;
     d.timeline.forEach(t => {
       if (t.type === 'start') {
-        body += `<tr class="pt"><td>▶</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b></td></tr>`;
+        body += `<tr class="pt"><td>▶</td><td>${fromMin(t.time)}</td><td colspan="7"><b>${escapeHtml(t.label)}</b></td></tr>`;
       } else if (t.type === 'lunch') {
-        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="6">Almuerzo${STATE.restaurant ? ' en <b>' + escapeHtml(STATE.restaurant.name) + '</b> · <a href="' + gmapsViewUrl(STATE.restaurant.lat, STATE.restaurant.lon) + '">📍 Ver</a>' : ''}</td></tr>`;
+        body += `<tr class="pt"><td>🍽</td><td>${fromMin(t.time)}–${fromMin(t.endTime)}</td><td colspan="7">Almuerzo${STATE.restaurant ? ' en <b>' + escapeHtml(STATE.restaurant.name) + '</b> · <a href="' + gmapsViewUrl(STATE.restaurant.lat, STATE.restaurant.lon) + '">📍 Ver</a>' : ''}</td></tr>`;
       } else if (t.type === 'wait') {
-        body += `<tr class="pt"><td>⏸</td><td>${fromMin(t.from)}–${fromMin(t.to)}</td><td colspan="6">${escapeHtml(t.label)}</td></tr>`;
+        body += `<tr class="pt"><td>⏸</td><td>${fromMin(t.from)}–${fromMin(t.to)}</td><td colspan="7">${escapeHtml(t.label)}</td></tr>`;
       } else if (t.type === 'visit') {
         n++;
         const cl = t.client;
+        const direccion = [cl.dir, cl.ciudad].filter(Boolean).join(', ');
         body += `<tr><td><span class="num" style="background:${col}">${n}</span></td>` +
           `<td>${fromMin(t.arrive)}–${fromMin(t.depart)}</td>` +
           `<td><b>${escapeHtml(cl.id)}</b>${cl.ruc ? '<br><span class="sub">RUC ' + escapeHtml(cl.ruc) + '</span>' : ''}</td>` +
           `<td><b>${escapeHtml(cl.nombre)}</b>${cl.vend && cl.vend !== SIN_VEND ? '<br><span class="sub">' + escapeHtml(cl.vend) + '</span>' : ''}</td>` +
           `<td>${escapeHtml(cl.tipo)}${cl.abat1 ? ' (' + escapeHtml(cl.abat1) + ')' : ''}</td>` +
+          `<td class="dir">${escapeHtml(direccion)}</td>` +
           `<td class="r">${fmtMoney(cl.venta2026)}</td>` +
           `<td class="nota">${escapeHtml(cl.nota || '')}</td>` +
-          `<td><a href="${gmapsViewUrl(cl.lat, cl.lon)}">📍 Ver en Google</a></td></tr>`;
+          `<td><a class="gbtn" href="${gmapsViewUrl(cl.lat, cl.lon)}" target="_blank" rel="noopener">📍 Ver en Google</a></td></tr>`;
       } else if (t.type === 'end') {
-        body += `<tr class="pt"><td>🏁</td><td>${fromMin(t.time)}</td><td colspan="6"><b>${escapeHtml(t.label)}</b> — viaje ${fmtDur(t.travel)} (${(t.km || 0).toFixed(1)} km)</td></tr>`;
+        body += `<tr class="pt"><td>🏁</td><td>${fromMin(t.time)}</td><td colspan="7"><b>${escapeHtml(t.label)}</b> — viaje ${fmtDur(t.travel)} (${(t.km || 0).toFixed(1)} km)</td></tr>`;
       }
     });
     body += `</tbody></table></div>`;
@@ -1595,26 +1599,44 @@ window.exportPlanPDF = function () {
       plan.notVisited.slice(0, 120).map(c => `[${escapeHtml(c.id)}] ${escapeHtml(c.nombre)}`).join(' · ') + '</div>';
   }
 
-  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Itinerario de ruta</title>
+  const printScript = autoPrint ? `<script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>` : '';
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Itinerario de ruta</title>
     <style>
-      *{box-sizing:border-box} body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0f172a;margin:24px;font-size:12px}
+      *{box-sizing:border-box} body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0f172a;margin:16px;font-size:13px}
       h1{font-size:20px;margin:0 0 4px} .meta{color:#64748b;font-size:12px;margin-bottom:16px}
       .day{margin-bottom:22px} h2{font-size:14px;border-left:5px solid #2563eb;padding-left:8px;margin:0 0 8px}
-      table{width:100%;border-collapse:collapse} th,td{border:1px solid #e2e8f0;padding:5px 7px;text-align:left;vertical-align:top}
-      th{background:#f8fafc;font-size:11px} td.r{text-align:right;font-weight:bold} .sub{color:#64748b;font-size:10.5px}
+      .tblwrap{overflow-x:auto} table{width:100%;border-collapse:collapse;min-width:640px} th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left;vertical-align:top}
+      th{background:#f8fafc;font-size:11px} td.r{text-align:right;font-weight:bold} .sub{color:#64748b;font-size:10.5px} td.dir{font-size:11px;color:#334155;min-width:150px}
       tr.pt td{background:#f8fafc;color:#334155} .num{display:inline-block;min-width:18px;text-align:center;color:#fff;border-radius:50%;padding:1px 5px;font-weight:bold}
-      td.nota{min-width:120px;color:#334155;font-style:italic}
+      td.nota{min-width:110px;color:#334155;font-style:italic}
       .vsum-wrap h2{border-color:#7c3aed}
       .vsum{margin:8px 0 12px} .vsum h3{font-size:12.5px;margin:0 0 4px;background:#f5f3ff;border-left:4px solid #7c3aed;padding:4px 8px}
-      a{color:#2563eb;text-decoration:none;font-weight:600;white-space:nowrap} .nv{margin-top:10px;color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px;font-size:11px}
-      @media print{ body{margin:10px} .day{page-break-inside:avoid} }
-    </style></head><body>${body}
-    <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
+      a{color:#2563eb;font-weight:700} a.gbtn{display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:5px 9px;border-radius:6px;white-space:nowrap}
+      .nv{margin-top:10px;color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px;font-size:11px}
+      @media print{ body{margin:10px} .day{page-break-inside:avoid} a.gbtn{background:none;color:#2563eb;padding:0} }
+    </style></head><body>${body}${printScript}
     </body></html>`;
+  return html;
+}
 
+/* Exportar a PDF (abre vista imprimible → Guardar como PDF) */
+window.exportPlanPDF = function () {
+  const html = buildPlanReportHTML(true);
+  if (!html) return;
   const w = window.open('', '_blank');
-  if (!w) { alert('Permite las ventanas emergentes para descargar el PDF.'); return; }
+  if (!w) { alert('Permite las ventanas emergentes para generar el PDF.'); return; }
   w.document.open(); w.document.write(html); w.document.close();
+};
+
+/* Descargar un HTML compartible (links a Google Maps clicables en el celular) */
+window.exportPlanHTML = function () {
+  const html = buildPlanReportHTML(false);
+  if (!html) return;
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'itinerario_ruta.html';
+  a.click();
 };
 
 /* Exportar CSV del itinerario */
