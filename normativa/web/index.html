@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compendio normativo de tránsito · Ecuador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .hero { max-width:70ch; }
+  .hero p { color:var(--ink-2); }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin:22px 0; }
+  .kpi { background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+         padding:14px 16px; box-shadow:var(--shadow); }
+  .kpi .v { font-family:var(--slab); font-size:26px; font-weight:700;
+            font-variant-numeric:tabular-nums; line-height:1.1; }
+  .kpi .v small { font-size:13px; font-weight:500; color:var(--ink-2); }
+  .kpi .l { font-size:11px; letter-spacing:.07em; text-transform:uppercase;
+            color:var(--ink-3); margin-top:5px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:14px; }
+  .card { display:block; text-decoration:none; color:inherit; background:var(--surface);
+          border:1px solid var(--line); border-radius:var(--r); padding:18px; box-shadow:var(--shadow); }
+  .card:hover { border-color:var(--accent); }
+  .card h3 { font-size:15px; margin-bottom:6px; }
+  .card p { color:var(--ink-2); font-size:13px; margin:0; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div>
+      <h1>Compendio normativo de tránsito</h1>
+      <div class="sub">Ecuador · normativa nacional y municipal</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html" aria-current="page">Inicio</a>
+      <a href="cantones.html">Normativa por cantón</a>
+      <a href="mapa.html">Mapa y clientes</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h2 style="font-size:22px;margin-bottom:8px">Base de información para interpretar la ley</h2>
+    <p>Normativa de tránsito nacional y municipal codificada para medir su efecto agregado
+    sobre una operación de transporte. Cada cifra sale del corpus y es reproducible.</p>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="cards">
+    <a class="card" href="cantones.html">
+      <h3>Normativa por cantón</h3>
+      <p>Tablas en tres categorías: circulación, parqueo y carga/descarga, y otras.
+      Pesos, medidas, vías, horarios, costo de permiso y requisitos.</p>
+    </a>
+    <a class="card" href="mapa.html">
+      <h3>Mapa y clientes</h3>
+      <p>Zonas y corredores restringidos sobre mapa real, con reloj para ver qué está
+      prohibido a cada hora. Cruza tu CSV de clientes sin subirlo a ningún servidor.</p>
+    </a>
+    <a class="card" href="https://github.com/Demacollc1/planeacionderuta/tree/main/normativa">
+      <h3>Corpus y herramientas</h3>
+      <p>Datos, esquemas, motor de análisis, reglas de interpretación y el paquete de
+      solicitudes de acceso a la información pública.</p>
+    </a>
+  </div>
+
+  <div class="aviso warn" style="margin-top:22px">
+    <strong>Estado de verificación: ningún registro cotejado en fuente primaria.</strong>
+    El corpus se construyó sin acceso de red a los repositorios oficiales. Sirve para
+    priorizar y dimensionar, no para litigar ni presentar formalmente. La geometría del
+    mapa es aproximada y está marcada como tal.
+  </div>
+
+  <p class="foot">
+    Fuente de verdad: <code>normativa/data/*.json</code>. Estas páginas leen
+    <code>data.js</code>, que se regenera con <code>python3 tools/generar_web.py</code>
+    después de cada cambio en los datos.
+  </p>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  var C = window.CORPUS;
+  var R = C.restricciones.restricciones;
+  var totalGad = C.cantones.universo.gad_municipales_con_competencia_asumida;
+  var cob = C.cantones.cantones.length;
+  var conPermiso = R.filter(function (r) { return (r.permiso || {}).existe === true; }).length;
+  var sinCosto = R.filter(function (r) {
+    return (r.permiso || {}).existe === true && (r.permiso || {}).costo_usd == null; }).length;
+  var umbrales = {};
+  R.forEach(function (r) {
+    var p = r.parametros || {};
+    if ((r.categorias || []).indexOf("circulacion") >= 0) {
+      umbrales[[p.pbv_min_t, p.operador_umbral, p.largo_max_m].join("|")] = 1;
+    }
+  });
+  var kpis = [
+    [cob + '<small> / ' + totalGad + "</small>", "Cantones en el corpus"],
+    [R.length, "Restricciones modeladas"],
+    [Object.keys(umbrales).length, "Definiciones distintas de vehículo pesado"],
+    [sinCosto + '<small> de ' + conPermiso + "</small>", "Permisos sin costo publicado"],
+    ["0<small> de " + C.normas.normas.length + "</small>", "Normas verificadas en primaria"]
+  ];
+  document.getElementById("kpis").innerHTML = kpis.map(function (k) {
+    return '<div class="kpi"><div class="v">' + k[0] + '</div><div class="l">' + k[1] + "</div></div>";
+  }).join("");
+})();
+</script>
+</body>
+</html>

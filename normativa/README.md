@@ -50,9 +50,26 @@ schema/        esquemas JSON Schema de norma y restricción
 tools/         validador, motor de análisis, generador de documentos, importador
 docs/          metodología, reglas de interpretación, hallazgos, brechas
 peticiones/    solicitudes de acceso a la información pública + seguimiento de plazos
-portal/        consola de carga de normativa por cantón (fuente del artefacto publicado)
+web/           sitio estático (GitHub Pages): tablas por cantón y mapa de restricciones
+portal/        consola de captura publicada como artefacto — superseded por web/, pendiente
+               de decisión sobre si se conserva o se retira
 salidas/       artefactos generados (CSV, informe.json) — no editar
 ```
+
+## Sitio web
+
+```
+https://demacollc1.github.io/planeacionderuta/normativa/web/
+```
+
+Disponible al fusionar esta rama en `main`. Tres páginas, sin backend ni build:
+
+- **Normativa por cantón** — tablas en tres categorías (circulación; parqueo, carga y
+  descarga; otras) con pesos, medidas, vías, horarios, costo de permiso y requisitos.
+- **Mapa y clientes** — zonas y corredores sobre OpenStreetMap, reloj que muestra qué
+  está prohibido a cada hora, y cruce de tu CSV de clientes contra las zonas. El CSV
+  **no sale del navegador**: el repositorio es público.
+- Tras cada cambio en `data/`, regenerar con `python3 tools/generar_web.py`.
 
 ## Las tres piezas
 

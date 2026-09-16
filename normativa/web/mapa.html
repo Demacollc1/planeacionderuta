@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa de restricciones y clientes · Compendio de tránsito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  html, body { height:100%; }
+  body { display:flex; flex-direction:column; }
+  .app { flex:1; display:grid; grid-template-columns:330px minmax(0,1fr); min-height:0; }
+  @media (max-width:900px) { .app { grid-template-columns:1fr; } #mapa { height:62vh; } }
+
+  .lateral { border-right:1px solid var(--line); background:var(--surface);
+             overflow-y:auto; display:flex; flex-direction:column; }
+  .sec { padding:14px 16px; border-bottom:1px solid var(--line); }
+  .sec h2 { font-size:13px; letter-spacing:.02em; margin-bottom:9px; }
+  .sec h2 .c { font-family:var(--mono); font-size:11px; color:var(--ink-3); font-weight:400; }
+
+  #mapa { width:100%; height:100%; min-height:380px; background:var(--surface-2); z-index:0; }
+  .leaflet-container { font-family:var(--sans); background:var(--surface-2); }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background:var(--surface); color:var(--ink); box-shadow:var(--shadow); }
+  .leaflet-popup-content { margin:11px 13px; font-size:13px; line-height:1.45; }
+  .leaflet-popup-content h4 { font-size:13px; margin-bottom:4px; }
+  .leaflet-bar a, .leaflet-bar a:hover { background:var(--surface); color:var(--ink);
+    border-bottom-color:var(--line); }
+  .leaflet-control-attribution { background:rgba(255,255,255,.75); color:#333; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .leaflet-control-attribution { background:rgba(0,0,0,.55); color:#bbb; }
+    :root:not([data-theme="light"]) .leaflet-tile-pane { filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.92); }
+  }
+  :root[data-theme="dark"] .leaflet-tile-pane { filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.92); }
+
+  /* reloj */
+  .reloj { display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .reloj .h { font-family:var(--slab); font-size:26px; font-weight:700;
+              font-variant-numeric:tabular-nums; line-height:1; }
+  .reloj .d { color:var(--ink-2); font-size:13px; }
+  input[type="range"] { width:100%; accent-color:var(--accent); }
+  .dias { display:flex; gap:3px; margin-top:8px; }
+  .dias button { flex:1; padding:5px 0; font-size:12px; border:1px solid var(--line-strong);
+                 background:var(--bg); border-radius:6px; cursor:pointer; }
+  .dias button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink);
+                                      border-color:var(--accent); }
+
+  /* lista de restricciones */
+  .rlist { display:flex; flex-direction:column; gap:2px; }
+  .ritem { display:flex; gap:8px; align-items:flex-start; padding:7px 8px; border-radius:7px;
+           cursor:pointer; border:1px solid transparent; background:none; text-align:left; width:100%; }
+  .ritem:hover { background:var(--surface-2); }
+  .ritem .sw { width:11px; height:11px; border-radius:3px; flex:none; margin-top:3px; }
+  .ritem .t { flex:1; min-width:0; }
+  .ritem .t b { display:block; font-weight:600; font-size:12.5px; }
+  .ritem .t span { font-size:11px; color:var(--ink-2); }
+  .ritem input { margin-top:3px; }
+
+  /* clientes */
+  .drop { border:1.5px dashed var(--line-strong); border-radius:9px; padding:16px 12px;
+          text-align:center; color:var(--ink-2); font-size:12.5px; cursor:pointer; }
+  .drop.over { border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+  .drop strong { color:var(--ink); display:block; margin-bottom:3px; font-size:13px; }
+  .grupos { display:flex; flex-direction:column; gap:1px; margin-top:4px; }
+  .grow { display:flex; gap:8px; align-items:center; padding:5px 7px; border-radius:6px; font-size:12.5px; }
+  .grow:hover { background:var(--surface-2); }
+  .grow .n { margin-left:auto; font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .minitxt { font-size:11.5px; color:var(--ink-3); line-height:1.45; }
+  textarea.geo { width:100%; min-height:90px; font-family:var(--mono); font-size:11px;
+                 background:var(--bg); border:1px solid var(--line-strong); border-radius:7px; padding:8px; }
+  .fila { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div>
+      <h1>Mapa de restricciones y clientes</h1>
+      <div class="sub">Cruce de ubicaciones contra zonas y corredores restringidos</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="cantones.html">Normativa por cantón</a>
+      <a href="mapa.html" aria-current="page">Mapa y clientes</a>
+    </nav>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="lateral">
+
+    <div class="sec">
+      <div class="aviso warn" style="font-size:12px">
+        <strong>Geometría aproximada.</strong> Ningún trazo viene de cartografía oficial.
+        Ubica la restricción y sirve para corregirla sobre el mapa; <em>no</em> para decidir
+        una ruta ni para citar en un escrito. Corrige con “Dibujar geometría”.
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Momento consultado</h2>
+      <div class="reloj">
+        <span class="h mono" id="reloj-h">08:00</span>
+        <span class="d" id="reloj-d">lunes</span>
+      </div>
+      <input type="range" id="slider" min="0" max="1425" step="15" value="480"
+             aria-label="Hora del día">
+      <div class="dias" id="dias"></div>
+      <div class="minitxt" style="margin-top:8px" id="resumen-momento"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Restricciones <span class="c" id="c-restr"></span></h2>
+      <div class="rlist" id="rlist"></div>
+      <div class="fila" style="margin-top:10px">
+        <label style="font-size:12px"><input type="checkbox" id="chk-inactivas" checked>
+          Mostrar las inactivas en este momento</label>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Clientes <span class="c" id="c-clientes"></span></h2>
+      <div class="drop" id="drop" tabindex="0" role="button">
+        <strong>Arrastra tu CSV de clientes</strong>
+        o haz clic para elegirlo
+      </div>
+      <input type="file" id="file" accept=".csv,text/csv" hidden>
+      <div class="minitxt" style="margin-top:8px">
+        Columnas reconocidas: <code>nombre</code>, <code>lat</code>, <code>lon</code>
+        (o una sola <code>coordenadas</code> con “lat, lon”), y opcionalmente
+        <code>ciudad</code>, <code>direccion</code>, <code>grupo</code>.
+        <strong>El archivo no sale de tu navegador:</strong> no se envía a ningún servidor
+        ni se guarda en el repositorio.
+      </div>
+      <div class="fila" style="margin-top:9px">
+        <label style="font-size:12px"><input type="checkbox" id="chk-recordar">
+          Recordar en este navegador</label>
+        <button class="btn btn-sm" id="btn-limpiar-cli" type="button" hidden>Quitar</button>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-analisis" hidden>
+      <h2>Clientes afectados</h2>
+      <div class="fila" style="margin-bottom:9px">
+        <label style="font-size:12px">Buffer de corredor
+          <input type="number" id="buffer" value="150" min="10" max="2000" step="10"
+                 style="width:78px"> m</label>
+      </div>
+      <div class="grupos" id="grupos"></div>
+      <div class="fila" style="margin-top:11px">
+        <button class="btn btn-sm" id="btn-exp" type="button">Exportar cruce en CSV</button>
+      </div>
+      <div class="minitxt" style="margin-top:8px">
+        Una zona afecta al cliente que cae dentro del polígono. Un corredor afecta a quien
+        está a menos del buffer de la vía: la restricción pesa sobre quien debe circular
+        por ella, no sobre quien está a kilómetros.
+      </div>
+      <div class="aviso warn" style="margin-top:9px;font-size:11.5px">
+        <strong>El cruce es por ubicación, no por ruta.</strong> Un cliente puede salir
+        “sin restricción” y ser inalcanzable igual, porque la prohibición está en el
+        camino y no en el destino: el caso de Samborondón y Daule, donde el veto de 24 h
+        sobre los puentes impide llegar aunque el punto esté despejado. Las restricciones
+        de enlace sin alternativa vial aparecen listadas abajo; léelas siempre junto al
+        conteo.
+      </div>
+      <div class="minitxt" id="enlaces-criticos" style="margin-top:7px"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Dibujar geometría</h2>
+      <div class="fila">
+        <select id="sel-dibujo" style="flex:1"></select>
+      </div>
+      <div class="fila" style="margin-top:8px">
+        <button class="btn btn-sm" id="btn-linea" type="button">Trazar corredor</button>
+        <button class="btn btn-sm" id="btn-poli" type="button">Trazar zona</button>
+        <button class="btn btn-sm" id="btn-cancelar" type="button" hidden>Cancelar</button>
+      </div>
+      <div class="minitxt" style="margin-top:7px" id="ayuda-dibujo">
+        Clic para añadir vértices, doble clic para cerrar. El resultado sale abajo en GeoJSON
+        para pegarlo en <code>data/restricciones.json</code> y commitearlo.
+      </div>
+      <textarea class="geo" id="geo-out" readonly hidden></textarea>
+    </div>
+
+  </aside>
+
+  <div id="mapa"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="data.js"></script>
+<script src="comun.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.CORPUS, R = C.restricciones.restricciones;
+  var NORMAS = {}; C.normas.normas.forEach(function (n) { NORMAS[n.id] = n; });
+  var esc = NT.esc, $ = function (id) { return document.getElementById(id); };
+
+  var COLOR = { circulacion: "#A1382A", carga_descarga: "#B3890C", otras: "#1E4D40" };
+  var LS_KEY = "compendio.clientes.v1";
+
+  var estado = { dia: 1, minuto: 480, visibles: {}, clientes: [], buffer: 150, dibujo: null };
+  R.forEach(function (r) { estado.visibles[r.id] = true; });
+
+  // ---------- mapa ----------
+  var map = L.map("mapa", { zoomControl: true }).setView([-1.3, -78.6], 7);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  var capaRestr = L.layerGroup().addTo(map);
+  var capaCli = L.layerGroup().addTo(map);
+  var capaDibujo = L.layerGroup().addTo(map);
+
+  function geoALatLngs(coords) {
+    return coords.map(function (c) { return [c[1], c[0]]; });
+  }
+
+  function dibujarRestricciones() {
+    capaRestr.clearLayers();
+    var verInactivas = $("chk-inactivas").checked;
+    var todos = [];
+    R.forEach(function (r) {
+      if (!estado.visibles[r.id]) return;
+      var activa = NT.activaEn(r, estado.dia, estado.minuto);
+      if (!activa && !verInactivas) return;
+      var geo = (r.geometria || {}).geojson;
+      if (!geo) return;
+      var cat = (r.categorias || ["otras"])[0];
+      var color = COLOR[cat] || COLOR.otras;
+      var estilo = activa
+        ? { color: color, weight: 5, opacity: .95, fillColor: color, fillOpacity: .28 }
+        : { color: color, weight: 3, opacity: .35, dashArray: "5 6",
+            fillColor: color, fillOpacity: .07 };
+
+      NT.lineasDe(geo).forEach(function (ln) {
+        var l = L.polyline(geoALatLngs(ln), estilo).addTo(capaRestr);
+        l.bindPopup(popup(r, activa));
+        todos.push(l);
+      });
+      NT.anillosDe(geo).forEach(function (an) {
+        var p = L.polygon(geoALatLngs(an), estilo).addTo(capaRestr);
+        p.bindPopup(popup(r, activa));
+        todos.push(p);
+      });
+    });
+    return todos;
+  }
+
+  function popup(r, activa) {
+    var n = NORMAS[(r.norma_ids || [])[0]] || {};
+    var permiso = NT.textoPermiso(r);
+    var horas = NT.horasPermitidasSemana(r);
+    var permitidas = NT.permitidosDia(r, estado.dia);
+    return "<h4>" + esc(r.id) + "</h4>" +
+      '<div style="color:var(--ink-2);font-size:12px;margin-bottom:6px">' +
+        esc(n.titulo || "") + "</div>" +
+      '<div><span class="pill ' + (activa ? "p-crit" : "p-ok") + '">' +
+        (activa ? "prohibido ahora" : "permitido ahora") + "</span></div>" +
+      '<div style="margin-top:6px;font-size:12px">' +
+      "<b>Vías/zona:</b> " + esc(NT.textoAmbito(r)) + "<br>" +
+      "<b>Aplica a:</b> " + esc(NT.textoPeso(r) || "umbral sin publicar") +
+        (NT.textoMedidas(r) ? " · " + esc(NT.textoMedidas(r)) : "") + "<br>" +
+      "<b>Horario prohibido:</b> " + esc(NT.resumenHorario(r)) + "<br>" +
+      "<b>Permitido el " + esc(NT.DIAS[estado.dia]) + ":</b> " + esc(NT.fmtIntervalos(permitidas)) + "<br>" +
+      "<b>Permitidas/semana:</b> " + horas.toFixed(0) + " h de 168<br>" +
+      "<b>Permiso:</b> " + esc(permiso.txt) + "<br>" +
+      "<b>Alcance:</b> " + esc((r.ambito_espacial || {}).alcance || "—") +
+        ((r.ambito_espacial || {}).alternativa_vial === "ninguna" ? " · sin alternativa vial" : "") +
+      "</div>" +
+      '<div style="margin-top:6px;font-size:11px;color:var(--ink-3)">Geometría ' +
+        esc((r.geometria || {}).precision || "?") + " · verificación " +
+        esc(r.verificacion || "?") + "</div>";
+  }
+
+  // ---------- clientes ----------
+  function parseCSV(txt) {
+    var filas = [], campo = "", fila = [], enCom = false;
+    txt = txt.replace(/^﻿/, "");
+    for (var i = 0; i < txt.length; i++) {
+      var ch = txt[i];
+      if (enCom) {
+        if (ch === '"') { if (txt[i + 1] === '"') { campo += '"'; i++; } else enCom = false; }
+        else campo += ch;
+      } else if (ch === '"') enCom = true;
+      else if (ch === "," || ch === ";") { fila.push(campo); campo = ""; }
+      else if (ch === "\n") { fila.push(campo); filas.push(fila); fila = []; campo = ""; }
+      else if (ch !== "\r") campo += ch;
+    }
+    if (campo.length || fila.length) { fila.push(campo); filas.push(fila); }
+    return filas.filter(function (f) { return f.some(function (v) { return String(v).trim(); }); });
+  }
+
+  function norm(s) {
+    return String(s || "").trim().toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+  }
+
+  var ALIAS = {
+    nombre: ["nombre", "cliente", "razonsocial", "establecimiento", "punto", "local"],
+    lat: ["lat", "latitud", "latitude", "y"],
+    lon: ["lon", "lng", "long", "longitud", "longitude", "x"],
+    coord: ["coordenadas", "coordenada", "latlon", "latlng", "ubicacion", "geo"],
+    ciudad: ["ciudad", "canton", "municipio"],
+    direccion: ["direccion", "address", "domicilio"],
+    grupo: ["grupo", "zona", "ruta", "segmento", "categoria", "canal"]
+  };
+
+  function mapaColumnas(cab) {
+    var idx = {};
+    cab.forEach(function (c, i) {
+      var n = norm(c);
+      Object.keys(ALIAS).forEach(function (k) {
+        if (idx[k] === undefined && ALIAS[k].indexOf(n) >= 0) idx[k] = i;
+      });
+    });
+    return idx;
+  }
+
+  function cargarCSV(txt) {
+    var filas = parseCSV(txt);
+    if (filas.length < 2) { alert("El archivo no tiene filas de datos."); return; }
+    var idx = mapaColumnas(filas[0]);
+    if (idx.lat === undefined && idx.coord === undefined) {
+      alert("No encontré columnas de coordenadas.\n\nCabeceras leídas: " + filas[0].join(", ") +
+            "\n\nEsperaba lat/latitud y lon/longitud, o una columna 'coordenadas' con \"lat, lon\".");
+      return;
+    }
+    var out = [], malas = 0;
+    for (var i = 1; i < filas.length; i++) {
+      var f = filas[i], lat = null, lon = null;
+      if (idx.lat !== undefined) {
+        lat = parseFloat(String(f[idx.lat]).replace(",", "."));
+        lon = parseFloat(String(f[idx.lon]).replace(",", "."));
+      } else {
+        var partes = String(f[idx.coord]).split(/[,;]/);
+        lat = parseFloat(partes[0]); lon = parseFloat(partes[1]);
+      }
+      if (!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) { malas++; continue; }
+      out.push({
+        nombre: (idx.nombre !== undefined ? f[idx.nombre] : "") || ("Cliente " + i),
+        lat: lat, lon: lon,
+        ciudad: idx.ciudad !== undefined ? f[idx.ciudad] : "",
+        direccion: idx.direccion !== undefined ? f[idx.direccion] : "",
+        grupo: idx.grupo !== undefined ? f[idx.grupo] : ""
+      });
+    }
+    estado.clientes = out;
+    guardarSiPidio();
+    render();
+    if (out.length) {
+      var b = L.latLngBounds(out.map(function (c) { return [c.lat, c.lon]; }));
+      map.fitBounds(b.pad(0.15));
+    }
+    if (malas) {
+      alert("Cargados " + out.length + " clientes. " + malas +
+            " filas se descartaron por coordenadas inválidas o vacías.");
+    }
+  }
+
+  function cruce() {
+    var res = [];
+    estado.clientes.forEach(function (c) {
+      var hits = [];
+      R.forEach(function (r) {
+        var a = NT.afecta(r, c.lat, c.lon, estado.buffer);
+        if (a) hits.push({ r: r, modo: a.modo, metros: a.metros,
+                           activa: NT.activaEn(r, estado.dia, estado.minuto) });
+      });
+      res.push({ c: c, hits: hits });
+    });
+    return res;
+  }
+
+  function dibujarClientes(cr) {
+    capaCli.clearLayers();
+    cr.forEach(function (x) {
+      var prohibidoAhora = x.hits.some(function (h) { return h.activa; });
+      var color = !x.hits.length ? "#1B7550" : prohibidoAhora ? "#A1382A" : "#B3890C";
+      var m = L.circleMarker([x.c.lat, x.c.lon], {
+        radius: 6, weight: 2, color: "#fff", fillColor: color, fillOpacity: .95
+      }).addTo(capaCli);
+      m.bindPopup(
+        "<h4>" + esc(x.c.nombre) + "</h4>" +
+        (x.c.direccion ? '<div style="font-size:12px;color:var(--ink-2)">' + esc(x.c.direccion) + "</div>" : "") +
+        (x.c.grupo ? '<div style="font-size:12px"><b>Grupo:</b> ' + esc(x.c.grupo) + "</div>" : "") +
+        '<div class="mono" style="font-size:11px;color:var(--ink-3);margin:4px 0">' +
+          x.c.lat.toFixed(5) + ", " + x.c.lon.toFixed(5) + "</div>" +
+        (x.hits.length
+          ? "<b>Restricciones que lo alcanzan:</b><ul style='margin:4px 0 0;padding-left:16px'>" +
+            x.hits.map(function (h) {
+              return "<li>" + esc(h.r.id) + " <span class='pill " +
+                (h.activa ? "p-crit'>prohibido ahora" : "p-ok'>permitido ahora") + "</span>" +
+                (h.modo === "corredor" ? " <span style='color:var(--ink-3)'>a " + h.metros + " m</span>" : "") +
+                "</li>";
+            }).join("") + "</ul>"
+          : '<span class="pill p-ok">sin restricción registrada</span>')
+      );
+    });
+  }
+
+  function renderGrupos(cr) {
+    var sec = $("sec-analisis");
+    sec.hidden = !estado.clientes.length;
+    if (!estado.clientes.length) return;
+
+    var sin = cr.filter(function (x) { return !x.hits.length; }).length;
+    var ahora = cr.filter(function (x) { return x.hits.some(function (h) { return h.activa; }); }).length;
+    var alguna = cr.length - sin;
+
+    var porRestr = {};
+    cr.forEach(function (x) {
+      x.hits.forEach(function (h) { porRestr[h.r.id] = (porRestr[h.r.id] || 0) + 1; });
+    });
+    var porGrupo = {};
+    cr.forEach(function (x) {
+      var g = String(x.c.grupo || x.c.ciudad || "sin grupo").trim() || "sin grupo";
+      if (!porGrupo[g]) porGrupo[g] = { total: 0, afectados: 0 };
+      porGrupo[g].total++;
+      if (x.hits.length) porGrupo[g].afectados++;
+    });
+
+    var h = "";
+    h += fila("#A1382A", "Prohibidos en este momento", ahora);
+    h += fila("#B3890C", "Alcanzados por alguna restricción", alguna);
+    h += fila("#1B7550", "Sin restricción registrada", sin);
+    h += '<div style="height:9px"></div><div class="lbl">Por restricción</div>';
+    Object.keys(porRestr).sort(function (a, b) { return porRestr[b] - porRestr[a]; })
+      .forEach(function (k) {
+        var r = R.filter(function (x) { return x.id === k; })[0];
+        h += fila(COLOR[(r.categorias || ["otras"])[0]], k, porRestr[k]);
+      });
+    h += '<div style="height:9px"></div><div class="lbl">Por grupo del archivo</div>';
+    Object.keys(porGrupo).sort(function (a, b) { return porGrupo[b].afectados - porGrupo[a].afectados; })
+      .slice(0, 12).forEach(function (g) {
+        h += fila("#7C8B86", esc(g), porGrupo[g].afectados + " / " + porGrupo[g].total);
+      });
+    $("grupos").innerHTML = h;
+
+    // Enlaces sin alternativa vial: bloquean el acceso aunque ningún cliente
+    // caiga dentro de su geometría. No se cuentan como "afectados" y por eso
+    // deben nombrarse aparte.
+    var criticos = R.filter(function (r) {
+      var e = r.ambito_espacial || {};
+      return estado.visibles[r.id] && e.alternativa_vial === "ninguna" &&
+             NT.horasPermitidasSemana(r) === 0;
+    });
+    $("enlaces-criticos").innerHTML = criticos.length
+      ? "<strong>Enlaces vetados las 24 h sin alternativa vial:</strong> " +
+        criticos.map(function (r) {
+          return esc(r.id) + " (" + esc(NT.textoAmbito(r)) + ")";
+        }).join(" · ") +
+        ". Todo destino al otro lado es inalcanzable para el vehículo alcanzado, " +
+        "aparezca o no como afectado arriba."
+      : "";
+
+    function fila(color, txt, n) {
+      return '<div class="grow"><span class="dot" style="width:9px;height:9px;border-radius:50%;' +
+        "background:" + color + '"></span><span>' + txt + '</span><span class="n">' + n + "</span></div>";
+    }
+  }
+
+  function exportar() {
+    var cr = cruce();
+    var filas = [["cliente", "direccion", "grupo", "lat", "lon", "restricciones",
+                  "modo", "metros_a_via", "prohibido_en_momento_consultado", "momento"]];
+    var momento = NT.DIAS[estado.dia] + " " + NT.fmtMin(estado.minuto);
+    cr.forEach(function (x) {
+      filas.push([x.c.nombre, x.c.direccion, x.c.grupo, x.c.lat, x.c.lon,
+        x.hits.map(function (h) { return h.r.id; }).join("|"),
+        x.hits.map(function (h) { return h.modo; }).join("|"),
+        x.hits.map(function (h) { return h.metros; }).join("|"),
+        x.hits.some(function (h) { return h.activa; }) ? "si" : "no",
+        momento]);
+    });
+    var txt = filas.map(function (f) {
+      return f.map(function (v) {
+        v = String(v == null ? "" : v);
+        return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      }).join(",");
+    }).join("\n");
+    var url = URL.createObjectURL(new Blob(["﻿" + txt], { type: "text/csv;charset=utf-8" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = "clientes-vs-restricciones.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  // ---------- dibujo ----------
+  var puntos = [], capaTemp = null;
+
+  function iniciarDibujo(tipo) {
+    estado.dibujo = tipo; puntos = [];
+    capaDibujo.clearLayers();
+    $("btn-cancelar").hidden = false;
+    $("ayuda-dibujo").textContent = "Clic en el mapa para añadir vértices. Doble clic para cerrar.";
+    map.getContainer().style.cursor = "crosshair";
+  }
+
+  function cancelarDibujo() {
+    estado.dibujo = null; puntos = [];
+    capaDibujo.clearLayers();
+    $("btn-cancelar").hidden = true;
+    map.getContainer().style.cursor = "";
+    $("ayuda-dibujo").textContent =
+      "Clic para añadir vértices, doble clic para cerrar. El resultado sale abajo en GeoJSON " +
+      "para pegarlo en data/restricciones.json y commitearlo.";
+  }
+
+  map.on("click", function (e) {
+    if (!estado.dibujo) return;
+    puntos.push([e.latlng.lng, e.latlng.lat]);
+    repintarTemp();
+  });
+
+  map.on("dblclick", function (e) {
+    if (!estado.dibujo) return;
+    L.DomEvent.stop(e);
+    cerrarDibujo();
+  });
+
+  function repintarTemp() {
+    capaDibujo.clearLayers();
+    var lls = geoALatLngs(puntos);
+    if (estado.dibujo === "poli" && puntos.length > 2) {
+      L.polygon(lls, { color: "#1E4D40", weight: 3, dashArray: "4 4", fillOpacity: .12 }).addTo(capaDibujo);
+    } else if (puntos.length > 1) {
+      L.polyline(lls, { color: "#1E4D40", weight: 4, dashArray: "4 4" }).addTo(capaDibujo);
+    }
+    lls.forEach(function (ll) {
+      L.circleMarker(ll, { radius: 4, color: "#1E4D40", fillColor: "#fff", fillOpacity: 1, weight: 2 })
+        .addTo(capaDibujo);
+    });
+  }
+
+  function cerrarDibujo() {
+    if (puntos.length < 2) { cancelarDibujo(); return; }
+    var geo;
+    if (estado.dibujo === "poli") {
+      var anillo = puntos.slice();
+      anillo.push(anillo[0]);
+      geo = { type: "Polygon", coordinates: [anillo] };
+    } else {
+      geo = { type: "LineString", coordinates: puntos.slice() };
+    }
+    var destino = $("sel-dibujo").value;
+    var salida = {
+      restriccion: destino,
+      geometria: {
+        precision: "corregida_en_mapa",
+        origen: "trazo manual sobre basemap OSM",
+        editado_por: "",
+        fecha_edicion: new Date().toISOString().slice(0, 10),
+        geojson: geo
+      }
+    };
+    var ta = $("geo-out");
+    ta.hidden = false;
+    ta.value = JSON.stringify(salida, null, 2);
+    ta.focus(); ta.select();
+    $("ayuda-dibujo").innerHTML =
+      "Trazo cerrado con <strong>" + puntos.length + " vértices</strong>. Copia el GeoJSON y " +
+      "reemplaza el bloque <code>geometria</code> de <code>" + esc(destino) + "</code> en " +
+      "<code>data/restricciones.json</code>; luego corre <code>tools/generar_web.py</code>.";
+    estado.dibujo = null;
+    $("btn-cancelar").hidden = true;
+    map.getContainer().style.cursor = "";
+  }
+
+  // ---------- render general ----------
+  function render() {
+    $("reloj-h").textContent = NT.fmtMin(estado.minuto);
+    $("reloj-d").textContent = NT.DIAS[estado.dia];
+
+    dibujarRestricciones();
+    var cr = cruce();
+    dibujarClientes(cr);
+    renderGrupos(cr);
+
+    var activas = R.filter(function (r) {
+      return estado.visibles[r.id] && NT.activaEn(r, estado.dia, estado.minuto);
+    });
+    $("resumen-momento").innerHTML = activas.length
+      ? "<strong>" + activas.length + " de " + R.length + "</strong> restricciones activas: " +
+        activas.map(function (r) { return esc(r.id); }).join(", ")
+      : "Ninguna restricción activa en este momento.";
+
+    $("c-restr").textContent = R.filter(function (r) { return estado.visibles[r.id]; }).length +
+      " de " + R.length;
+    $("c-clientes").textContent = estado.clientes.length || "";
+    $("btn-limpiar-cli").hidden = !estado.clientes.length;
+    pintarLista();
+  }
+
+  function pintarLista() {
+    var h = "";
+    R.slice().sort(function (a, b) { return a.canton.localeCompare(b.canton, "es"); })
+      .forEach(function (r) {
+        var cat = (r.categorias || ["otras"])[0];
+        var activa = NT.activaEn(r, estado.dia, estado.minuto);
+        h += '<label class="ritem">' +
+          '<input type="checkbox" data-id="' + esc(r.id) + '"' + (estado.visibles[r.id] ? " checked" : "") + ">" +
+          '<span class="sw" style="background:' + COLOR[cat] + ";opacity:" + (activa ? 1 : .35) + '"></span>' +
+          '<span class="t"><b>' + esc(r.id) + "</b>" +
+          "<span>" + esc(r.canton) + " · " + esc(cat.replace(/_/g, " ")) + " · " +
+          (activa ? "prohibido ahora" : "permitido ahora") + "</span></span></label>";
+      });
+    $("rlist").innerHTML = h;
+    Array.prototype.forEach.call($("rlist").querySelectorAll("input"), function (cb) {
+      cb.addEventListener("change", function () {
+        estado.visibles[cb.dataset.id] = cb.checked;
+        render();
+      });
+    });
+  }
+
+  // ---------- persistencia local opcional ----------
+  function guardarSiPidio() {
+    if (!$("chk-recordar").checked) return;
+    try { localStorage.setItem(LS_KEY, JSON.stringify(estado.clientes)); } catch (e) {}
+  }
+  function leerGuardados() {
+    try {
+      var v = localStorage.getItem(LS_KEY);
+      if (v) { estado.clientes = JSON.parse(v) || []; $("chk-recordar").checked = true; }
+    } catch (e) {}
+  }
+
+  // ---------- arranque ----------
+  var cd = $("dias");
+  for (var d = 1; d <= 7; d++) {
+    (function (dd) {
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = NT.DIAS_CORTO[dd];
+      b.setAttribute("aria-pressed", String(dd === estado.dia));
+      b.setAttribute("aria-label", NT.DIAS[dd]);
+      b.addEventListener("click", function () {
+        estado.dia = dd;
+        Array.prototype.forEach.call(cd.children, function (x, i) {
+          x.setAttribute("aria-pressed", String(i + 1 === dd));
+        });
+        render();
+      });
+      cd.appendChild(b);
+    })(d);
+  }
+
+  $("slider").addEventListener("input", function () {
+    estado.minuto = parseInt(this.value, 10);
+    render();
+  });
+  $("chk-inactivas").addEventListener("change", render);
+  $("buffer").addEventListener("change", function () {
+    estado.buffer = Math.max(10, Math.min(2000, parseInt(this.value, 10) || 150));
+    this.value = estado.buffer;
+    render();
+  });
+  $("btn-exp").addEventListener("click", exportar);
+  $("btn-linea").addEventListener("click", function () { iniciarDibujo("linea"); });
+  $("btn-poli").addEventListener("click", function () { iniciarDibujo("poli"); });
+  $("btn-cancelar").addEventListener("click", cancelarDibujo);
+  $("btn-limpiar-cli").addEventListener("click", function () {
+    estado.clientes = [];
+    try { localStorage.removeItem(LS_KEY); } catch (e) {}
+    render();
+  });
+  $("chk-recordar").addEventListener("change", function () {
+    if (this.checked) guardarSiPidio();
+    else { try { localStorage.removeItem(LS_KEY); } catch (e) {} }
+  });
+
+  var sd = $("sel-dibujo");
+  R.forEach(function (r) {
+    var o = document.createElement("option");
+    o.value = r.id; o.textContent = r.id + " — " + r.canton;
+    sd.appendChild(o);
+  });
+
+  var drop = $("drop"), file = $("file");
+  drop.addEventListener("click", function () { file.click(); });
+  drop.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); }
+  });
+  file.addEventListener("change", function () {
+    if (this.files[0]) this.files[0].text().then(cargarCSV);
+  });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    var f = e.dataTransfer.files[0];
+    if (f) f.text().then(cargarCSV);
+  });
+
+  // encuadre inicial: cantón pedido por querystring, o todas las restricciones
+  leerGuardados();
+  render();
+  var qs = new URLSearchParams(location.search);
+  var foco = R.filter(function (r) {
+    return !qs.get("canton") || r.canton === qs.get("canton");
+  });
+  var pts = [];
+  foco.forEach(function (r) {
+    var cen = NT.centroide((r.geometria || {}).geojson);
+    if (cen) pts.push(cen);
+  });
+  if (estado.clientes.length) {
+    estado.clientes.forEach(function (c) { pts.push([c.lat, c.lon]); });
+  }
+  if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.25));
+})();
+</script>
+</body>
+</html>

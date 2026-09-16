@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normativa por cantón · Compendio de tránsito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .cant-head { padding:16px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+  .cant-head h2 { font-size:21px; }
+  .cant-head .meta { color:var(--ink-2); font-size:12px; margin-top:3px; }
+  .cant-head .tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .cant-head .acts { margin-left:auto; }
+  .cat { border-top:1px solid var(--line); }
+  .cat > .ph { background:var(--surface-2); border-bottom:1px solid var(--line); }
+  .cat > .ph h3 { font-size:13px; letter-spacing:.02em; }
+  .vacio { padding:16px; color:var(--ink-2); font-size:13px; }
+  .vacio strong { color:var(--ink); }
+  .req-list { margin:0; padding-left:16px; }
+  .req-list li { margin:1px 0; }
+  .barra { display:flex; align-items:center; gap:7px; }
+  .barra .track { width:52px; height:5px; border-radius:3px; background:var(--surface-3); overflow:hidden; }
+  .barra .track i { display:block; height:100%; background:var(--accent); }
+  .filtros { display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:18px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div>
+      <h1>Compendio normativo de tránsito</h1>
+      <div class="sub">Ecuador · normativa nacional y municipal</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="cantones.html" aria-current="page">Normativa por cantón</a>
+      <a href="mapa.html">Mapa y clientes</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="aviso warn" style="margin-bottom:18px">
+    <strong>Ningún registro está cotejado en fuente primaria.</strong>
+    Las cifras sirven para priorizar y dimensionar, no para litigar ni presentar formalmente.
+    Los campos marcados <em>por verificar</em> son brechas conocidas, no ausencia de regulación:
+    ver <code>docs/04-brechas-y-verificacion.md</code>.
+  </div>
+
+  <div class="filtros">
+    <div>
+      <span class="lbl">Cantón</span>
+      <select id="f-canton"><option value="">Todos</option></select>
+    </div>
+    <div>
+      <span class="lbl">Perfil de vehículo</span>
+      <select id="f-perfil"><option value="">Sin filtrar</option></select>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn" id="btn-csv" type="button">Descargar tabla en CSV</button>
+  </div>
+
+  <div id="salida"></div>
+
+  <p class="foot">
+    Las horas permitidas se calculan por restricción, sobre 168 h semanales.
+    Un corredor prohibido no reduce la ventana horaria del cantón: elimina un trazado.
+    Por eso cada fila indica su alcance — cantonal, zona, corredor o enlace — y si existe
+    alternativa vial. El costo del permiso aparece solo cuando consta en fuente accesible;
+    <em>sin publicar</em> significa que el GAD no lo ha hecho público, y es por sí mismo un hallazgo.
+  </p>
+</div>
+
+<script src="data.js"></script>
+<script src="comun.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.CORPUS, R = C.restricciones.restricciones, CANT = C.cantones.cantones;
+  var NORMAS = {}; C.normas.normas.forEach(function (n) { NORMAS[n.id] = n; });
+  var PERFILES = C.rutas.perfiles_vehiculo;
+  var esc = NT.esc;
+
+  var CATS = [
+    ["circulacion", "Restricciones de circulación",
+     "Pesos, medidas, vías, zonas, horarios, permiso y requisitos."],
+    ["carga_descarga", "Restricciones de parqueo, carga y descarga",
+     "Maniobra en la vía pública, estacionamiento y ventanas de reparto."],
+    ["otras", "Otras restricciones",
+     "Restricción por placa, ambientales, sectoriales."]
+  ];
+
+  function aplicaPerfil(r, perfil) {
+    if (!perfil) return true;
+    var a = r.aplica_a || {}, cats = a.categorias || [];
+    if (cats.length && !cats.some(function (c) { return perfil.categorias.indexOf(c) >= 0; })) return false;
+    var p = r.parametros || {}, op = p.operador_umbral;
+    if (p.pbv_min_t == null && p.largo_max_m == null) return true;
+    var cmp = op === ">" ? function (x, y) { return x > y; } : function (x, y) { return x >= y; };
+    if (p.pbv_min_t != null && cmp(perfil.pbv_t, p.pbv_min_t)) return true;
+    if (p.largo_max_m != null && cmp(perfil.largo_m, p.largo_max_m)) return true;
+    return false;
+  }
+
+  function celdaVerif(r) {
+    var v = r.verificacion || "por_verificar";
+    var cl = v === "primaria" ? "p-ok" : v === "por_verificar" ? "p-crit" : "p-warn";
+    return '<span class="pill ' + cl + '">' + esc(v.replace(/_/g, " ")) + "</span>";
+  }
+
+  function celdaAlcance(r) {
+    var e = r.ambito_espacial || {};
+    var alt = e.alternativa_vial;
+    var txt = esc(e.alcance || "—");
+    if (alt === "ninguna") txt += ' <span class="pill p-crit">sin alternativa vial</span>';
+    else if (alt === "existe") txt += ' <span class="pill p-neutro">hay alternativa</span>';
+    return txt;
+  }
+
+  function filaCirculacion(r) {
+    var n = NORMAS[(r.norma_ids || [])[0]] || {};
+    var horas = NT.horasPermitidasSemana(r);
+    var pct = Math.round((horas / 168) * 100);
+    var permiso = NT.textoPermiso(r);
+    var p = r.permiso || {};
+    var reqs = (p.requisitos || []);
+    var peso = NT.textoPeso(r), medidas = NT.textoMedidas(r);
+
+    return "<tr>" +
+      "<td><strong>" + esc(n.titulo ? (n.numero ? (n.tipo === "ordenanza_distrital" ? "OM " : "") + n.numero : n.id) : r.id) + "</strong>" +
+        '<div class="falta" style="font-style:normal;color:var(--ink-3);font-size:11px">' +
+        esc(r.autoridad || "") + "</div></td>" +
+      "<td>" + esc(NT.textoAmbito(r)) + "<div style='margin-top:4px'>" + celdaAlcance(r) + "</div></td>" +
+      "<td>" + (peso ? esc(peso) : '<span class="falta">sin umbral publicado</span>') + "</td>" +
+      "<td>" + (medidas ? esc(medidas) : '<span class="falta">sin publicar</span>') + "</td>" +
+      "<td>" + esc(NT.resumenHorario(r)) + "</td>" +
+      '<td class="num">' + esc(NT.diasTexto(((r.ventanas_prohibidas || [])[0] || {}).dias)) + "</td>" +
+      '<td class="num"><div class="barra"><span class="track"><i style="width:' + pct + '%"></i></span>' +
+        "<span>" + horas.toFixed(0) + " h</span></div></td>" +
+      '<td><span class="pill ' + permiso.clase + '">' + esc(permiso.txt) + "</span>" +
+        (p.tasa_negacion_observada != null
+          ? '<div style="font-size:11px;color:var(--crit);margin-top:3px">negación ' +
+            (p.tasa_negacion_observada * 100).toFixed(1) + "%</div>" : "") + "</td>" +
+      "<td>" + (reqs.length
+          ? '<ul class="req-list">' + reqs.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"
+          : '<span class="falta">sin publicar</span>') + "</td>" +
+      "<td>" + celdaVerif(r) + "</td></tr>";
+  }
+
+  function filaOtras(r) {
+    var a = r.aplica_a || {};
+    var s = r.sancion || {};
+    var sanc = "—";
+    if (s.escala) {
+      var sbu = (C.parametros.parametros.filter(function (x) { return x.id === "SBU"; })[0] || {}).valor_usd;
+      sanc = s.escala.map(function (e) {
+        return esc(e.evento.replace(/_/g, " ")) + ": " + (e.pct_sbu * 100) + "%" +
+          (sbu ? " = USD " + (sbu * e.pct_sbu).toFixed(2) : "");
+      }).join("<br>");
+    } else if (s.tipo && s.tipo !== "por_verificar") {
+      sanc = esc(s.tipo);
+    } else {
+      sanc = '<span class="falta">por verificar</span>';
+    }
+    return "<tr>" +
+      "<td><strong>" + esc(r.id) + "</strong>" +
+        '<div style="color:var(--ink-3);font-size:11px">' + esc(r.autoridad || "") + "</div></td>" +
+      "<td>" + esc(NT.textoAmbito(r)) + "<div style='margin-top:4px'>" + celdaAlcance(r) + "</div></td>" +
+      "<td>" + esc(a.regla || r.tipo.replace(/_/g, " ")) + "</td>" +
+      "<td>" + esc(NT.resumenHorario(r)) + "</td>" +
+      "<td>" + (a.exentos ? a.exentos.map(function (x) {
+          return '<span class="tag">' + esc(x.replace(/_/g, " ")) + "</span>"; }).join(" ")
+        : '<span class="falta">sin publicar</span>') + "</td>" +
+      "<td>" + sanc + "</td>" +
+      "<td>" + celdaVerif(r) + "</td></tr>";
+  }
+
+  var TH_CIRC = ["Norma", "Vías / zonas", "Pesos", "Medidas", "Horario", "Días",
+                 "Permitidas/sem", "Permiso y costo", "Requisitos", "Verificación"];
+  var TH_OTRAS = ["Norma", "Alcance", "Regla", "Horario", "Exentos", "Sanción", "Verificación"];
+
+  function tabla(ths, filas) {
+    return '<div class="tabla-scroll"><table><thead><tr>' +
+      ths.map(function (t) { return "<th>" + esc(t) + "</th>"; }).join("") +
+      "</tr></thead><tbody>" + filas.join("") + "</tbody></table></div>";
+  }
+
+  function render() {
+    var filtroC = document.getElementById("f-canton").value;
+    var perfilId = document.getElementById("f-perfil").value;
+    var perfil = PERFILES.filter(function (p) { return p.id === perfilId; })[0] || null;
+    var cantones = CANT.filter(function (c) { return !filtroC || c.codigo_dpa === filtroC; });
+    var html = "";
+
+    cantones.forEach(function (c) {
+      var propias = R.filter(function (r) { return r.canton === c.canton; });
+      html += '<section class="panel"><div class="cant-head"><div>' +
+        "<h2>" + esc(c.canton) + "</h2>" +
+        '<div class="meta mono">' + esc(c.codigo_dpa) + " · " + esc(c.provincia) + "</div>" +
+        '<div class="tags">' +
+          '<span class="tag">' + esc(c.autoridad_transito || "autoridad sin registrar") + "</span>" +
+          '<span class="tag">modelo de gestión: ' + esc(c.modelo_gestion || "por verificar") + "</span>" +
+          '<span class="tag">ordenanza rango art. 425: ' + (c.rango_ordenanza_art425 || 7) + "</span>" +
+        "</div></div>" +
+        '<div class="acts"><a class="btn btn-sm" href="mapa.html?canton=' +
+          encodeURIComponent(c.canton) + '">Ver en el mapa</a></div></div>';
+
+      CATS.forEach(function (cat) {
+        var clave = cat[0];
+        var lista = propias.filter(function (r) {
+          return (r.categorias || []).indexOf(clave) >= 0 && aplicaPerfil(r, perfil);
+        });
+        var todas = propias.filter(function (r) { return (r.categorias || []).indexOf(clave) >= 0; });
+        html += '<div class="cat"><div class="ph"><h3>' + esc(cat[1]) + "</h3>" +
+          '<span style="color:var(--ink-3);font-size:12px">' + esc(cat[2]) + "</span>" +
+          '<span class="count">' + lista.length +
+          (perfil && todas.length !== lista.length ? " de " + todas.length : "") + "</span></div>";
+
+        if (!lista.length) {
+          html += '<div class="vacio">' + (todas.length
+            ? "Ninguna de las " + todas.length + " restricciones de esta categoría aplica al perfil seleccionado."
+            : "<strong>Sin registros en el corpus.</strong> No significa que el cantón no regule " +
+              "esta materia: significa que todavía no se ha cargado. Cárgala desde el portal o " +
+              "pídela con <code>peticiones/plantilla-gad-municipal.md</code>.") + "</div>";
+        } else if (clave === "otras") {
+          html += tabla(TH_OTRAS, lista.map(filaOtras));
+        } else {
+          html += tabla(TH_CIRC, lista.map(filaCirculacion));
+        }
+        html += "</div>";
+      });
+      html += "</section>";
+    });
+
+    document.getElementById("salida").innerHTML = html ||
+      '<div class="panel"><div class="vacio">Sin cantones que mostrar.</div></div>';
+  }
+
+  function csv() {
+    var filas = [["canton", "restriccion", "categorias", "vias_zonas", "alcance", "alternativa_vial",
+                  "pbv_min_t", "operador", "largo_max_m", "horario_prohibido",
+                  "horas_permitidas_semana", "permiso", "costo_usd", "requisitos",
+                  "tasa_negacion", "verificacion"]];
+    R.forEach(function (r) {
+      var p = r.permiso || {}, pa = r.parametros || {}, e = r.ambito_espacial || {};
+      filas.push([r.canton, r.id, (r.categorias || []).join("|"), NT.textoAmbito(r),
+        e.alcance || "", e.alternativa_vial || "",
+        pa.pbv_min_t == null ? "" : pa.pbv_min_t, pa.operador_umbral || "",
+        pa.largo_max_m == null ? "" : pa.largo_max_m,
+        NT.resumenHorario(r), NT.horasPermitidasSemana(r).toFixed(1),
+        p.existe === true ? (p.nombre || "sí") : String(p.existe),
+        p.costo_usd == null ? "" : p.costo_usd,
+        (p.requisitos || []).join("; "),
+        p.tasa_negacion_observada == null ? "" : p.tasa_negacion_observada,
+        r.verificacion || ""]);
+    });
+    var txt = filas.map(function (f) {
+      return f.map(function (v) {
+        v = String(v == null ? "" : v);
+        return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      }).join(",");
+    }).join("\n");
+    var url = URL.createObjectURL(new Blob(["﻿" + txt], { type: "text/csv;charset=utf-8" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = "restricciones-por-canton.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  // arranque
+  var selC = document.getElementById("f-canton");
+  CANT.slice().sort(function (a, b) { return a.canton.localeCompare(b.canton, "es"); })
+    .forEach(function (c) {
+      var o = document.createElement("option");
+      o.value = c.codigo_dpa; o.textContent = c.canton;
+      selC.appendChild(o);
+    });
+  var selP = document.getElementById("f-perfil");
+  PERFILES.forEach(function (p) {
+    var o = document.createElement("option");
+    o.value = p.id;
+    o.textContent = p.descripcion + " — " + p.pbv_t + " t, " + p.largo_m + " m";
+    selP.appendChild(o);
+  });
+  var qs = new URLSearchParams(location.search);
+  if (qs.get("canton")) {
+    var m = CANT.filter(function (c) { return c.canton === qs.get("canton"); })[0];
+    if (m) selC.value = m.codigo_dpa;
+  }
+  selC.addEventListener("change", render);
+  selP.addEventListener("change", render);
+  document.getElementById("btn-csv").addEventListener("click", csv);
+  render();
+})();
+</script>
+</body>
+</html>

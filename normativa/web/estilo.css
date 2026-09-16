@@ -1,0 +1,128 @@
+/* Compendio normativo de tránsito — hoja común de las páginas web. */
+
+:root {
+  --bg:#F1F4F2; --surface:#FFFFFF; --surface-2:#E9EEEB; --surface-3:#DFE6E2;
+  --ink:#12201C; --ink-2:#556360; --ink-3:#7C8B86;
+  --line:#D2DAD6; --line-strong:#B6C2BD;
+  --accent:#1E4D40; --accent-ink:#FFFFFF; --accent-soft:#DFEBE6;
+  --signal:#B3890C;
+  --ok:#1B7550; --warn:#8F6209; --crit:#A1382A;
+  --ok-soft:#DCEDE4; --warn-soft:#F4E9D2; --crit-soft:#F4DFDB;
+  --shadow:0 1px 2px rgba(18,32,28,.06), 0 4px 14px rgba(18,32,28,.05);
+  --r:10px;
+  --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --slab:"Bitter", Georgia, "Times New Roman", serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0D1513; --surface:#15201D; --surface-2:#1C2926; --surface-3:#24332E;
+    --ink:#E6EDEA; --ink-2:#9EAEA9; --ink-3:#7E8F89;
+    --line:#293833; --line-strong:#3A4C46;
+    --accent:#6FBBA1; --accent-ink:#0D1513; --accent-soft:#1A2E28;
+    --signal:#DCB235;
+    --ok:#4FAE80; --warn:#C79B34; --crit:#D7796A;
+    --ok-soft:#162E24; --warn-soft:#2E2617; --crit-soft:#2E1C18;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0D1513; --surface:#15201D; --surface-2:#1C2926; --surface-3:#24332E;
+  --ink:#E6EDEA; --ink-2:#9EAEA9; --ink-3:#7E8F89;
+  --line:#293833; --line-strong:#3A4C46;
+  --accent:#6FBBA1; --accent-ink:#0D1513; --accent-soft:#1A2E28;
+  --signal:#DCB235;
+  --ok:#4FAE80; --warn:#C79B34; --crit:#D7796A;
+  --ok-soft:#162E24; --warn-soft:#2E2617; --crit-soft:#2E1C18;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+}
+
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4 { font-family:var(--slab); font-weight:600; margin:0; text-wrap:balance; }
+a { color:var(--accent); }
+button, input, select, textarea { font:inherit; color:inherit; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+.mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+/* ---------- barra superior ---------- */
+.topbar { background:var(--surface); border-bottom:1px solid var(--line); }
+.topbar-in { max-width:1320px; margin:0 auto; padding:12px 16px;
+             display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+.topbar h1 { font-size:17px; letter-spacing:-.01em; }
+.topbar .sub { font-size:12px; color:var(--ink-2); }
+.nav { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; }
+.nav a { text-decoration:none; padding:6px 12px; border-radius:7px; font-weight:500;
+         border:1px solid transparent; color:var(--ink-2); font-size:13px; }
+.nav a:hover { background:var(--surface-2); }
+.nav a[aria-current="page"] { background:var(--accent-soft); color:var(--ink);
+                              border-color:var(--accent); }
+
+.wrap { max-width:1320px; margin:0 auto; padding:20px 16px 40px; }
+
+/* ---------- avisos ---------- */
+.aviso { padding:11px 14px; border-radius:8px; font-size:13px;
+         border:1px solid var(--line); background:var(--surface-2); color:var(--ink-2); }
+.aviso.warn { background:var(--warn-soft); border-color:var(--warn); color:var(--warn); }
+.aviso strong { color:var(--ink); }
+.aviso.warn strong { color:var(--warn); }
+
+/* ---------- paneles y tablas ---------- */
+.panel { background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+         box-shadow:var(--shadow); }
+.panel + .panel { margin-top:18px; }
+.ph { padding:13px 16px; border-bottom:1px solid var(--line);
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.ph h2 { font-size:15px; }
+.ph h3 { font-size:14px; }
+.ph .count { margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--ink-3); }
+
+.tabla-scroll { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:13px; }
+th, td { text-align:left; padding:9px 12px; border-top:1px solid var(--line);
+         vertical-align:top; }
+thead th { border-top:0; border-bottom:1px solid var(--line-strong);
+           font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+           color:var(--ink-3); font-weight:600; white-space:nowrap;
+           background:var(--surface-2); position:sticky; top:0; z-index:1; }
+tbody tr:hover { background:var(--surface-2); }
+td.num { font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+/* ---------- píldoras y etiquetas ---------- */
+.pill { display:inline-block; font-size:11px; font-weight:500; padding:2px 9px;
+        border-radius:99px; white-space:nowrap; }
+.p-ok { background:var(--ok-soft); color:var(--ok); }
+.p-warn { background:var(--warn-soft); color:var(--warn); }
+.p-crit { background:var(--crit-soft); color:var(--crit); }
+.p-neutro { background:var(--surface-3); color:var(--ink-2); }
+.tag { display:inline-block; font-size:11px; padding:2px 8px; border-radius:99px;
+       background:var(--surface-2); border:1px solid var(--line); color:var(--ink-2); }
+.falta { color:var(--ink-3); font-style:italic; }
+
+/* ---------- controles ---------- */
+.btn { border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+       padding:7px 12px; border-radius:7px; cursor:pointer; font-weight:500; font-size:13px; }
+.btn:hover { background:var(--surface-2); }
+.btn-pri { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+.btn-pri:hover { filter:brightness(1.08); }
+.btn-sm { padding:4px 9px; font-size:12px; border-radius:6px; }
+.btn[disabled] { opacity:.5; cursor:not-allowed; }
+select, input[type="text"], input[type="number"], input[type="search"] {
+  background:var(--bg); border:1px solid var(--line-strong); border-radius:7px; padding:6px 9px; }
+
+.lbl { font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
+       display:block; margin-bottom:3px; }
+
+.foot { margin-top:26px; color:var(--ink-3); font-size:12px; max-width:80ch; }
+.foot code { font-family:var(--mono); font-size:11px; }
+
+@media (max-width:620px) {
+  .topbar-in { gap:10px; }
+  .nav { margin-left:0; width:100%; }
+}

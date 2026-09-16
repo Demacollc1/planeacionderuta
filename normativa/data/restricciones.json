@@ -4,7 +4,9 @@
     "dias": "ISO-8601: 1=lunes ... 7=domingo",
     "ventanas": "Se declaran las ventanas PROHIBIDAS. La ventana permitida es el complemento en el dia de 24 h.",
     "cruce_medianoche": "Una ventana con fin < inicio cruza la medianoche y se normaliza en dos tramos.",
-    "pbv_t": "Peso Bruto Vehicular en toneladas metricas."
+    "pbv_t": "Peso Bruto Vehicular en toneladas metricas.",
+    "geometria": "Coordenadas GeoJSON en orden [longitud, latitud], WGS84. Toda geometria de esta version es APROXIMADA: ubica la restriccion en el mapa y sirve para corregirla encima del basemap, no para decidir una ruta ni para citar en un escrito.",
+    "categorias": "circulacion | carga_descarga | parqueo | otras. Una restriccion puede pertenecer a mas de una: la de Av. Del Bombero y Arosemena regula circulacion y ademas carga y descarga en la misma ventana."
   },
   "restricciones": [
     {
@@ -93,7 +95,101 @@
         "https://www.quitoinforma.gob.ec/2025/11/20/que-vehiculos-de-carga-tendran-restriccion-de-circulacion/",
         "https://www.quitoinforma.gob.ec/2025/12/24/transporte-pesado-que-requiera-circular-en-la-simon-bolivar-y-ruta-viva-en-el-horario-de-restriccion-debe-obtener-un-salvoconducto/",
         "https://www.amt.gob.ec/index.php/informacion/carga-pesada/restriccion-circulacion/"
-      ]
+      ],
+      "categorias": [
+        "circulacion"
+      ],
+      "parametros": {
+        "pbv_min_t": null,
+        "operador_umbral": null,
+        "largo_max_m": null,
+        "alto_max_m": null,
+        "ancho_max_m": null,
+        "ejes_min": null,
+        "brecha_dimensional": "Alto, ancho y numero de ejes no constan en la fuente disponible."
+      },
+      "permiso": {
+        "existe": true,
+        "nombre": "Salvoconducto de circulacion",
+        "emisor": "AMT",
+        "costo_usd": null,
+        "moneda": "USD",
+        "vigencia": "por_verificar",
+        "plazo_resolucion_dias": null,
+        "silencio_administrativo": "por_verificar",
+        "requisitos": [],
+        "criterios_publicados": false,
+        "tasa_negacion_observada": 0.581,
+        "verificacion": "por_verificar",
+        "brecha": "Costo, vigencia, plazo y requisitos no publicados en fuente accesible. Numeral 4 y 5 de peticiones/plantilla-gad-municipal.md."
+      },
+      "geometria": {
+        "precision": "aproximada",
+        "origen": "trazo de referencia; sin cartografia oficial ni cotejo del tramo literal",
+        "editado_por": null,
+        "fecha_edicion": null,
+        "geojson": {
+          "type": "MultiLineString",
+          "coordinates": [
+            [
+              [
+                -78.504,
+                -0.323
+              ],
+              [
+                -78.493,
+                -0.29
+              ],
+              [
+                -78.487,
+                -0.26
+              ],
+              [
+                -78.482,
+                -0.23
+              ],
+              [
+                -78.47,
+                -0.2
+              ],
+              [
+                -78.46,
+                -0.17
+              ],
+              [
+                -78.45,
+                -0.14
+              ],
+              [
+                -78.44,
+                -0.11
+              ],
+              [
+                -78.436,
+                -0.096
+              ]
+            ],
+            [
+              [
+                -78.457,
+                -0.202
+              ],
+              [
+                -78.44,
+                -0.193
+              ],
+              [
+                -78.423,
+                -0.187
+              ],
+              [
+                -78.408,
+                -0.185
+              ]
+            ]
+          ]
+        }
+      }
     },
     {
       "id": "UIO-PICOPLACA",
@@ -180,7 +276,67 @@
       "fuentes": [
         "https://www.ecuadorlegalonline.com/consultas/secretaria-movilidad-quito/horario-pico-y-placa-quito/"
       ],
-      "nota_operativa": "La exencion cubre 'comercial rural' pero no la distribucion urbana. Una flota de reparto urbano pierde 1 de cada 5 dias habiles de operacion plena por vehiculo."
+      "nota_operativa": "La exencion cubre 'comercial rural' pero no la distribucion urbana. Una flota de reparto urbano pierde 1 de cada 5 dias habiles de operacion plena por vehiculo.",
+      "categorias": [
+        "otras"
+      ],
+      "parametros": {
+        "pbv_min_t": null,
+        "operador_umbral": null,
+        "largo_max_m": null,
+        "alto_max_m": null,
+        "ancho_max_m": null,
+        "ejes_min": null,
+        "brecha_dimensional": "Alto, ancho y numero de ejes no constan en la fuente disponible."
+      },
+      "permiso": {
+        "existe": "por_verificar",
+        "nombre": null,
+        "emisor": null,
+        "costo_usd": null,
+        "moneda": "USD",
+        "vigencia": null,
+        "plazo_resolucion_dias": null,
+        "silencio_administrativo": null,
+        "requisitos": [],
+        "criterios_publicados": null,
+        "tasa_negacion_observada": null,
+        "verificacion": "por_verificar",
+        "brecha": "No consta regimen de permiso o excepcion en la fuente disponible. Pendiente de solicitud formal."
+      },
+      "geometria": {
+        "precision": "aproximada",
+        "origen": "trazo de referencia; sin cartografia oficial ni cotejo del tramo literal",
+        "editado_por": null,
+        "fecha_edicion": null,
+        "geojson": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -78.56,
+                -0.34
+              ],
+              [
+                -78.43,
+                -0.34
+              ],
+              [
+                -78.43,
+                -0.07
+              ],
+              [
+                -78.56,
+                -0.07
+              ],
+              [
+                -78.56,
+                -0.34
+              ]
+            ]
+          ]
+        }
+      }
     },
     {
       "id": "GYE-PUENTES-35T",
@@ -238,7 +394,65 @@
       "fuentes": [
         "https://www.expreso.ec/guayaquil/que-puentes-no-puede-usar-transporte-pesado-guayaquil-y-cuanto-es-la-multa-273160.html"
       ],
-      "nota_operativa": "Prohibicion absoluta. Ventana permitida = 0 h/dia para todo vehiculo sobre 3.5 t. El umbral coincide con el nacional de CONTROL de pesos, no con un umbral de PROHIBICION: se toma un parametro nacional de fiscalizacion y se lo convierte en barrera de acceso."
+      "nota_operativa": "Prohibicion absoluta. Ventana permitida = 0 h/dia para todo vehiculo sobre 3.5 t. El umbral coincide con el nacional de CONTROL de pesos, no con un umbral de PROHIBICION: se toma un parametro nacional de fiscalizacion y se lo convierte en barrera de acceso.",
+      "categorias": [
+        "circulacion"
+      ],
+      "parametros": {
+        "pbv_min_t": 3.5,
+        "operador_umbral": ">",
+        "largo_max_m": null,
+        "alto_max_m": null,
+        "ancho_max_m": null,
+        "ejes_min": null,
+        "brecha_dimensional": "Alto, ancho y numero de ejes no constan en la fuente disponible."
+      },
+      "permiso": {
+        "existe": "por_verificar",
+        "nombre": null,
+        "emisor": null,
+        "costo_usd": null,
+        "moneda": "USD",
+        "vigencia": null,
+        "plazo_resolucion_dias": null,
+        "silencio_administrativo": null,
+        "requisitos": [],
+        "criterios_publicados": null,
+        "tasa_negacion_observada": null,
+        "verificacion": "por_verificar",
+        "brecha": "No consta regimen de permiso o excepcion en la fuente disponible. Pendiente de solicitud formal."
+      },
+      "geometria": {
+        "precision": "aproximada",
+        "origen": "trazo de referencia; sin cartografia oficial ni cotejo del tramo literal",
+        "editado_por": null,
+        "fecha_edicion": null,
+        "geojson": {
+          "type": "MultiLineString",
+          "coordinates": [
+            [
+              [
+                -79.868,
+                -2.154
+              ],
+              [
+                -79.857,
+                -2.149
+              ]
+            ],
+            [
+              [
+                -79.89,
+                -2.118
+              ],
+              [
+                -79.879,
+                -2.112
+              ]
+            ]
+          ]
+        }
+      }
     },
     {
       "id": "GYE-BOMBERO-AROSEMENA",
@@ -315,7 +529,74 @@
       "fuentes": [
         "https://x.com/ATMGuayaquil/status/1943077263249125877"
       ],
-      "nota_operativa": "Dias de aplicacion no confirmados; se asume L-D y se marca para cotejo. Detectada por camaras automaticas."
+      "nota_operativa": "Dias de aplicacion no confirmados; se asume L-D y se marca para cotejo. Detectada por camaras automaticas.",
+      "categorias": [
+        "circulacion",
+        "carga_descarga"
+      ],
+      "parametros": {
+        "pbv_min_t": 15.0,
+        "operador_umbral": ">",
+        "largo_max_m": 10.0,
+        "alto_max_m": null,
+        "ancho_max_m": null,
+        "ejes_min": null,
+        "brecha_dimensional": "Alto, ancho y numero de ejes no constan en la fuente disponible."
+      },
+      "permiso": {
+        "existe": "por_verificar",
+        "nombre": null,
+        "emisor": null,
+        "costo_usd": null,
+        "moneda": "USD",
+        "vigencia": null,
+        "plazo_resolucion_dias": null,
+        "silencio_administrativo": null,
+        "requisitos": [],
+        "criterios_publicados": null,
+        "tasa_negacion_observada": null,
+        "verificacion": "por_verificar",
+        "brecha": "No consta regimen de permiso o excepcion en la fuente disponible. Pendiente de solicitud formal."
+      },
+      "geometria": {
+        "precision": "aproximada",
+        "origen": "trazo de referencia; sin cartografia oficial ni cotejo del tramo literal",
+        "editado_por": null,
+        "fecha_edicion": null,
+        "geojson": {
+          "type": "MultiLineString",
+          "coordinates": [
+            [
+              [
+                -79.918,
+                -2.168
+              ],
+              [
+                -79.93,
+                -2.1705
+              ],
+              [
+                -79.94,
+                -2.172
+              ]
+            ],
+            [
+              [
+                -79.904,
+                -2.165
+              ],
+              [
+                -79.898,
+                -2.161
+              ],
+              [
+                -79.893,
+                -2.158
+              ]
+            ]
+          ]
+        }
+      }
     },
     {
       "id": "GYE-PEDRO-MENENDEZ",
@@ -372,7 +653,57 @@
       "requiere_cotejo": true,
       "fuentes": [
         "https://www.eluniverso.com/guayaquil/comunidad/atm-recuerda-que-se-mantiene-la-prohibicion-de-ingreso-de-vehiculos-pesados-a-la-av-pedro-menendez-nota/"
-      ]
+      ],
+      "categorias": [
+        "circulacion"
+      ],
+      "parametros": {
+        "pbv_min_t": null,
+        "operador_umbral": null,
+        "largo_max_m": null,
+        "alto_max_m": null,
+        "ancho_max_m": null,
+        "ejes_min": null,
+        "brecha_dimensional": "Alto, ancho y numero de ejes no constan en la fuente disponible."
+      },
+      "permiso": {
+        "existe": "por_verificar",
+        "nombre": null,
+        "emisor": null,
+        "costo_usd": null,
+        "moneda": "USD",
+        "vigencia": null,
+        "plazo_resolucion_dias": null,
+        "silencio_administrativo": null,
+        "requisitos": [],
+        "criterios_publicados": null,
+        "tasa_negacion_observada": null,
+        "verificacion": "por_verificar",
+        "brecha": "No consta regimen de permiso o excepcion en la fuente disponible. Pendiente de solicitud formal."
+      },
+      "geometria": {
+        "precision": "aproximada",
+        "origen": "trazo de referencia; sin cartografia oficial ni cotejo del tramo literal",
+        "editado_por": null,
+        "fecha_edicion": null,
+        "geojson": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              -79.902,
+              -2.156
+            ],
+            [
+              -79.898,
+              -2.15
+            ],
+            [
+              -79.895,
+              -2.144
+            ]
+          ]
+        }
+      }
     },
     {
       "id": "CUE-CENTRO-HISTORICO",
@@ -426,7 +757,67 @@
       "fuentes": [
         "https://www.emov.gob.ec/sites/default/files/transparencia/a2.23.pdf"
       ],
-      "nota_operativa": "Ventana permitida de 9 h estrictamente nocturna (21h00-06h00), incompatible con jornada laboral ordinaria de recepcion en bodega del cliente."
+      "nota_operativa": "Ventana permitida de 9 h estrictamente nocturna (21h00-06h00), incompatible con jornada laboral ordinaria de recepcion en bodega del cliente.",
+      "categorias": [
+        "circulacion"
+      ],
+      "parametros": {
+        "pbv_min_t": 3.5,
+        "operador_umbral": ">=",
+        "largo_max_m": null,
+        "alto_max_m": null,
+        "ancho_max_m": null,
+        "ejes_min": null,
+        "brecha_dimensional": "Alto, ancho y numero de ejes no constan en la fuente disponible."
+      },
+      "permiso": {
+        "existe": "por_verificar",
+        "nombre": null,
+        "emisor": null,
+        "costo_usd": null,
+        "moneda": "USD",
+        "vigencia": null,
+        "plazo_resolucion_dias": null,
+        "silencio_administrativo": null,
+        "requisitos": [],
+        "criterios_publicados": null,
+        "tasa_negacion_observada": null,
+        "verificacion": "por_verificar",
+        "brecha": "No consta regimen de permiso o excepcion en la fuente disponible. Pendiente de solicitud formal."
+      },
+      "geometria": {
+        "precision": "aproximada",
+        "origen": "trazo de referencia; sin cartografia oficial ni cotejo del tramo literal",
+        "editado_por": null,
+        "fecha_edicion": null,
+        "geojson": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -79.014,
+                -2.892
+              ],
+              [
+                -78.996,
+                -2.892
+              ],
+              [
+                -78.996,
+                -2.901
+              ],
+              [
+                -79.014,
+                -2.901
+              ],
+              [
+                -79.014,
+                -2.892
+              ]
+            ]
+          ]
+        }
+      }
     }
   ]
 }
