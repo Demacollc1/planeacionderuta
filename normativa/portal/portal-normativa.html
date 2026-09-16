@@ -1,0 +1,725 @@
+<title>Registro Cantonal de Normativa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg:#F1F4F2; --surface:#FFFFFF; --surface-2:#E9EEEB; --surface-3:#DFE6E2;
+    --ink:#12201C; --ink-2:#556360; --ink-3:#7C8B86;
+    --line:#D2DAD6; --line-strong:#B6C2BD;
+    --accent:#1E4D40; --accent-ink:#FFFFFF; --accent-soft:#DFEBE6;
+    --signal:#B3890C;
+    --ok:#1B7550; --warn:#8F6209; --crit:#A1382A;
+    --ok-soft:#DCEDE4; --warn-soft:#F4E9D2; --crit-soft:#F4DFDB;
+    --shadow:0 1px 2px rgba(18,32,28,.06), 0 4px 14px rgba(18,32,28,.05);
+    --r:10px;
+    --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --slab:"Bitter", Georgia, "Times New Roman", serif;
+    --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0D1513; --surface:#15201D; --surface-2:#1C2926; --surface-3:#24332E;
+      --ink:#E6EDEA; --ink-2:#9EAEA9; --ink-3:#7E8F89;
+      --line:#293833; --line-strong:#3A4C46;
+      --accent:#6FBBA1; --accent-ink:#0D1513; --accent-soft:#1A2E28;
+      --signal:#DCB235;
+      --ok:#4FAE80; --warn:#C79B34; --crit:#D7796A;
+      --ok-soft:#162E24; --warn-soft:#2E2617; --crit-soft:#2E1C18;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0D1513; --surface:#15201D; --surface-2:#1C2926; --surface-3:#24332E;
+    --ink:#E6EDEA; --ink-2:#9EAEA9; --ink-3:#7E8F89;
+    --line:#293833; --line-strong:#3A4C46;
+    --accent:#6FBBA1; --accent-ink:#0D1513; --accent-soft:#1A2E28;
+    --signal:#DCB235;
+    --ok:#4FAE80; --warn:#C79B34; --crit:#D7796A;
+    --ok-soft:#162E24; --warn-soft:#2E2617; --crit-soft:#2E1C18;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3 { font-family:var(--slab); font-weight:600; text-wrap:balance; margin:0; }
+  button, input, select, textarea { font:inherit; color:inherit; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  .mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  /* ---------- header ---------- */
+  header.top {
+    position:sticky; top:env(safe-area-inset-top, 0px); z-index:20;
+    background:var(--surface); border-bottom:1px solid var(--line);
+  }
+  .top-in { max-width:1240px; margin:0 auto; padding:14px 16px;
+            display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+  .brand { display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .brand h1 { font-size:18px; letter-spacing:-.01em; }
+  .brand .sub { color:var(--ink-2); font-size:12px; }
+  .cover { margin-left:auto; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .kpi { display:flex; flex-direction:column; gap:2px; }
+  .kpi .lbl { font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); }
+  .kpi .val { font-family:var(--slab); font-size:22px; font-weight:700;
+              font-variant-numeric:tabular-nums; line-height:1.1; }
+  .kpi .val small { font-size:12px; font-weight:500; color:var(--ink-2); }
+  .meter { width:170px; height:6px; background:var(--surface-3); border-radius:3px; overflow:hidden; }
+  .meter > i { display:block; height:100%; background:var(--accent); border-radius:3px;
+               transition:width .35s ease; }
+  @media (prefers-reduced-motion: reduce) { .meter > i { transition:none; } }
+
+  /* ---------- layout ---------- */
+  .wrap { max-width:1240px; margin:0 auto; padding-block:20px; padding-left:16px; padding-right:16px; }
+  .cols { display:grid; grid-template-columns:270px minmax(0,1fr); gap:20px; align-items:start; }
+  @media (max-width:860px) { .cols { grid-template-columns:1fr; } }
+
+  .panel { background:var(--surface); border:1px solid var(--line); border-radius:var(--r); }
+  .panel > .ph { padding:12px 14px; border-bottom:1px solid var(--line);
+                 display:flex; align-items:center; gap:8px; }
+  .ph h2 { font-size:13px; letter-spacing:.02em; }
+  .ph .count { margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--ink-3); }
+
+  /* ---------- rail ---------- */
+  .rail { max-height:min(70vh, 720px); overflow-y:auto; }
+  .prov { padding:10px 14px 4px; font-size:10px; letter-spacing:.09em;
+          text-transform:uppercase; color:var(--ink-3); }
+  .cant { width:100%; text-align:left; background:none; border:0; cursor:pointer;
+          padding:8px 14px; display:flex; align-items:center; gap:8px;
+          border-left:3px solid transparent; }
+  .cant:hover { background:var(--surface-2); }
+  .cant[aria-current="true"] { background:var(--accent-soft); border-left-color:var(--accent); }
+  .cant .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cant .n { font-family:var(--mono); font-size:11px; color:var(--ink-3); }
+  .dot { width:7px; height:7px; border-radius:50%; flex:none; }
+  .d-ok { background:var(--ok); } .d-warn { background:var(--warn); } .d-none { background:var(--line-strong); }
+
+  /* ---------- buttons ---------- */
+  .btn { border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+         padding:7px 12px; border-radius:7px; cursor:pointer; font-weight:500; font-size:13px; }
+  .btn:hover { background:var(--surface-2); }
+  .btn-pri { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .btn-pri:hover { filter:brightness(1.08); }
+  .btn-sm { padding:4px 9px; font-size:12px; border-radius:6px; }
+  .btn[disabled] { opacity:.5; cursor:not-allowed; }
+
+  /* ---------- cantón head ---------- */
+  .chead { padding:16px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+  .chead h2 { font-size:20px; }
+  .chead .meta { color:var(--ink-2); font-size:12px; margin-top:3px; }
+  .chead .acts { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  .tagrow { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .tag { font-size:11px; padding:2px 8px; border-radius:99px; background:var(--surface-2);
+         border:1px solid var(--line); color:var(--ink-2); }
+
+  /* ---------- norma rows ---------- */
+  .norms { display:flex; flex-direction:column; }
+  .norm { padding:14px 16px; border-top:1px solid var(--line); display:grid;
+          grid-template-columns:minmax(0,1fr) auto; gap:10px 16px; }
+  .norm:first-child { border-top:0; }
+  .norm h3 { font-size:14px; font-family:var(--sans); font-weight:600; }
+  .norm .ref { font-family:var(--mono); font-size:12px; color:var(--ink-2); margin-top:2px; }
+  .norm .links { margin-top:7px; display:flex; gap:12px; flex-wrap:wrap; font-size:12px; }
+  .norm a { color:var(--accent); text-decoration:none; border-bottom:1px solid currentColor; }
+  .right { display:flex; flex-direction:column; align-items:flex-end; gap:7px; }
+  .pill { font-size:11px; font-weight:500; padding:2px 9px; border-radius:99px; white-space:nowrap; }
+  .p-ok { background:var(--ok-soft); color:var(--ok); }
+  .p-warn { background:var(--warn-soft); color:var(--warn); }
+  .p-crit { background:var(--crit-soft); color:var(--crit); }
+
+  /* citabilidad: 6 segmentos = 6 datos que hacen citable una norma */
+  .cit { display:flex; align-items:center; gap:7px; }
+  .cit .segs { display:flex; gap:2px; }
+  .cit .segs i { width:15px; height:5px; border-radius:2px; background:var(--surface-3); display:block; }
+  .cit .segs i.on { background:var(--ok); }
+  .cit .txt { font-family:var(--mono); font-size:11px; color:var(--ink-2); }
+
+  .empty { padding:28px 16px; text-align:center; color:var(--ink-2); }
+  .empty p { max-width:46ch; margin:0 auto 12px; }
+
+  /* ---------- form ---------- */
+  .form { padding:16px; display:grid; gap:12px; }
+  .grid2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:12px; }
+  .f { display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .f label { font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
+  .f input, .f select, .f textarea {
+    background:var(--bg); border:1px solid var(--line-strong); border-radius:7px;
+    padding:7px 9px; width:100%; }
+  .f textarea { resize:vertical; min-height:56px; }
+  .req::after { content:" ·"; color:var(--signal); }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .chip { cursor:pointer; font-size:12px; padding:4px 10px; border-radius:99px;
+          border:1px solid var(--line-strong); background:var(--bg); color:var(--ink-2); }
+  .chip[aria-pressed="true"] { background:var(--accent-soft); border-color:var(--accent); color:var(--ink); }
+  .formfoot { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .formfoot .note { font-size:12px; color:var(--ink-2); }
+
+  .banner { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px;
+            border:1px solid var(--line); background:var(--surface-2); color:var(--ink-2); }
+  .banner.warn { background:var(--warn-soft); border-color:var(--warn); color:var(--warn); }
+  .banner strong { color:var(--ink); }
+  .banner.warn strong { color:var(--warn); }
+
+  .toast { position:fixed; left:50%; transform:translateX(-50%);
+           bottom:calc(18px + env(safe-area-inset-bottom, 0px)); z-index:60;
+           background:var(--ink); color:var(--bg); padding:9px 16px; border-radius:99px;
+           font-size:13px; box-shadow:var(--shadow); max-width:90vw; }
+
+  .foot { margin-top:22px; color:var(--ink-3); font-size:12px; }
+  .foot code { font-family:var(--mono); font-size:11px; }
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>Registro Cantonal de Normativa</h1>
+      <div class="sub">Tránsito y transporte de carga · Ecuador</div>
+    </div>
+    <div class="cover">
+      <div class="kpi">
+        <span class="lbl">Cantones con norma</span>
+        <span class="val" id="kpi-cob">—<small> / 221</small></span>
+      </div>
+      <div class="meter" role="img" id="meter-cob" aria-label="Cobertura"><i id="meter-fill" style="width:0%"></i></div>
+      <div class="kpi">
+        <span class="lbl">Normas</span>
+        <span class="val" id="kpi-normas">—</span>
+      </div>
+      <div class="kpi">
+        <span class="lbl">Citables</span>
+        <span class="val" id="kpi-cit">—</span>
+      </div>
+      <button class="btn" id="btn-export" type="button">Exportar corpus</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="banner" class="banner" hidden></div>
+
+  <div class="cols">
+    <aside class="panel">
+      <div class="ph">
+        <h2>Cantones</h2>
+        <span class="count" id="rail-count"></span>
+      </div>
+      <div class="rail" id="rail"></div>
+      <div style="padding:12px 14px; border-top:1px solid var(--line);">
+        <button class="btn btn-sm" id="btn-nuevo-canton" type="button">+ Agregar cantón</button>
+      </div>
+    </aside>
+
+    <main style="display:flex; flex-direction:column; gap:20px; min-width:0;">
+      <section class="panel" id="panel-canton"></section>
+
+      <section class="panel">
+        <div class="ph"><h2>Registrar norma</h2></div>
+        <form class="form" id="form-norma">
+          <div class="grid2">
+            <div class="f">
+              <label for="f-tipo">Tipo de norma</label>
+              <select id="f-tipo">
+                <option value="ordenanza">Ordenanza</option>
+                <option value="ordenanza_distrital">Ordenanza metropolitana / distrital</option>
+                <option value="resolucion">Resolución de la autoridad de tránsito</option>
+                <option value="acuerdo">Acuerdo</option>
+                <option value="reglamento">Reglamento</option>
+                <option value="instructivo">Instructivo</option>
+              </select>
+            </div>
+            <div class="f">
+              <label for="f-numero" class="req">Número</label>
+              <input id="f-numero" class="mono" placeholder="147" autocomplete="off">
+            </div>
+            <div class="f">
+              <label for="f-estado">Estado</label>
+              <select id="f-estado">
+                <option value="vigente">Vigente</option>
+                <option value="vigente_con_reformas">Vigente con reformas</option>
+                <option value="reformada">Reformada</option>
+                <option value="derogada">Derogada</option>
+                <option value="por_verificar">Por verificar</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="f">
+            <label for="f-titulo" class="req">Título</label>
+            <input id="f-titulo" placeholder="Ordenanza que regula la circulación de vehículos de transporte de carga pesada" autocomplete="off">
+          </div>
+
+          <div class="grid2">
+            <div class="f">
+              <label for="f-sancion" class="req">Fecha de sanción</label>
+              <input id="f-sancion" type="date">
+            </div>
+            <div class="f">
+              <label for="f-medio" class="req">Medio de publicación</label>
+              <select id="f-medio">
+                <option value="">— seleccionar —</option>
+                <option value="gaceta_municipal">Gaceta Oficial Municipal</option>
+                <option value="registro_oficial">Registro Oficial</option>
+                <option value="portal_institucional">Portal institucional del GAD</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="f">
+              <label for="f-fpub" class="req">Fecha de publicación</label>
+              <input id="f-fpub" type="date">
+            </div>
+          </div>
+
+          <div class="f">
+            <label for="f-url" class="req">URL oficial en el portal del GAD</label>
+            <input id="f-url" type="url" placeholder="https://…" autocomplete="off">
+          </div>
+
+          <div class="f">
+            <label>Materias que regula</label>
+            <div class="chips" id="f-materias"></div>
+          </div>
+
+          <div class="grid2">
+            <div class="f">
+              <label for="f-verif">Nivel de verificación</label>
+              <select id="f-verif">
+                <option value="primaria">Primaria — leí el texto oficial</option>
+                <option value="secundaria_oficial">Secundaria oficial — web de la entidad</option>
+                <option value="secundaria_prensa">Secundaria prensa</option>
+                <option value="por_verificar" selected>Por verificar</option>
+              </select>
+            </div>
+            <div class="f" id="wrap-pdf">
+              <label for="f-pdf" class="req">PDF de la norma</label>
+              <input id="f-pdf" type="file" accept="application/pdf">
+            </div>
+          </div>
+
+          <div class="f">
+            <label for="f-notas">Notas</label>
+            <textarea id="f-notas" placeholder="Umbral declarado, artículo relevante, reformas pendientes de cotejo…"></textarea>
+          </div>
+
+          <div class="formfoot">
+            <button class="btn btn-pri" id="btn-guardar" type="submit">Guardar norma</button>
+            <button class="btn" id="btn-limpiar" type="button">Limpiar</button>
+            <span class="note">Los seis campos marcados <span style="color:var(--signal)">·</span> son los que hacen la norma citable ante una autoridad.</span>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <p class="foot">
+    Citabilidad = número · fecha de sanción · medio de publicación · fecha de publicación · URL oficial · PDF archivado.
+    Una norma sin esos seis datos no es oponible en un escrito: es una referencia.
+    El denominador 221 es el número de GAD municipales con la competencia de tránsito asumida.
+    Exportar entrega <code>normas.json</code> y <code>cantones.json</code> para fusionar en el corpus.
+  </p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var MATERIAS = [
+    ["circulacion_carga", "Circulación de carga"],
+    ["carga_descarga", "Carga y descarga"],
+    ["pico_placa", "Pico y placa"],
+    ["pesos_dimensiones", "Pesos y dimensiones"],
+    ["salvoconductos", "Salvoconductos y permisos"],
+    ["tasas", "Tasas"],
+    ["titulos_habilitantes", "Títulos habilitantes"],
+    ["estacionamiento", "Estacionamiento"],
+    ["micromovilidad", "Micromovilidad"],
+    ["quimicos_peligrosos", "Químicos peligrosos"]
+  ];
+
+  // Código DPA provincial (INEC). Prefijo sugerido al crear un cantón; editable.
+  var PROVINCIAS = [
+    ["01","Azuay"],["02","Bolívar"],["03","Cañar"],["04","Carchi"],["05","Cotopaxi"],
+    ["06","Chimborazo"],["07","El Oro"],["08","Esmeraldas"],["09","Guayas"],["10","Imbabura"],
+    ["11","Loja"],["12","Los Ríos"],["13","Manabí"],["14","Morona Santiago"],["15","Napo"],
+    ["16","Pastaza"],["17","Pichincha"],["18","Tungurahua"],["19","Zamora Chinchipe"],
+    ["20","Galápagos"],["21","Sucumbíos"],["22","Orellana"],["23","Santo Domingo de los Tsáchilas"],
+    ["24","Santa Elena"]
+  ];
+
+  var TOTAL_GAD = 221;
+  var CIT_CAMPOS = ["numero", "fecha_sancion", "medio_publicacion", "fecha_publicacion", "url_oficial", "asset_id"];
+
+  var db = null, assets = null, downloads = null;
+  var cantones = [], normas = [], seleccion = null, materiasSel = {};
+  var unsubs = [];
+
+  // ---------- utilidades ----------
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function $(id) { return document.getElementById(id); }
+  function slug(s) {
+    return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").toUpperCase().slice(0, 40) || "X";
+  }
+  function toast(msg) {
+    var t = document.createElement("div");
+    t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status");
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 3200);
+  }
+  function banner(html, warn) {
+    var b = $("banner");
+    b.innerHTML = html; b.hidden = false;
+    b.className = "banner" + (warn ? " warn" : "");
+  }
+  function citScore(n) {
+    var k = 0;
+    for (var i = 0; i < CIT_CAMPOS.length; i++) if (n[CIT_CAMPOS[i]]) k++;
+    return k;
+  }
+
+  // ---------- render ----------
+  function renderKPIs() {
+    var conNorma = {};
+    normas.forEach(function (n) { if (n.codigo_dpa) conNorma[n.codigo_dpa] = true; });
+    var nCob = Object.keys(conNorma).length;
+    var citables = normas.filter(function (n) { return citScore(n) === 6; }).length;
+
+    $("kpi-cob").innerHTML = nCob + "<small> / " + TOTAL_GAD + "</small>";
+    $("kpi-normas").textContent = normas.length;
+    $("kpi-cit").innerHTML = citables + '<small> de ' + normas.length + "</small>";
+    var pct = Math.min(100, (nCob / TOTAL_GAD) * 100);
+    $("meter-fill").style.width = pct.toFixed(2) + "%";
+    $("meter-cob").setAttribute("aria-label",
+      "Cobertura: " + nCob + " de " + TOTAL_GAD + " cantones, " + pct.toFixed(1) + " por ciento");
+  }
+
+  function renderRail() {
+    var rail = $("rail");
+    if (!cantones.length) {
+      rail.innerHTML = '<div class="empty"><p>Todavía no hay cantones. Agrega el primero para empezar.</p></div>';
+      $("rail-count").textContent = "";
+      return;
+    }
+    var porProv = {};
+    cantones.forEach(function (c) { (porProv[c.provincia] = porProv[c.provincia] || []).push(c); });
+    var provs = Object.keys(porProv).sort(function (a, b) { return a.localeCompare(b, "es"); });
+
+    var h = "";
+    provs.forEach(function (p) {
+      h += '<div class="prov">' + esc(p) + "</div>";
+      porProv[p].sort(function (a, b) { return a.canton.localeCompare(b.canton, "es"); })
+        .forEach(function (c) {
+          var mine = normas.filter(function (n) { return n.codigo_dpa === c.codigo_dpa; });
+          var cit = mine.filter(function (n) { return citScore(n) === 6; }).length;
+          var cls = !mine.length ? "d-none" : (cit === mine.length ? "d-ok" : "d-warn");
+          var titulo = !mine.length ? "sin normas registradas"
+            : cit + " de " + mine.length + " normas citables";
+          h += '<button class="cant" type="button" data-dpa="' + esc(c.codigo_dpa) + '" ' +
+            'aria-current="' + (seleccion === c.codigo_dpa) + '" title="' + esc(titulo) + '">' +
+            '<span class="dot ' + cls + '"></span>' +
+            '<span class="nm">' + esc(c.canton) + "</span>" +
+            '<span class="n">' + mine.length + "</span></button>";
+        });
+    });
+    rail.innerHTML = h;
+    $("rail-count").textContent = cantones.length;
+    Array.prototype.forEach.call(rail.querySelectorAll(".cant"), function (b) {
+      b.addEventListener("click", function () { seleccion = b.dataset.dpa; renderAll(); });
+    });
+  }
+
+  function renderCanton() {
+    var p = $("panel-canton");
+    var c = cantones.filter(function (x) { return x.codigo_dpa === seleccion; })[0];
+    if (!c) {
+      p.innerHTML = '<div class="empty"><p>Selecciona un cantón en la lista, o agrega uno nuevo, ' +
+        "para ver y registrar su normativa.</p></div>";
+      return;
+    }
+    var mine = normas.filter(function (n) { return n.codigo_dpa === c.codigo_dpa; })
+      .sort(function (a, b) { return (b.fecha_sancion || "").localeCompare(a.fecha_sancion || ""); });
+
+    var h = '<div class="chead"><div style="min-width:0">' +
+      "<h2>" + esc(c.canton) + "</h2>" +
+      '<div class="meta mono">' + esc(c.codigo_dpa) + " · " + esc(c.provincia) + "</div>" +
+      '<div class="tagrow">' +
+      '<span class="tag">' + esc(c.autoridad || "autoridad sin registrar") + "</span>" +
+      '<span class="tag">modelo de gestión: ' + esc(c.modelo_gestion || "por verificar") + "</span>" +
+      '<span class="tag">ordenanza rango art. 425: ' + (c.regimen === "distrito_metropolitano" ? "5" : "7") + "</span>" +
+      "</div></div>" +
+      '<div class="acts"><button class="btn btn-sm" id="btn-edit-canton" type="button">Editar cantón</button></div>' +
+      "</div>";
+
+    if (!mine.length) {
+      h += '<div class="empty" style="border-top:1px solid var(--line)"><p>Sin normas registradas en ' +
+        esc(c.canton) + ". Usa el formulario de abajo: la norma suele estar publicada en el portal " +
+        "de transparencia del GAD.</p></div>";
+    } else {
+      h += '<div class="norms">';
+      mine.forEach(function (n) {
+        var k = citScore(n), segs = "";
+        for (var i = 0; i < 6; i++) segs += "<i" + (i < k ? ' class="on"' : "") + "></i>";
+        var pv = n.verificacion === "primaria" ? "p-ok"
+          : n.verificacion === "por_verificar" ? "p-crit" : "p-warn";
+        var faltan = CIT_CAMPOS.filter(function (f) { return !n[f]; });
+        h += '<article class="norm"><div>' +
+          "<h3>" + esc(n.titulo || "(sin título)") + "</h3>" +
+          '<div class="ref">' + esc(n.tipo || "") + " " + esc(n.numero || "s/n") +
+          (n.fecha_sancion ? " · sanción " + esc(n.fecha_sancion) : "") +
+          (n.fecha_publicacion ? " · publicada " + esc(n.fecha_publicacion) : "") +
+          (n.medio_publicacion ? " · " + esc(n.medio_publicacion) : "") + "</div>" +
+          (n.materias && n.materias.length
+            ? '<div class="tagrow">' + n.materias.map(function (m) {
+                return '<span class="tag">' + esc(m) + "</span>"; }).join("") + "</div>"
+            : "") +
+          '<div class="links">' +
+          (n.url_oficial ? '<a href="' + esc(n.url_oficial) + '" target="_blank" rel="noopener">fuente del GAD</a>' : "") +
+          (n.asset_id ? '<a href="/_blob/' + esc(n.asset_id) + '" target="_blank" rel="noopener">PDF archivado</a>' : "") +
+          (faltan.length ? '<span style="color:var(--ink-3)">falta: ' + esc(faltan.join(", ")) + "</span>" : "") +
+          "</div>" +
+          (n.notas ? '<div class="meta" style="margin-top:6px;color:var(--ink-2)">' + esc(n.notas) + "</div>" : "") +
+          "</div>" +
+          '<div class="right">' +
+          '<span class="pill ' + pv + '">' + esc(n.verificacion || "por_verificar") + "</span>" +
+          '<div class="cit"><span class="segs">' + segs + '</span>' +
+          '<span class="txt">' + k + "/6</span></div>" +
+          '<button class="btn btn-sm" data-del="' + esc(n.id) + '" type="button">Eliminar</button>' +
+          "</div></article>";
+      });
+      h += "</div>";
+    }
+    p.innerHTML = h;
+
+    var be = $("btn-edit-canton");
+    if (be) be.addEventListener("click", function () { editarCanton(c); });
+    Array.prototype.forEach.call(p.querySelectorAll("[data-del]"), function (b) {
+      b.addEventListener("click", function () { borrarNorma(b.dataset.del); });
+    });
+  }
+
+  function renderAll() { renderKPIs(); renderRail(); renderCanton(); }
+
+  // ---------- escritura ----------
+  function requireDb() {
+    if (!db) { toast("Sin almacenamiento en esta vista: no se puede guardar."); return false; }
+    return true;
+  }
+
+  function editarCanton(c) {
+    if (!requireDb()) return;
+    var aut = prompt("Autoridad de tránsito del cantón (AMT, ATM, EMOV EP, dirección municipal…):", c.autoridad || "");
+    if (aut === null) return;
+    var mg = prompt("Modelo de gestión asignado por el CNC (A, B, C o 'por verificar'):", c.modelo_gestion || "por verificar");
+    if (mg === null) return;
+    db.doc("cantones/" + c.codigo_dpa).update({
+      autoridad: aut.trim(), modelo_gestion: mg.trim(), actualizado: new Date().toISOString()
+    }).then(function () { toast("Cantón actualizado."); })
+      .catch(function (e) { toast("No se pudo guardar: " + (e && e.code ? e.code : "error")); });
+  }
+
+  function nuevoCanton() {
+    if (!requireDb()) return;
+    var nombre = prompt("Nombre del cantón:");
+    if (!nombre || !nombre.trim()) return;
+    var lista = PROVINCIAS.map(function (p) { return p[0] + " " + p[1]; }).join("\n");
+    var prov = prompt("Provincia — escribe el código de dos dígitos:\n\n" + lista);
+    if (!prov) return;
+    prov = prov.trim().padStart(2, "0");
+    var fila = PROVINCIAS.filter(function (p) { return p[0] === prov; })[0];
+    if (!fila) { toast("Código de provincia no reconocido."); return; }
+    var dpa = prompt("Código DPA del cantón (prefijo provincial " + prov + "; verificar contra INEC):", prov + "01");
+    if (!dpa || !dpa.trim()) return;
+    dpa = dpa.trim().replace(/[^0-9]/g, "");
+    if (!dpa) { toast("El código DPA debe ser numérico."); return; }
+    if (cantones.some(function (c) { return c.codigo_dpa === dpa; })) {
+      toast("Ese código DPA ya está registrado."); return;
+    }
+    db.doc("cantones/" + dpa).set({
+      codigo_dpa: dpa, canton: nombre.trim(), provincia: fila[1],
+      regimen: "municipal", autoridad: "", modelo_gestion: "por verificar",
+      actualizado: new Date().toISOString()
+    }).then(function () { seleccion = dpa; toast("Cantón agregado."); })
+      .catch(function (e) { toast("No se pudo agregar: " + (e && e.code ? e.code : "error")); });
+  }
+
+  function borrarNorma(id) {
+    if (!requireDb()) return;
+    var n = normas.filter(function (x) { return x.id === id; })[0];
+    if (!n) return;
+    if (!confirm('Eliminar "' + (n.titulo || n.numero) + '" del registro?\n\nEl PDF archivado se conserva.')) return;
+    db.doc("normas/" + id).delete()
+      .then(function () { toast("Norma eliminada."); })
+      .catch(function (e) { toast("No se pudo eliminar: " + (e && e.code ? e.code : "error")); });
+  }
+
+  function limpiarForm() {
+    ["f-numero", "f-titulo", "f-sancion", "f-fpub", "f-url", "f-notas"].forEach(function (id) { $(id).value = ""; });
+    $("f-pdf").value = "";
+    $("f-medio").value = "";
+    $("f-verif").value = "por_verificar";
+    materiasSel = {};
+    Array.prototype.forEach.call(document.querySelectorAll("#f-materias .chip"), function (b) {
+      b.setAttribute("aria-pressed", "false");
+    });
+  }
+
+  function guardar(ev) {
+    ev.preventDefault();
+    if (!requireDb()) return;
+    var c = cantones.filter(function (x) { return x.codigo_dpa === seleccion; })[0];
+    if (!c) { toast("Selecciona primero un cantón."); return; }
+    var numero = $("f-numero").value.trim();
+    var titulo = $("f-titulo").value.trim();
+    if (!titulo) { toast("El título es obligatorio."); $("f-titulo").focus(); return; }
+
+    var btn = $("btn-guardar");
+    btn.disabled = true; btn.textContent = "Guardando…";
+
+    var file = $("f-pdf").files[0];
+    var subir = (file && assets)
+      ? assets.upload(file, { type: "application/pdf" }).then(function (r) { return r.id; })
+        .catch(function (e) {
+          toast("PDF no subido (" + (e && e.code ? e.code : "error") + "); se guarda el resto.");
+          return "";
+        })
+      : Promise.resolve("");
+
+    subir.then(function (assetId) {
+      var id = slug(c.canton) + "-" + slug($("f-tipo").value).slice(0, 4) + "-" +
+        (slug(numero) || Date.now().toString(36).toUpperCase());
+      var doc = {
+        id: id,
+        codigo_dpa: c.codigo_dpa,
+        canton: c.canton,
+        provincia: c.provincia,
+        tipo: $("f-tipo").value,
+        numero: numero,
+        titulo: titulo,
+        fecha_sancion: $("f-sancion").value,
+        medio_publicacion: $("f-medio").value,
+        fecha_publicacion: $("f-fpub").value,
+        url_oficial: $("f-url").value.trim(),
+        asset_id: assetId,
+        estado: $("f-estado").value,
+        verificacion: $("f-verif").value,
+        materias: Object.keys(materiasSel).filter(function (k) { return materiasSel[k]; }),
+        notas: $("f-notas").value.trim(),
+        actualizado: new Date().toISOString()
+      };
+      return db.doc("normas/" + id).set(doc).then(function () {
+        var k = citScore(doc);
+        toast(k === 6 ? "Norma guardada y citable (6/6)." : "Norma guardada — citabilidad " + k + "/6.");
+        limpiarForm();
+      });
+    }).catch(function (e) {
+      toast("No se pudo guardar: " + (e && e.code ? e.code : "error"));
+    }).then(function () {
+      btn.disabled = false; btn.textContent = "Guardar norma";
+    });
+  }
+
+  // ---------- exportación ----------
+  function exportar() {
+    var payload = {
+      version_corpus: "0.2.0-portal",
+      generado: new Date().toISOString(),
+      nota: "Exportado desde el Registro Cantonal de Normativa. Fusionar en normativa/data/. " +
+            "Cada norma incluye citabilidad calculada sobre 6 campos.",
+      cantones: cantones.map(function (c) {
+        return {
+          codigo_dpa: c.codigo_dpa, canton: c.canton, provincia: c.provincia,
+          regimen: c.regimen || "municipal",
+          rango_ordenanza_art425: c.regimen === "distrito_metropolitano" ? 5 : 7,
+          autoridad_transito: c.autoridad || "", modelo_gestion: c.modelo_gestion || "por_verificar"
+        };
+      }),
+      normas: normas.map(function (n) {
+        var o = {};
+        Object.keys(n).forEach(function (k) { o[k] = n[k]; });
+        o.citabilidad = citScore(n);
+        o.campos_faltantes = CIT_CAMPOS.filter(function (f) { return !n[f]; });
+        o.requiere_cotejo = citScore(n) < 6 || n.verificacion !== "primaria";
+        return o;
+      })
+    };
+    var texto = JSON.stringify(payload, null, 2);
+    if (downloads) {
+      downloads.save({ filename: "corpus-normativa.json", data: texto })
+        .then(function () { toast("Exportado."); })
+        .catch(function (e) { toast("Exportación cancelada o no disponible."); });
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto)
+        .then(function () { toast("Sin descargas en esta vista: JSON copiado al portapapeles."); })
+        .catch(function () { toast("No se pudo exportar en esta vista."); });
+    } else {
+      toast("No se pudo exportar en esta vista.");
+    }
+  }
+
+  // ---------- arranque ----------
+  function pintarChips() {
+    $("f-materias").innerHTML = MATERIAS.map(function (m) {
+      return '<button class="chip" type="button" aria-pressed="false" data-m="' + m[0] + '">' + esc(m[1]) + "</button>";
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("#f-materias .chip"), function (b) {
+      b.addEventListener("click", function () {
+        var on = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", String(!on));
+        materiasSel[b.dataset.m] = !on;
+      });
+    });
+  }
+
+  function conectar() {
+    if (!window.claude || !window.claude.use) { sinDb(); return; }
+    Promise.all([
+      claude.use("db").catch(function () { return null; }),
+      claude.use("assets").catch(function () { return null; }),
+      claude.use("downloads").catch(function () { return null; })
+    ]).then(function (r) {
+      db = r[0]; assets = r[1]; downloads = r[2];
+      if (!db) { sinDb(); return; }
+      if (!assets) {
+        $("wrap-pdf").hidden = true;
+        banner("Vista de <strong>solo lectura</strong> para archivos: puedes consultar el registro, " +
+          "pero no subir PDF. Pide acceso de edición para cargar documentos.", true);
+      }
+      unsubs.push(db.collection("cantones").onSnapshot(function (s) {
+        cantones = s.docs.map(function (d) { return d.data(); });
+        if (!seleccion && cantones.length) {
+          seleccion = cantones.slice().sort(function (a, b) {
+            return a.canton.localeCompare(b.canton, "es"); })[0].codigo_dpa;
+        }
+        renderAll();
+      }, function (e) { toast("Error al leer cantones: " + e.code); }));
+      unsubs.push(db.collection("normas").onSnapshot(function (s) {
+        normas = s.docs.map(function (d) { return d.data(); });
+        renderAll();
+      }, function (e) { toast("Error al leer normas: " + e.code); }));
+    });
+  }
+
+  function sinDb() {
+    banner("Esta vista no tiene acceso al almacenamiento compartido, así que el registro " +
+      "aparece vacío y no se puede guardar. Ábrela desde tu cuenta con permiso de edición.", true);
+    renderAll();
+  }
+
+  pintarChips();
+  renderAll();
+  $("form-norma").addEventListener("submit", guardar);
+  $("btn-limpiar").addEventListener("click", limpiarForm);
+  $("btn-nuevo-canton").addEventListener("click", nuevoCanton);
+  $("btn-export").addEventListener("click", exportar);
+  window.addEventListener("beforeunload", function () {
+    unsubs.forEach(function (u) { try { u(); } catch (e) {} });
+  });
+  conectar();
+})();
+</script>

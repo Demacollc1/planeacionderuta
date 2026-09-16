@@ -47,10 +47,24 @@ data/          fuente de verdad (JSON)
   rutas.json           perfiles de vehículo y escenarios de prueba
   parametros.json      constantes nacionales (SBU, umbrales técnicos)
 schema/        esquemas JSON Schema de norma y restricción
-tools/         validador, motor de análisis, generador de documentos
+tools/         validador, motor de análisis, generador de documentos, importador
 docs/          metodología, reglas de interpretación, hallazgos, brechas
+peticiones/    solicitudes de acceso a la información pública + seguimiento de plazos
+portal/        consola de carga de normativa por cantón (fuente del artefacto publicado)
 salidas/       artefactos generados (CSV, informe.json) — no editar
 ```
+
+## Las tres piezas
+
+| Pieza | Qué captura | Por qué |
+|---|---|---|
+| `portal/` | El **texto** de las ordenanzas, por cantón | Los GAD sí las publican; lo que falta es consolidarlas y hacerlas citables |
+| `peticiones/` | Los **sustentos** que la norma debió tener | Estudio técnico del umbral, criterios del salvoconducto, estudio de costos, reporte a la ANT: nada de eso se publica |
+| `data/` + `tools/` | La **interpretación** y la medición | Ventana de circulación efectiva, matriz de competencias, detección de conflictos |
+
+El portal alimenta el corpus vía `tools/importar_portal.py`. Las solicitudes suben el
+nivel de verificación de `secundaria` a `primaria`. Sin las dos entradas, el corpus mide
+sobre datos sin cotejar.
 
 ## Documentos
 
