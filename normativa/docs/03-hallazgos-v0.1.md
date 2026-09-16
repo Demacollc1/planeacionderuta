@@ -93,8 +93,12 @@ publicados. Un régimen de excepción que niega a la mayoría y no publica su cr
 es una excepción: es una prohibición con trámite. Pedido concreto: criterios reglados,
 plazo máximo y silencio administrativo positivo.
 
-**R6 — Déficit de publicidad, 4 de 4 normas municipales.** Ninguna de las normas
-municipales del corpus tiene referencia de publicación oficial localizable y citable.
+**R6 — Déficit de referencia citable, 4 de 4 normas municipales.** Ninguna de las normas
+municipales del corpus tiene registrado el par número + fecha y medio de publicación que
+permite citarla. Precisión necesaria: esto **no** prueba que los GAD no publiquen —
+normalmente sí publican sus ordenanzas en sus portales de transparencia. Prueba que no
+existe una referencia consolidada y verificable por tercero, y que el corpus se construyó
+sin acceso a esos portales.
 Es el hallazgo más barato de corregir y el que más rinde: un registro público único de
 normativa local de tránsito elimina la categoría completa y no le cuesta competencia a
 nadie. Es la primera propuesta que debe ir sobre la mesa.

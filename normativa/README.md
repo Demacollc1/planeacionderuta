@@ -86,8 +86,10 @@ gran carga.
 emitidos, 344 negados sobre 592 solicitudes — **58,1 % de negación, sin criterios de
 resolución publicados**.
 
-**Publicidad.** 4 de 4 normas municipales del corpus carecen de referencia de
-publicación oficial localizable y citable.
+**Referencia citable.** 4 de 4 normas municipales del corpus carecen del par número +
+fecha y medio de publicación. Los GAD normalmente sí publican sus ordenanzas en sus
+portales de transparencia: el déficit es de consolidación y de acceso, no necesariamente
+de publicación. Es la brecha que ataca el portal de carga.
 
 ## Tesis de trabajo
 

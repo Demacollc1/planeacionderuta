@@ -1,0 +1,24 @@
+{
+  "nota": "Feriados nacionales usados para contar terminos en dias habiles. Los feriados de fecha fija estan sembrados; los moviles (Carnaval, Viernes Santo) y los traslados dispuestos por la ley de feriados deben completarse cada anio con el calendario oficial. Mientras falten, el contador SUBESTIMA la fecha de vencimiento: verificar antes de invocar negativa tacita.",
+  "modo_conteo_por_defecto": "termino",
+  "definiciones": {
+    "termino": "Solo dias habiles: excluye sabados, domingos y feriados.",
+    "plazo": "Dias calendario corridos."
+  },
+  "advertencia_legal": "Cotejar si la LOTAIP fija el plazo de 10 dias en TERMINO (habiles) o en PLAZO (calendario). El corpus asume termino por ser lo habitual en el regimen administrativo ecuatoriano, pero esta suposicion no fue verificada en fuente primaria y cambia la fecha de vencimiento.",
+  "fijos_anuales": [
+    { "mes": 1, "dia": 1, "nombre": "Ano Nuevo" },
+    { "mes": 5, "dia": 1, "nombre": "Dia del Trabajo" },
+    { "mes": 5, "dia": 24, "nombre": "Batalla de Pichincha" },
+    { "mes": 8, "dia": 10, "nombre": "Primer Grito de Independencia" },
+    { "mes": 10, "dia": 9, "nombre": "Independencia de Guayaquil" },
+    { "mes": 11, "dia": 2, "nombre": "Dia de los Difuntos" },
+    { "mes": 11, "dia": 3, "nombre": "Independencia de Cuenca" },
+    { "mes": 12, "dia": 25, "nombre": "Navidad" }
+  ],
+  "moviles_y_traslados": {
+    "_comentario": "Completar por anio con el calendario oficial de feriados. Clave: anio; valor: lista de fechas YYYY-MM-DD.",
+    "2026": [],
+    "2027": []
+  }
+}
