@@ -1,0 +1,5 @@
+escenario,nombre,perfil,pbv_t,cantones,restricciones,restricciones_red,horas_semana,pct_semana,horas_jornada_util,pct_jornada_util,ventana_lunes
+E1,Troncal Quito - Guayaquil - Cuenca con trailer de 32 t,V-TRAILER-32T,32.0,Quito|Guayaquil|Cuenca,UIO-CARGA-SB-RV|CUE-CENTRO-HISTORICO,GYE-PUENTES-35T|GYE-BOMBERO-AROSEMENA|GYE-PEDRO-MENENDEZ,63.0,37.5,0.0,0.0,00:00-06:00 | 21:00-24:00
+E2,Distribucion Guayaquil - Samborondon con camion de 8 t,V-CAMION-8T,8.0,Guayaquil,GYE-PUENTES-35T,GYE-PEDRO-MENENDEZ,0.0,0.0,0.0,0.0,sin ventana
+E3,Reparto urbano en Quito con furgoneta de 3 t,V-FURGONETA-3T,3.0,Quito,UIO-PICOPLACA,,130.5,77.7,32.5,65.0,00:00-06:00 | 09:30-16:00 | 20:00-24:00
+E4,Camion liviano de 4 t en los tres cantones,V-CAMION-4T,4.0,Quito|Guayaquil|Cuenca,UIO-PICOPLACA|GYE-PUENTES-35T,,0.0,0.0,0.0,0.0,sin ventana

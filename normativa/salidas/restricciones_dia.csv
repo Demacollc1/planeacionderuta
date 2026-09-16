@@ -1,0 +1,43 @@
+restriccion,canton,autoridad,tipo,dia,horas_permitidas,pbv_min_t,operador,verificacion
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,1,16.0,,,secundaria_prensa
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,2,16.0,,,secundaria_prensa
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,3,16.0,,,secundaria_prensa
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,4,16.0,,,secundaria_prensa
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,5,16.0,,,secundaria_prensa
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,6,16.0,,,secundaria_prensa
+UIO-CARGA-SB-RV,Quito,AMT,restriccion_circulacion,7,16.0,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,1,16.5,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,2,16.5,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,3,16.5,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,4,16.5,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,5,16.5,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,6,24.0,,,secundaria_prensa
+UIO-PICOPLACA,Quito,AMT,restriccion_matricula,7,24.0,,,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,1,0.0,3.5,>,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,2,0.0,3.5,>,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,3,0.0,3.5,>,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,4,0.0,3.5,>,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,5,0.0,3.5,>,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,6,0.0,3.5,>,secundaria_prensa
+GYE-PUENTES-35T,Guayaquil,ATM,restriccion_circulacion,7,0.0,3.5,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,1,17.0,15.0,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,2,17.0,15.0,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,3,17.0,15.0,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,4,17.0,15.0,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,5,17.0,15.0,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,6,17.0,15.0,>,secundaria_prensa
+GYE-BOMBERO-AROSEMENA,Guayaquil,ATM,restriccion_circulacion,7,17.0,15.0,>,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,1,0.0,,,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,2,0.0,,,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,3,0.0,,,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,4,0.0,,,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,5,0.0,,,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,6,0.0,,,secundaria_prensa
+GYE-PEDRO-MENENDEZ,Guayaquil,ATM,restriccion_circulacion,7,0.0,,,secundaria_prensa
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,1,9.0,3.5,>=,secundaria_oficial
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,2,9.0,3.5,>=,secundaria_oficial
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,3,9.0,3.5,>=,secundaria_oficial
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,4,9.0,3.5,>=,secundaria_oficial
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,5,9.0,3.5,>=,secundaria_oficial
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,6,9.0,3.5,>=,secundaria_oficial
+CUE-CENTRO-HISTORICO,Cuenca,EMOV EP,restriccion_circulacion,7,9.0,3.5,>=,secundaria_oficial

@@ -1,0 +1,187 @@
+{
+  "version": "0.1.0",
+  "fecha_corte": "2026-09-16",
+  "integridad": {
+    "errores": [],
+    "niveles_verificacion": {
+      "secundaria_oficial": 11,
+      "por_verificar": 2,
+      "secundaria_prensa": 1
+    }
+  },
+  "fragmentacion": {
+    "cantones": 3,
+    "definiciones_de_vehiculo_pesado": 4,
+    "definiciones_de_ventana": 4
+  },
+  "escenarios": [
+    {
+      "escenario": "E1",
+      "nombre": "Troncal Quito - Guayaquil - Cuenca con trailer de 32 t",
+      "perfil": "V-TRAILER-32T",
+      "pbv_t": 32.0,
+      "cantones": "Quito|Guayaquil|Cuenca",
+      "restricciones": "UIO-CARGA-SB-RV|CUE-CENTRO-HISTORICO",
+      "restricciones_red": "GYE-PUENTES-35T|GYE-BOMBERO-AROSEMENA|GYE-PEDRO-MENENDEZ",
+      "horas_semana": 63.0,
+      "pct_semana": 37.5,
+      "horas_jornada_util": 0.0,
+      "pct_jornada_util": 0.0,
+      "ventana_lunes": "00:00-06:00 | 21:00-24:00"
+    },
+    {
+      "escenario": "E2",
+      "nombre": "Distribucion Guayaquil - Samborondon con camion de 8 t",
+      "perfil": "V-CAMION-8T",
+      "pbv_t": 8.0,
+      "cantones": "Guayaquil",
+      "restricciones": "GYE-PUENTES-35T",
+      "restricciones_red": "GYE-PEDRO-MENENDEZ",
+      "horas_semana": 0.0,
+      "pct_semana": 0.0,
+      "horas_jornada_util": 0.0,
+      "pct_jornada_util": 0.0,
+      "ventana_lunes": "sin ventana"
+    },
+    {
+      "escenario": "E3",
+      "nombre": "Reparto urbano en Quito con furgoneta de 3 t",
+      "perfil": "V-FURGONETA-3T",
+      "pbv_t": 3.0,
+      "cantones": "Quito",
+      "restricciones": "UIO-PICOPLACA",
+      "restricciones_red": "",
+      "horas_semana": 130.5,
+      "pct_semana": 77.7,
+      "horas_jornada_util": 32.5,
+      "pct_jornada_util": 65.0,
+      "ventana_lunes": "00:00-06:00 | 09:30-16:00 | 20:00-24:00"
+    },
+    {
+      "escenario": "E4",
+      "nombre": "Camion liviano de 4 t en los tres cantones",
+      "perfil": "V-CAMION-4T",
+      "pbv_t": 4.0,
+      "cantones": "Quito|Guayaquil|Cuenca",
+      "restricciones": "UIO-PICOPLACA|GYE-PUENTES-35T",
+      "restricciones_red": "",
+      "horas_semana": 0.0,
+      "pct_semana": 0.0,
+      "horas_jornada_util": 0.0,
+      "pct_jornada_util": 0.0,
+      "ventana_lunes": "sin ventana"
+    }
+  ],
+  "hallazgos": [
+    {
+      "regla": "R2b",
+      "tipo": "indeterminacion_del_supuesto",
+      "severidad": "alta",
+      "objeto": "UIO-CARGA-SB-RV",
+      "canton": "Quito",
+      "detalle": "Restringe la categoria carga_pesada, productos_quimicos_peligrosos sin umbral numerico verificable de peso o dimension.",
+      "implicacion": "El alcance subjetivo depende del criterio del agente en via. Inseguridad juridica medible como riesgo de detencion.",
+      "base_contraste": "CRE art. 76.3 (tipicidad)"
+    },
+    {
+      "regla": "R5",
+      "tipo": "discrecionalidad_sin_criterio",
+      "severidad": "alta",
+      "objeto": "UIO-CARGA-SB-RV",
+      "canton": "Quito",
+      "detalle": "Excepcion via salvoconducto emitida por AMT sin criterios de resolucion publicados; tasa de negacion observada 58.1%.",
+      "implicacion": "Sin criterio reglado no hay control de legalidad ni previsibilidad para planificar rutas.",
+      "base_contraste": "CRE art. 76.7.l (motivacion); COOTAD art. 566 si media tasa"
+    },
+    {
+      "regla": "R6",
+      "tipo": "deficit_de_publicidad",
+      "severidad": "media",
+      "objeto": "OM-QUITO-147",
+      "canton": "Quito",
+      "detalle": "Norma sin referencia de publicacion oficial verificable (numero o Registro Oficial).",
+      "implicacion": "Una norma que el obligado no puede localizar ni citar es inexigible en la practica y no auditable.",
+      "base_contraste": "Principio de publicidad normativa"
+    },
+    {
+      "regla": "R6",
+      "tipo": "deficit_de_publicidad",
+      "severidad": "media",
+      "objeto": "RES-AMT-CARGA",
+      "canton": "Quito",
+      "detalle": "Norma sin referencia de publicacion oficial verificable (numero o Registro Oficial).",
+      "implicacion": "Una norma que el obligado no puede localizar ni citar es inexigible en la practica y no auditable.",
+      "base_contraste": "Principio de publicidad normativa"
+    },
+    {
+      "regla": "R1",
+      "tipo": "reserva_de_ley_sancionadora",
+      "severidad": "alta",
+      "objeto": "UIO-PICOPLACA",
+      "canton": "Quito",
+      "detalle": "Aplica sancion de tipo multa_porcentaje_sbu sin norma legal de respaldo identificada.",
+      "implicacion": "Las contravenciones de transito y sus multas son reserva de ley. Una ordenanza no puede crearlas.",
+      "base_contraste": "CRE art. 76.3; LOTTTSV; COIP"
+    },
+    {
+      "regla": "R3",
+      "tipo": "barrera_absoluta_de_acceso",
+      "severidad": "alta",
+      "objeto": "GYE-PUENTES-35T",
+      "canton": "Guayaquil",
+      "detalle": "Prohibicion permanente (168 h/semana) sobre un enlace sin alternativa vial.",
+      "implicacion": "No es una medida de gestion de trafico sino una supresion de accesibilidad: ningun reprogramado horario la resuelve. Exige prueba de proporcionalidad y medida alternativa.",
+      "base_contraste": "CRE art. 66.14 (libertad de transito); principio de proporcionalidad"
+    },
+    {
+      "regla": "R6",
+      "tipo": "deficit_de_publicidad",
+      "severidad": "media",
+      "objeto": "ORD-GYE-CIRCULACION",
+      "canton": "Guayaquil",
+      "detalle": "Norma sin referencia de publicacion oficial verificable (numero o Registro Oficial).",
+      "implicacion": "Una norma que el obligado no puede localizar ni citar es inexigible en la practica y no auditable.",
+      "base_contraste": "Principio de publicidad normativa"
+    },
+    {
+      "regla": "R2",
+      "tipo": "divergencia_parametrica",
+      "severidad": "alta",
+      "objeto": "GYE-BOMBERO-AROSEMENA",
+      "canton": "Guayaquil",
+      "detalle": "Umbral local de 15.0 t sin correspondencia con los parametros nacionales [3.5, 48.0, 60.0].",
+      "implicacion": "Un mismo vehiculo cambia de categoria juridica al cruzar el limite cantonal.",
+      "base_contraste": "AM-MTOP-028-2022 / AM-MTOP-018-2016"
+    },
+    {
+      "regla": "R4",
+      "tipo": "posible_exceso_competencial",
+      "severidad": "alta",
+      "objeto": "GYE-BOMBERO-AROSEMENA",
+      "canton": "Guayaquil",
+      "detalle": "Fija un limite de longitud vehicular (10.0 m) como condicion de acceso.",
+      "implicacion": "Pesos y dimensiones es materia reglada a nivel nacional por el MTOP (competencia C08).",
+      "base_contraste": "AM-MTOP-018-2016; LOTTTSV art. 30.4 (deber de observar disposiciones nacionales)"
+    },
+    {
+      "regla": "R2b",
+      "tipo": "indeterminacion_del_supuesto",
+      "severidad": "alta",
+      "objeto": "GYE-PEDRO-MENENDEZ",
+      "canton": "Guayaquil",
+      "detalle": "Restringe la categoria carga_pesada sin umbral numerico verificable de peso o dimension.",
+      "implicacion": "El alcance subjetivo depende del criterio del agente en via. Inseguridad juridica medible como riesgo de detencion.",
+      "base_contraste": "CRE art. 76.3 (tipicidad)"
+    },
+    {
+      "regla": "R6",
+      "tipo": "deficit_de_publicidad",
+      "severidad": "media",
+      "objeto": "ORD-CUE-SERT",
+      "canton": "Cuenca",
+      "detalle": "Norma sin referencia de publicacion oficial verificable (numero o Registro Oficial).",
+      "implicacion": "Una norma que el obligado no puede localizar ni citar es inexigible en la practica y no auditable.",
+      "base_contraste": "Principio de publicidad normativa"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Restriccion operativa",
+  "type": "object",
+  "required": ["id", "canton", "autoridad", "norma_ids", "tipo", "aplica_a", "ambito_espacial", "ventanas_prohibidas", "verificacion"],
+  "properties": {
+    "id": { "type": "string" },
+    "canton": { "type": "string" },
+    "codigo_dpa": { "type": "string" },
+    "autoridad": { "type": "string" },
+    "norma_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "tipo": { "enum": ["restriccion_circulacion", "restriccion_matricula", "restriccion_carga_descarga", "peaje", "tasa"] },
+    "vigencia_desde": { "type": ["string", "null"] },
+    "aplica_a": {
+      "type": "object",
+      "properties": {
+        "categorias": { "type": "array", "items": { "type": "string" } },
+        "pbv_min_t": { "type": ["number", "null"], "description": "Umbral de Peso Bruto Vehicular en toneladas." },
+        "largo_min_m": { "type": ["number", "null"] },
+        "operador_umbral": { "enum": [">", ">=", null],
+          "description": "Literalidad de la norma: '>' para 'supere', '>=' para 'igual o superior'. NO normalizar." }
+      }
+    },
+    "ambito_espacial": {
+      "type": "object",
+      "required": ["tipo"],
+      "properties": {
+        "tipo": { "enum": ["zona", "corredor", "puntos_criticos", "cantonal"] },
+        "alcance": { "enum": ["cantonal", "zona", "corredor", "enlace"],
+          "description": "Determina si la restriccion se intersecta en el plano temporal (cantonal) o elimina un trazado (corredor/enlace)." },
+        "alternativa_vial": { "enum": ["ninguna", "existe", "por_verificar"] },
+        "vias": { "type": "array", "items": {
+          "type": "object",
+          "properties": { "nombre": { "type": "string" }, "tramo": { "type": "string" } } } },
+        "descripcion": { "type": "string" }
+      }
+    },
+    "ventanas_prohibidas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["dias", "inicio", "fin"],
+        "properties": {
+          "dias": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 7 },
+            "description": "ISO-8601: 1=lunes ... 7=domingo" },
+          "inicio": { "type": "string", "pattern": "^([01]\\d|2[0-4]):[0-5]\\d$" },
+          "fin": { "type": "string", "pattern": "^([01]\\d|2[0-4]):[0-5]\\d$" }
+        }
+      }
+    },
+    "excepciones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tipo": { "type": "string" },
+          "emisor": { "type": "string" },
+          "discrecional": { "type": "boolean" },
+          "criterios_publicados": { "type": "boolean" },
+          "tasa_negacion_observada": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "sancion": { "type": "object" },
+    "verificacion": { "enum": ["primaria", "secundaria_oficial", "secundaria_prensa", "por_verificar"] },
+    "requiere_cotejo": { "type": "boolean" },
+    "fuentes": { "type": "array", "items": { "type": "string" } }
+  }
+}

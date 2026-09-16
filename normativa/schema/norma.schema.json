@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Norma",
+  "type": "object",
+  "required": [
+    "id",
+    "tipo",
+    "nivel",
+    "emisor",
+    "titulo",
+    "estado",
+    "verificacion",
+    "requiere_cotejo"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "tipo": {
+      "enum": [
+        "constitucion",
+        "tratado",
+        "ley_organica",
+        "ley_ordinaria",
+        "reglamento",
+        "decreto",
+        "acuerdo_ministerial",
+        "resolucion",
+        "ordenanza",
+        "ordenanza_distrital"
+      ]
+    },
+    "nivel": {
+      "enum": [
+        "nacional",
+        "provincial",
+        "cantonal"
+      ]
+    },
+    "rango_art425": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9,
+      "description": "Posicion en el orden jerarquico del art. 425 CRE. Ordenanza distrital=5, ordenanza municipal=7, resoluciones y acuerdos=8."
+    },
+    "canton": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "codigo_dpa": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "emisor": {
+      "type": "string"
+    },
+    "numero": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "titulo": {
+      "type": "string"
+    },
+    "publicacion": {
+      "type": "object",
+      "properties": {
+        "registro_oficial": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fecha": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$",
+          "description": "Fecha de publicacion. Se admite precision parcial: YYYY, YYYY-MM o YYYY-MM-DD. Una fecha parcial implica requiere_cotejo=true: el registro no es citable hasta completarla."
+        }
+      }
+    },
+    "estado": {
+      "enum": [
+        "vigente",
+        "vigente_con_reformas",
+        "reformado",
+        "derogada",
+        "suspendida",
+        "por_verificar"
+      ]
+    },
+    "url_fuente": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verificacion": {
+      "enum": [
+        "primaria",
+        "secundaria_oficial",
+        "secundaria_prensa",
+        "por_verificar"
+      ]
+    },
+    "requiere_cotejo": {
+      "type": "boolean"
+    },
+    "materias": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "disposiciones_clave": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "articulo",
+          "sintesis"
+        ],
+        "properties": {
+          "articulo": {
+            "type": "string"
+          },
+          "sintesis": {
+            "type": "string"
+          },
+          "relevancia": {
+            "type": "string"
+          },
+          "verificacion": {
+            "enum": [
+              "primaria",
+              "secundaria_oficial",
+              "secundaria_prensa",
+              "por_verificar"
+            ]
+          }
+        }
+      }
+    },
+    "brecha": {
+      "type": "string"
+    }
+  }
+}

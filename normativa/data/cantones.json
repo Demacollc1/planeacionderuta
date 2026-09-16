@@ -1,0 +1,58 @@
+{
+  "version_corpus": "0.1.0",
+  "universo": {
+    "gad_municipales_con_competencia_asumida": 221,
+    "fuente": "ANT - proceso de descentralizacion TTTSV",
+    "cobertura_actual_corpus": 3,
+    "nota": "Cobertura 3/221 = 1.4%. El corpus v0.1 es un prototipo de metodo, no un censo. La prioridad de expansion debe seguir el volumen de carga movida, no el tamano poblacional."
+  },
+  "cantones": [
+    {
+      "codigo_dpa": "1701",
+      "canton": "Quito",
+      "provincia": "Pichincha",
+      "regimen": "distrito_metropolitano",
+      "rango_ordenanza_art425": 5,
+      "autoridad_transito": "AMT - Agencia Metropolitana de Transito",
+      "modelo_gestion": "por_verificar",
+      "normas_en_corpus": ["OM-QUITO-147", "RES-AMT-CARGA"],
+      "restricciones_en_corpus": ["UIO-CARGA-SB-RV", "UIO-PICOPLACA"]
+    },
+    {
+      "codigo_dpa": "0901",
+      "canton": "Guayaquil",
+      "provincia": "Guayas",
+      "regimen": "municipal",
+      "rango_ordenanza_art425": 7,
+      "autoridad_transito": "ATM - Agencia de Transito y Movilidad",
+      "modelo_gestion": "por_verificar",
+      "normas_en_corpus": ["ORD-GYE-CIRCULACION"],
+      "restricciones_en_corpus": ["GYE-PUENTES-35T", "GYE-BOMBERO-AROSEMENA", "GYE-PEDRO-MENENDEZ"]
+    },
+    {
+      "codigo_dpa": "0101",
+      "canton": "Cuenca",
+      "provincia": "Azuay",
+      "regimen": "municipal",
+      "rango_ordenanza_art425": 7,
+      "autoridad_transito": "EMOV EP",
+      "modelo_gestion": "por_verificar",
+      "normas_en_corpus": ["ORD-CUE-SERT"],
+      "restricciones_en_corpus": ["CUE-CENTRO-HISTORICO"]
+    }
+  ],
+  "cola_de_ingreso": [
+    { "canton": "Ambato", "provincia": "Tungurahua", "motivo": "nodo logistico de la sierra central; existe tramite municipal de salvoconductos", "estado": "sin_datos" },
+    { "canton": "Santo Domingo", "provincia": "Sto. Domingo de los Tsachilas", "motivo": "cruce obligado Sierra-Costa", "estado": "sin_datos" },
+    { "canton": "Manta", "provincia": "Manabi", "motivo": "puerto", "estado": "sin_datos" },
+    { "canton": "Machala", "provincia": "El Oro", "motivo": "puerto y frontera sur", "estado": "sin_datos" },
+    { "canton": "Duran", "provincia": "Guayas", "motivo": "conurbacion de Guayaquil, regimen distinto", "estado": "sin_datos" },
+    { "canton": "Samborondon", "provincia": "Guayas", "motivo": "destino de los puentes con prohibicion de 24 h", "estado": "sin_datos" },
+    { "canton": "Daule", "provincia": "Guayas", "motivo": "destino de los puentes con prohibicion de 24 h", "estado": "sin_datos" },
+    { "canton": "Loja", "provincia": "Loja", "motivo": "frontera sur", "estado": "sin_datos" },
+    { "canton": "Riobamba", "provincia": "Chimborazo", "motivo": "corredor sierra", "estado": "sin_datos" },
+    { "canton": "Ibarra", "provincia": "Imbabura", "motivo": "corredor norte y frontera", "estado": "sin_datos" },
+    { "canton": "Portoviejo", "provincia": "Manabi", "motivo": "capital provincial de Manabi", "estado": "sin_datos" },
+    { "canton": "Latacunga", "provincia": "Cotopaxi", "motivo": "corredor Panamericana", "estado": "sin_datos" }
+  ]
+}

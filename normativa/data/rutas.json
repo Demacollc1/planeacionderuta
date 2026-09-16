@@ -1,0 +1,116 @@
+{
+  "version_corpus": "0.1.0",
+  "nota": "Escenarios de prueba. Cada escenario combina un perfil de vehiculo con los cantones atravesados; la herramienta selecciona las restricciones aplicables y calcula la ventana efectiva.",
+  "perfiles_vehiculo": [
+    {
+      "id": "V-TRAILER-32T",
+      "descripcion": "Cabezal con semirremolque",
+      "pbv_t": 32.0,
+      "largo_m": 16.5,
+      "categorias": [
+        "carga",
+        "carga_pesada"
+      ]
+    },
+    {
+      "id": "V-CAMION-8T",
+      "descripcion": "Camion rigido de distribucion",
+      "pbv_t": 8.0,
+      "largo_m": 8.0,
+      "categorias": [
+        "carga",
+        "carga_pesada"
+      ]
+    },
+    {
+      "id": "V-CAMION-4T",
+      "descripcion": "Camion liviano de reparto",
+      "pbv_t": 4.0,
+      "largo_m": 6.0,
+      "categorias": [
+        "carga",
+        "carga_liviana"
+      ]
+    },
+    {
+      "id": "V-FURGONETA-3T",
+      "descripcion": "Furgoneta urbana de reparto",
+      "pbv_t": 3.0,
+      "largo_m": 5.5,
+      "categorias": [
+        "carga_liviana",
+        "comercial_urbano",
+        "liviano"
+      ]
+    }
+  ],
+  "escenarios": [
+    {
+      "id": "E1",
+      "nombre": "Troncal Quito - Guayaquil - Cuenca con trailer de 32 t",
+      "perfil_vehiculo": "V-TRAILER-32T",
+      "cantones": [
+        "Quito",
+        "Guayaquil",
+        "Cuenca"
+      ],
+      "pregunta": "Que franja horaria comun le queda a un trailer que debe tocar los tres mercados principales del pais.",
+      "restricciones_vinculantes_declaradas": [
+        "UIO-CARGA-SB-RV",
+        "CUE-CENTRO-HISTORICO"
+      ],
+      "supuesto": "Se asume paso por el by-pass Simon Bolivar/Ruta Viva y entrega dentro del Centro Historico de Cuenca. Cambiar cualquiera de los dos supuestos cambia el resultado."
+    },
+    {
+      "id": "E2",
+      "nombre": "Distribucion Guayaquil - Samborondon con camion de 8 t",
+      "perfil_vehiculo": "V-CAMION-8T",
+      "cantones": [
+        "Guayaquil"
+      ],
+      "pregunta": "Puede un camion de 8 t abastecer Samborondon desde Guayaquil.",
+      "restricciones_vinculantes_declaradas": [
+        "GYE-PUENTES-35T"
+      ],
+      "supuesto": "El destino Samborondon obliga a usar los puentes: no hay trazado alternativo."
+    },
+    {
+      "id": "E3",
+      "nombre": "Reparto urbano en Quito con furgoneta de 3 t",
+      "perfil_vehiculo": "V-FURGONETA-3T",
+      "cantones": [
+        "Quito"
+      ],
+      "pregunta": "Cuanta jornada comercial util conserva un vehiculo de reparto urbano sujeto a pico y placa.",
+      "restricciones_vinculantes_declaradas": [],
+      "supuesto": "Solo aplica la restriccion de alcance cantonal."
+    },
+    {
+      "id": "E4",
+      "nombre": "Camion liviano de 4 t en los tres cantones",
+      "perfil_vehiculo": "V-CAMION-4T",
+      "cantones": [
+        "Quito",
+        "Guayaquil",
+        "Cuenca"
+      ],
+      "pregunta": "Efecto del umbral de 3.5 t sobre un vehiculo que la norma nacional no considera gran carga.",
+      "restricciones_vinculantes_declaradas": [
+        "GYE-PUENTES-35T"
+      ],
+      "supuesto": "Mismo supuesto de destino Samborondon; ademas el vehiculo de 4 t supera el umbral local de 3.5 t pese a no ser carga pesada segun la norma nacional."
+    }
+  ],
+  "jornada_comercial_referencia": {
+    "inicio": "08:00",
+    "fin": "18:00",
+    "dias": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "nota_modelo": "Una prohibicion de enlace o de corredor no reduce la ventana horaria de un canton: elimina un trazado. Solo se intersectan en el tiempo las restricciones de alcance cantonal y aquellas que el escenario declara vinculantes (enlace sin alternativa vial o zona de destino). Mezclar ambos planos produce ceros falsos."
+}

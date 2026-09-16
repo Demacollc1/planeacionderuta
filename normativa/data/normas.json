@@ -1,0 +1,359 @@
+{
+  "version_corpus": "0.1.0",
+  "normas": [
+    {
+      "id": "CRE-2008",
+      "tipo": "constitucion",
+      "nivel": "nacional",
+      "rango_art425": 1,
+      "emisor": "Asamblea Constituyente",
+      "numero": "s/n",
+      "titulo": "Constitucion de la Republica del Ecuador",
+      "publicacion": { "registro_oficial": "RO 449", "fecha": "2008-10-20" },
+      "estado": "vigente",
+      "url_fuente": "https://www.asambleanacional.gob.ec",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["competencias", "jerarquia", "sancion"],
+      "disposiciones_clave": [
+        {
+          "articulo": "264.6",
+          "sintesis": "Competencia exclusiva de los GAD municipales: planificar, regular y controlar el transito y el transporte PUBLICO dentro de su territorio cantonal.",
+          "relevancia": "La Constitucion acota el transporte a 'publico'. COOTAD 55.f lo amplia a 'transporte terrestre'. Esa asimetria es la raiz de la disputa sobre hasta donde puede un municipio regular carga privada y comercial de alcance nacional.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "425",
+          "sintesis": "Orden jerarquico de aplicacion: Constitucion; tratados; leyes organicas; leyes ordinarias; normas regionales y ordenanzas distritales; decretos y reglamentos; ordenanzas; acuerdos y resoluciones; demas actos.",
+          "relevancia": "Una ordenanza municipal (rango 7) cede ante reglamento y ley, pero una ordenanza DISTRITAL (rango 5, caso Quito) se ubica sobre decretos y reglamentos. Distinguir Quito del resto de cantones no es un detalle formal.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "76.3",
+          "sintesis": "Principio de legalidad sancionadora: nadie puede ser sancionado por acto u omision que no este tipificado como infraccion en la ley.",
+          "relevancia": "Regla R1 del motor de conflictos: una ordenanza no puede crear contravenciones de transito ni multas de transito no previstas en la LOTTTSV.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "260",
+          "sintesis": "El ejercicio de competencias exclusivas no excluye el ejercicio concurrente de la gestion en la prestacion de servicios publicos.",
+          "relevancia": "Base constitucional para una normativa conjunta nacion-municipio sin que ningun nivel pierda su competencia.",
+          "verificacion": "por_verificar"
+        }
+      ]
+    },
+    {
+      "id": "COOTAD",
+      "tipo": "ley_organica",
+      "nivel": "nacional",
+      "rango_art425": 3,
+      "emisor": "Asamblea Nacional",
+      "numero": "s/n",
+      "titulo": "Codigo Organico de Organizacion Territorial, Autonomia y Descentralizacion",
+      "publicacion": { "registro_oficial": "RO Supl. 303", "fecha": "2010-10-19" },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.competencias.gob.ec",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["competencias", "tasas", "modelos_gestion"],
+      "disposiciones_clave": [
+        {
+          "articulo": "55.f",
+          "sintesis": "Competencia exclusiva del GAD municipal: planificar, regular y controlar el transito y el transporte terrestre dentro de su circunscripcion cantonal.",
+          "relevancia": "Amplia el texto constitucional de 'transporte publico' a 'transporte terrestre'. Fundamento que los municipios invocan para regular carga.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "130",
+          "sintesis": "Ejercicio de la competencia de transito y transporte: los GAD municipales definen en su canton el modelo de gestion y pueden delegar total o parcialmente la gestion.",
+          "relevancia": "Origen de la fragmentacion institucional: AMT, ATM, EMOV EP, direcciones municipales, mancomunidades.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "566",
+          "sintesis": "Objeto y determinacion de las tasas municipales: solo por servicios efectivamente prestados y su monto guarda relacion con el costo del servicio.",
+          "relevancia": "Regla R5: una tasa por salvoconducto o permiso de circulacion sin contraprestacion medible ni estudio de costo es impugnable.",
+          "verificacion": "por_verificar"
+        }
+      ]
+    },
+    {
+      "id": "LOTTTSV",
+      "tipo": "ley_organica",
+      "nivel": "nacional",
+      "rango_art425": 3,
+      "emisor": "Asamblea Nacional",
+      "numero": "Ley s/n",
+      "titulo": "Ley Organica de Transporte Terrestre, Transito y Seguridad Vial",
+      "publicacion": { "registro_oficial": "RO Supl. 398", "fecha": "2008-08-07" },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.gob.ec/sites/default/files/regulations/2025-11/Documento_Ley_organica_transporte_terrestre_transito_seguridad_vial.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["competencias", "titulos_habilitantes", "contravenciones", "control"],
+      "disposiciones_clave": [
+        {
+          "articulo": "30.4",
+          "sintesis": "Los GAD regionales, metropolitanos y municipales, en el ambito de sus competencias, planifican, regulan y controlan el transito y el transporte en su circunscripcion, OBSERVANDO las disposiciones de caracter nacional de la ANT, e informando sobre las regulaciones locales que dicten.",
+          "relevancia": "Clave interpretativa central. La competencia municipal no es autonoma: esta subordinada a las disposiciones nacionales de la ANT y sujeta a un deber de informar. Una ordenanza que contradiga parametros tecnicos nacionales incumple el propio articulo que la habilita.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "30.5",
+          "sintesis": "Desarrollo del ejercicio de la competencia segun el nivel de gobierno; los GAD municipales tienen a su cargo planificar, regular y controlar el transito, transporte y seguridad vial en el territorio cantonal.",
+          "relevancia": "Delimita territorialmente. No habilita a regular titulos habilitantes de ambito inter-cantonal, que permanecen en la ANT.",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    },
+    {
+      "id": "LOTTTSV-REF-2025",
+      "tipo": "ley_organica",
+      "nivel": "nacional",
+      "rango_art425": 3,
+      "emisor": "Asamblea Nacional",
+      "numero": "Ley Organica Reformatoria a la LOTTTSV",
+      "titulo": "Reforma integral: seguridad vial, micromovilidad, plataformas digitales, licencias, maquinaria agricola",
+      "publicacion": { "registro_oficial": "RO 73, Tercer Suplemento", "fecha": "2025-07-03" },
+      "estado": "vigente",
+      "url_fuente": "https://www.asambleanacional.gob.ec/es/system/files/ro_11.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["micromovilidad", "licencias", "plataformas_digitales", "registro_repartidores"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Reconoce y regula a nivel nacional bicicletas, scooters y vehiculos de micromovilidad; crea el Registro Nacional de repartidores; fija responsabilidades de plataformas digitales; mantiene competencias de la ANT.",
+          "relevancia": "Es la ventana legislativa abierta: si el objetivo es una normativa conjunta, la via natural es el reglamento de esta reforma y no una ley nueva.",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    },
+    {
+      "id": "RGLTO-LOTTTSV",
+      "tipo": "reglamento",
+      "nivel": "nacional",
+      "rango_art425": 6,
+      "emisor": "Presidencia de la Republica",
+      "numero": "por_verificar",
+      "titulo": "Reglamento General para la aplicacion de la LOTTTSV",
+      "publicacion": { "registro_oficial": "por_verificar", "fecha": null },
+      "estado": "vigente_con_reformas",
+      "url_fuente": null,
+      "verificacion": "por_verificar",
+      "requiere_cotejo": true,
+      "materias": ["clases_servicio", "transporte_por_cuenta_propia", "titulos_habilitantes"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Clasificacion del servicio de transporte (publico, comercial, por cuenta propia), modalidades de carga liviana, carga pesada y mixto, y requisitos de titulos habilitantes.",
+          "relevancia": "Define si una flota propia de distribucion es 'transporte por cuenta propia' y que autorizacion requiere. Determinante para el costo regulatorio de una operacion logistica.",
+          "verificacion": "por_verificar"
+        }
+      ],
+      "brecha": "Prioridad 1 de verificacion. No se pudo acceder al texto en esta sesion."
+    },
+    {
+      "id": "CNC-006-2012",
+      "tipo": "resolucion",
+      "nivel": "nacional",
+      "rango_art425": 8,
+      "emisor": "Consejo Nacional de Competencias",
+      "numero": "006-CNC-2012",
+      "titulo": "Transferencia progresiva de la competencia de transito, transporte terrestre y seguridad vial a los GAD metropolitanos y municipales",
+      "publicacion": { "registro_oficial": "por_verificar", "fecha": "2012" },
+      "estado": "vigente_con_reformas",
+      "url_fuente": null,
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["competencias", "descentralizacion"],
+      "disposiciones_clave": []
+    },
+    {
+      "id": "CNC-003-2015",
+      "tipo": "resolucion",
+      "nivel": "nacional",
+      "rango_art425": 8,
+      "emisor": "Consejo Nacional de Competencias",
+      "numero": "0003-CNC-2015",
+      "titulo": "Asignacion de modelos de gestion A, B y C a los cantones para el ejercicio de la competencia de TTTSV",
+      "publicacion": { "registro_oficial": "RO Supl. 475", "fecha": "2015-04-08" },
+      "estado": "vigente_con_reformas",
+      "url_fuente": null,
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["modelos_gestion", "control_operativo"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Tres modelos de gestion diferenciados por necesidad territorial, experiencia y requisitos minimos de sostenibilidad. El modelo determina si el GAD ejerce control operativo con agentes civiles de transito propios o si lo mantiene la CTE/ANT.",
+          "relevancia": "El modelo de gestion es la variable que explica por que la misma infraccion se controla y se cobra distinto en dos cantones vecinos. Es el campo llave de la tabla cantones.json.",
+          "verificacion": "secundaria_oficial"
+        }
+      ],
+      "brecha": "Falta la lista oficial canton->modelo. Prioridad 2 de verificacion."
+    },
+    {
+      "id": "AM-MTOP-018-2016",
+      "tipo": "acuerdo_ministerial",
+      "nivel": "nacional",
+      "rango_art425": 8,
+      "emisor": "Ministerio de Transporte y Obras Publicas",
+      "numero": "018-2016",
+      "titulo": "Normas de aplicacion para el control de pesos y dimensiones de vehiculos de carga pesada en la red vial del pais",
+      "publicacion": { "registro_oficial": "por_verificar", "fecha": "2016" },
+      "estado": "reformado",
+      "url_fuente": "https://www.gob.ec/regulaciones/acuerdo-ministerial-nro-018-2016",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["pesos_dimensiones", "carga_pesada"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "PBV maximo 48 t en condiciones normales en carreteras y puentes; sobre la tabla nacional (tope 60 t) se requiere Certificado de Operacion Especial.",
+          "relevancia": "Parametro tecnico nacional. Cualquier limite municipal distinto sobre vias que integran la red estatal genera conflicto de competencia (regla R4).",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    },
+    {
+      "id": "AM-MTOP-032-2020",
+      "tipo": "acuerdo_ministerial",
+      "nivel": "nacional",
+      "rango_art425": 8,
+      "emisor": "Ministerio de Transporte y Obras Publicas",
+      "numero": "032-2020",
+      "titulo": "Reforma a las normas de control de pesos y dimensiones",
+      "publicacion": { "registro_oficial": "por_verificar", "fecha": "2020" },
+      "estado": "reformado",
+      "url_fuente": null,
+      "verificacion": "por_verificar",
+      "requiere_cotejo": true,
+      "materias": ["pesos_dimensiones"],
+      "disposiciones_clave": []
+    },
+    {
+      "id": "AM-MTOP-028-2022",
+      "tipo": "acuerdo_ministerial",
+      "nivel": "nacional",
+      "rango_art425": 8,
+      "emisor": "Ministerio de Transporte y Obras Publicas",
+      "numero": "028-2022",
+      "titulo": "Normas de aplicacion para el control de pesos y dimensiones a vehiculos con PBV igual o superior a 3.5 t en la red vial nacional y requisitos de documentos habilitantes de control",
+      "publicacion": { "registro_oficial": "por_verificar", "fecha": "2022" },
+      "estado": "vigente",
+      "url_fuente": "https://vlex.ec/vid/028-2022-expidense-normas-907405938",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["pesos_dimensiones", "carga_pesada", "documentos_habilitantes"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Fija en 3.5 t de PBV el umbral nacional para el control de pesos y dimensiones.",
+          "relevancia": "Referencia normativa contra la cual se mide toda definicion municipal de 'vehiculo pesado'. Cuenca y Guayaquil usan 3.5 t; otras jurisdicciones usan umbrales distintos.",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    },
+    {
+      "id": "OM-QUITO-147",
+      "tipo": "ordenanza_distrital",
+      "nivel": "cantonal",
+      "codigo_dpa": "1701",
+      "canton": "Quito",
+      "rango_art425": 5,
+      "emisor": "Concejo Metropolitano de Quito",
+      "numero": "147",
+      "titulo": "Ordenanza Metropolitana que regula la circulacion de vehiculos de transporte de carga pesada y de transporte de productos quimicos peligrosos en el DMQ",
+      "publicacion": { "registro_oficial": "gaceta_municipal", "fecha": null },
+      "estado": "vigente",
+      "url_fuente": "https://www7.quito.gob.ec/mdmq_ordenanzas/ordenanzas/ORDENANZAS%20A%C3%91OS%20ANTERIORES/ORDM-147%20-%20TRANSPORTE%20DE%20CARGA%20-%20PRODUCTOS%20QUIMICOS.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["carga_pesada", "quimicos_peligrosos", "horarios", "dimensiones", "salvoconducto"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Objeto: disminuir congestion, contaminacion y mejorar seguridad vial mediante la regulacion de dimensiones y horarios de circulacion de carga pesada y quimicos peligrosos.",
+          "relevancia": "Regula DIMENSIONES vehiculares, materia sobre la que existe norma tecnica nacional (AM-MTOP). Punto de conflicto competencial a examinar.",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    },
+    {
+      "id": "RES-AMT-CARGA",
+      "tipo": "resolucion",
+      "nivel": "cantonal",
+      "codigo_dpa": "1701",
+      "canton": "Quito",
+      "rango_art425": 8,
+      "emisor": "Agencia Metropolitana de Transito (AMT)",
+      "numero": "por_verificar",
+      "titulo": "Resolucion de implementacion de la restriccion de carga pesada en Av. Simon Bolivar y Ruta Viva y regimen de salvoconductos",
+      "publicacion": { "registro_oficial": null, "fecha": "2025-11" },
+      "estado": "vigente",
+      "url_fuente": "https://www.amt.gob.ec/index.php/informacion/carga-pesada/restriccion-circulacion/",
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true,
+      "materias": ["restriccion_circulacion", "salvoconducto"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Restriccion vigente desde 2026-01-01 (anunciada para 2025-12-01), 06h00-10h00 y 16h00-20h00, de lunes a domingo, con fase de adaptacion de 4 meses solo en franja matinal. Salvoconducto discrecional: hasta 2025-12-30 la AMT emitio 248 salvoconductos y nego 344 solicitudes (tasa de negacion 58.2%).",
+          "relevancia": "Dato duro de arbitrariedad administrativa: mas solicitudes negadas que aprobadas, sin criterio publicado de resolucion. Argumento central para exigir criterios reglados y silencio administrativo positivo.",
+          "verificacion": "secundaria_prensa"
+        }
+      ]
+    },
+    {
+      "id": "ORD-GYE-CIRCULACION",
+      "tipo": "ordenanza",
+      "nivel": "cantonal",
+      "codigo_dpa": "0901",
+      "canton": "Guayaquil",
+      "rango_art425": 7,
+      "emisor": "M.I. Concejo Cantonal de Guayaquil",
+      "numero": "por_verificar",
+      "titulo": "Ordenanza de Circulacion del Canton Guayaquil",
+      "publicacion": { "registro_oficial": "gaceta_municipal", "fecha": null },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.gob.ec/sites/default/files/regulations/2021-06/ORDENANZA%20DE%20CIRCULACION%20DEL%20CANTON%20GUAYAQUIL.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["restriccion_circulacion", "carga_pesada", "vias_prohibidas"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Prohibicion de circulacion de vehiculos pesados y extrapesados en vias determinadas; restriccion permanente (24 h) a vehiculos sobre 3.5 t en los puentes que conectan con Samborondon y Daule; restriccion horaria en Av. Del Bombero y Av. Carlos Julio Arosemena con tope de 10 m de longitud y 15 t.",
+          "relevancia": "Introduce un umbral operativo de 15 t que no existe en la norma nacional (3.5 t / 48 t). Divergencia parametrica pura.",
+          "verificacion": "secundaria_prensa"
+        }
+      ]
+    },
+    {
+      "id": "ORD-CUE-SERT",
+      "tipo": "ordenanza",
+      "nivel": "cantonal",
+      "codigo_dpa": "0101",
+      "canton": "Cuenca",
+      "rango_art425": 7,
+      "emisor": "Concejo Cantonal de Cuenca",
+      "numero": "por_verificar",
+      "titulo": "Ordenanza que regula y controla la ocupacion de las vias publicas (SERT)",
+      "publicacion": { "registro_oficial": "gaceta_municipal", "fecha": null },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.emov.gob.ec/sites/default/files/transparencia/a2.23.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": ["ocupacion_via", "carga_pesada", "centro_historico"],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Define vehiculo motorizado pesado como aquel de capacidad igual o superior a 3.5 t. El Centro Historico es area especial restringida: los vehiculos pesados solo pueden ingresar entre las 21h00 y las 06h00. Ejecuta EMOV EP.",
+          "relevancia": "Alinea el umbral con la norma nacional (3.5 t) pero fija una ventana permitida de 9 h nocturnas, disjunta del criterio de Quito y Guayaquil.",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    }
+  ]
+}

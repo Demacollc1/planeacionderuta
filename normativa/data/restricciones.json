@@ -1,0 +1,432 @@
+{
+  "version_corpus": "0.1.0",
+  "convenciones": {
+    "dias": "ISO-8601: 1=lunes ... 7=domingo",
+    "ventanas": "Se declaran las ventanas PROHIBIDAS. La ventana permitida es el complemento en el dia de 24 h.",
+    "cruce_medianoche": "Una ventana con fin < inicio cruza la medianoche y se normaliza en dos tramos.",
+    "pbv_t": "Peso Bruto Vehicular en toneladas metricas."
+  },
+  "restricciones": [
+    {
+      "id": "UIO-CARGA-SB-RV",
+      "canton": "Quito",
+      "codigo_dpa": "1701",
+      "autoridad": "AMT",
+      "norma_ids": [
+        "OM-QUITO-147",
+        "RES-AMT-CARGA"
+      ],
+      "tipo": "restriccion_circulacion",
+      "vigencia_desde": "2026-01-01",
+      "aplica_a": {
+        "categorias": [
+          "carga_pesada",
+          "productos_quimicos_peligrosos"
+        ],
+        "pbv_min_t": null,
+        "largo_min_m": null,
+        "nota_umbral": "La definicion de 'carga pesada' aplicable no fue verificada en fuente primaria. Brecha critica: sin umbral explicito, el alcance subjetivo de la norma es indeterminado.",
+        "operador_umbral": null,
+        "nota_operador": "Sin umbral numerico declarado en la fuente disponible."
+      },
+      "ambito_espacial": {
+        "tipo": "corredor",
+        "vias": [
+          {
+            "nombre": "Av. Simon Bolivar",
+            "tramo": "Curva de Santa Rosa (sur) a conexion con Panamericana Norte"
+          },
+          {
+            "nombre": "Av. Ruta Viva",
+            "tramo": "Av. Simon Bolivar (oeste) a Av. Oswaldo Guayasamin (este)"
+          }
+        ],
+        "alcance": "corredor",
+        "alternativa_vial": "por_verificar",
+        "nota_alcance": "Av. Simon Bolivar y Ruta Viva son el by-pass de facto del trafico de paso del DMQ. El desvio alternativo atraviesa el area urbana, donde rigen otras restricciones. La inevitabilidad practica debe medirse con datos de ruteo."
+      },
+      "ventanas_prohibidas": [
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "06:00",
+          "fin": "10:00"
+        },
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "16:00",
+          "fin": "20:00"
+        }
+      ],
+      "excepciones": [
+        {
+          "tipo": "salvoconducto",
+          "emisor": "AMT",
+          "discrecional": true,
+          "criterios_publicados": false,
+          "tasa_negacion_observada": 0.581
+        }
+      ],
+      "sancion": {
+        "tipo": "por_verificar",
+        "valor_usd": null,
+        "base_legal": "por_verificar"
+      },
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true,
+      "fuentes": [
+        "https://www.quitoinforma.gob.ec/2025/11/20/que-vehiculos-de-carga-tendran-restriccion-de-circulacion/",
+        "https://www.quitoinforma.gob.ec/2025/12/24/transporte-pesado-que-requiera-circular-en-la-simon-bolivar-y-ruta-viva-en-el-horario-de-restriccion-debe-obtener-un-salvoconducto/",
+        "https://www.amt.gob.ec/index.php/informacion/carga-pesada/restriccion-circulacion/"
+      ]
+    },
+    {
+      "id": "UIO-PICOPLACA",
+      "canton": "Quito",
+      "codigo_dpa": "1701",
+      "autoridad": "AMT",
+      "norma_ids": [
+        "RES-AMT-CARGA"
+      ],
+      "tipo": "restriccion_matricula",
+      "vigencia_desde": "2026-01-01",
+      "aplica_a": {
+        "categorias": [
+          "liviano",
+          "carga_liviana",
+          "comercial_urbano"
+        ],
+        "regla": "Ultimo digito de placa: lunes 1-2, martes 3-4, miercoles 5-6, jueves 7-8, viernes 9-0",
+        "exentos": [
+          "transporte_publico",
+          "comercial_rural",
+          "emergencia",
+          "electrico_cero_emisiones",
+          "discapacidad",
+          "tercera_edad",
+          "diplomatico"
+        ],
+        "operador_umbral": null,
+        "nota_operador": "Sin umbral numerico declarado en la fuente disponible."
+      },
+      "ambito_espacial": {
+        "tipo": "zona",
+        "vias": [],
+        "descripcion": "Area urbana del DMQ segun mapa oficial",
+        "alcance": "cantonal",
+        "alternativa_vial": "ninguna",
+        "nota_alcance": "Aplica al area urbana completa: no es evitable por trazado."
+      },
+      "ventanas_prohibidas": [
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "inicio": "06:00",
+          "fin": "09:30"
+        },
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "inicio": "16:00",
+          "fin": "20:00"
+        }
+      ],
+      "excepciones": [],
+      "sancion": {
+        "tipo": "multa_porcentaje_sbu",
+        "escala": [
+          {
+            "evento": "primera",
+            "pct_sbu": 0.15
+          },
+          {
+            "evento": "reincidencia",
+            "pct_sbu": 0.3
+          },
+          {
+            "evento": "segunda_reincidencia_en_adelante",
+            "pct_sbu": 0.5
+          }
+        ],
+        "base_legal": "por_verificar"
+      },
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true,
+      "fuentes": [
+        "https://www.ecuadorlegalonline.com/consultas/secretaria-movilidad-quito/horario-pico-y-placa-quito/"
+      ],
+      "nota_operativa": "La exencion cubre 'comercial rural' pero no la distribucion urbana. Una flota de reparto urbano pierde 1 de cada 5 dias habiles de operacion plena por vehiculo."
+    },
+    {
+      "id": "GYE-PUENTES-35T",
+      "canton": "Guayaquil",
+      "codigo_dpa": "0901",
+      "autoridad": "ATM",
+      "norma_ids": [
+        "ORD-GYE-CIRCULACION"
+      ],
+      "tipo": "restriccion_circulacion",
+      "vigencia_desde": null,
+      "aplica_a": {
+        "categorias": [
+          "carga"
+        ],
+        "pbv_min_t": 3.5,
+        "operador_umbral": ">",
+        "nota_operador": "Literalidad de la fuente: se usa el operador '>'. La divergencia entre 'supere' y 'igual o superior' desplaza el umbral efectivo y es en si misma un defecto de tecnica normativa."
+      },
+      "ambito_espacial": {
+        "tipo": "puntos_criticos",
+        "vias": [
+          {
+            "nombre": "Puentes de conexion Guayaquil - Samborondon y Guayaquil - Daule",
+            "tramo": "integro"
+          }
+        ],
+        "alcance": "enlace",
+        "alternativa_vial": "ninguna",
+        "nota_alcance": "No existe cruce alternativo hacia Samborondon ni Daule. Para esos destinos la prohibicion es absoluta, no diferible en el tiempo."
+      },
+      "ventanas_prohibidas": [
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "00:00",
+          "fin": "24:00"
+        }
+      ],
+      "excepciones": [],
+      "sancion": {
+        "tipo": "por_verificar",
+        "valor_usd": null,
+        "base_legal": "por_verificar"
+      },
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true,
+      "fuentes": [
+        "https://www.expreso.ec/guayaquil/que-puentes-no-puede-usar-transporte-pesado-guayaquil-y-cuanto-es-la-multa-273160.html"
+      ],
+      "nota_operativa": "Prohibicion absoluta. Ventana permitida = 0 h/dia para todo vehiculo sobre 3.5 t. El umbral coincide con el nacional de CONTROL de pesos, no con un umbral de PROHIBICION: se toma un parametro nacional de fiscalizacion y se lo convierte en barrera de acceso."
+    },
+    {
+      "id": "GYE-BOMBERO-AROSEMENA",
+      "canton": "Guayaquil",
+      "codigo_dpa": "0901",
+      "autoridad": "ATM",
+      "norma_ids": [
+        "ORD-GYE-CIRCULACION"
+      ],
+      "tipo": "restriccion_circulacion",
+      "vigencia_desde": null,
+      "aplica_a": {
+        "categorias": [
+          "carga_pesada"
+        ],
+        "pbv_min_t": 15.0,
+        "largo_min_m": 10.0,
+        "nota_umbral": "Durante la ventana restringida solo se permite circulacion, carga y descarga a vehiculos de hasta 10 m de longitud y hasta 15 t.",
+        "operador_umbral": ">",
+        "nota_operador": "Literalidad de la fuente: se usa el operador '>'. La divergencia entre 'supere' y 'igual o superior' desplaza el umbral efectivo y es en si misma un defecto de tecnica normativa."
+      },
+      "ambito_espacial": {
+        "tipo": "corredor",
+        "vias": [
+          {
+            "nombre": "Av. Del Bombero",
+            "tramo": "por_verificar"
+          },
+          {
+            "nombre": "Av. Carlos Julio Arosemena",
+            "tramo": "por_verificar"
+          }
+        ],
+        "alcance": "corredor",
+        "alternativa_vial": "existe",
+        "nota_alcance": "Existen trazados alternativos con mayor recorrido. El costo es de kilometro y tiempo, no de acceso."
+      },
+      "ventanas_prohibidas": [
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "06:00",
+          "fin": "10:00"
+        },
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "17:00",
+          "fin": "20:00"
+        }
+      ],
+      "excepciones": [],
+      "sancion": {
+        "tipo": "por_verificar",
+        "valor_usd": null,
+        "base_legal": "por_verificar"
+      },
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true,
+      "fuentes": [
+        "https://x.com/ATMGuayaquil/status/1943077263249125877"
+      ],
+      "nota_operativa": "Dias de aplicacion no confirmados; se asume L-D y se marca para cotejo. Detectada por camaras automaticas."
+    },
+    {
+      "id": "GYE-PEDRO-MENENDEZ",
+      "canton": "Guayaquil",
+      "codigo_dpa": "0901",
+      "autoridad": "ATM",
+      "norma_ids": [
+        "ORD-GYE-CIRCULACION"
+      ],
+      "tipo": "restriccion_circulacion",
+      "vigencia_desde": null,
+      "aplica_a": {
+        "categorias": [
+          "carga_pesada"
+        ],
+        "pbv_min_t": null,
+        "operador_umbral": null,
+        "nota_operador": "Sin umbral numerico declarado en la fuente disponible."
+      },
+      "ambito_espacial": {
+        "tipo": "corredor",
+        "vias": [
+          {
+            "nombre": "Av. Pedro Menendez Gilbert",
+            "tramo": "por_verificar"
+          }
+        ],
+        "alcance": "corredor",
+        "alternativa_vial": "existe",
+        "nota_alcance": "Existen trazados alternativos. Impacta el trazado, no la franja horaria."
+      },
+      "ventanas_prohibidas": [
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "00:00",
+          "fin": "24:00"
+        }
+      ],
+      "excepciones": [],
+      "sancion": {
+        "tipo": "por_verificar",
+        "valor_usd": null,
+        "base_legal": "por_verificar"
+      },
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true,
+      "fuentes": [
+        "https://www.eluniverso.com/guayaquil/comunidad/atm-recuerda-que-se-mantiene-la-prohibicion-de-ingreso-de-vehiculos-pesados-a-la-av-pedro-menendez-nota/"
+      ]
+    },
+    {
+      "id": "CUE-CENTRO-HISTORICO",
+      "canton": "Cuenca",
+      "codigo_dpa": "0101",
+      "autoridad": "EMOV EP",
+      "norma_ids": [
+        "ORD-CUE-SERT"
+      ],
+      "tipo": "restriccion_circulacion",
+      "vigencia_desde": null,
+      "aplica_a": {
+        "categorias": [
+          "carga_pesada"
+        ],
+        "pbv_min_t": 3.5,
+        "operador_umbral": ">=",
+        "nota_operador": "Literalidad de la fuente: se usa el operador '>='. La divergencia entre 'supere' y 'igual o superior' desplaza el umbral efectivo y es en si misma un defecto de tecnica normativa."
+      },
+      "ambito_espacial": {
+        "tipo": "zona",
+        "vias": [],
+        "descripcion": "Centro Historico de Cuenca, area especial restringida",
+        "alcance": "zona",
+        "alternativa_vial": "ninguna",
+        "nota_alcance": "Vinculante solo si el punto de entrega esta dentro del Centro Historico. Para transito de paso por Cuenca no aplica."
+      },
+      "ventanas_prohibidas": [
+        {
+          "dias": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "inicio": "06:00",
+          "fin": "21:00"
+        }
+      ],
+      "excepciones": [],
+      "sancion": {
+        "tipo": "por_verificar",
+        "valor_usd": null,
+        "base_legal": "por_verificar"
+      },
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "fuentes": [
+        "https://www.emov.gob.ec/sites/default/files/transparencia/a2.23.pdf"
+      ],
+      "nota_operativa": "Ventana permitida de 9 h estrictamente nocturna (21h00-06h00), incompatible con jornada laboral ordinaria de recepcion en bodega del cliente."
+    }
+  ]
+}

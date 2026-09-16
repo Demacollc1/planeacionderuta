@@ -1,0 +1,40 @@
+{
+  "version_corpus": "0.1.0",
+  "fecha_corte": "2026-09-16",
+  "nota_global": "Todo registro requiere cotejo contra texto publicado en Registro Oficial o Gaceta Municipal antes de uso litigioso o de incidencia publica. Esta sesion no tuvo acceso de red a fuentes primarias (egress bloqueado); la evidencia es de busqueda web.",
+  "parametros": [
+    {
+      "id": "SBU",
+      "descripcion": "Salario Basico Unificado, unidad de cuenta de las multas de transito",
+      "anio": 2026,
+      "valor_usd": 482.00,
+      "base_legal": "Acuerdo Ministerial MDT-2025-195",
+      "verificacion": "secundaria_prensa",
+      "requiere_cotejo": true
+    },
+    {
+      "id": "PBV_UMBRAL_PESADO_NACIONAL",
+      "descripcion": "Peso Bruto Vehicular a partir del cual aplica el control nacional de pesos y dimensiones",
+      "valor_t": 3.5,
+      "base_legal": "AM-MTOP-028-2022",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true
+    },
+    {
+      "id": "PBV_MAX_RED_ESTATAL",
+      "descripcion": "Peso Bruto Vehicular maximo en condiciones normales en red vial estatal",
+      "valor_t": 48.0,
+      "base_legal": "AM-MTOP-018-2016",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true
+    },
+    {
+      "id": "PBV_MAX_OPERACION_ESPECIAL",
+      "descripcion": "Tope de la tabla nacional; sobre este valor se requiere Certificado de Operacion Especial",
+      "valor_t": 60.0,
+      "base_legal": "AM-MTOP-018-2016 / tramite MTOP",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true
+    }
+  ]
+}
