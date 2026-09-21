@@ -36,11 +36,11 @@ De mi consideración:
 
 {{REPRESENTANTE_LEGAL}}, en calidad de {{CARGO}} y representante legal de **{{RAZON_SOCIAL}}**, con RUC {{RUC}} y domicilio en {{DOMICILIO}}, al amparo del derecho de petición reconocido en el artículo 66, numeral 23, de la Constitución de la República, comparezco ante usted para formular la siguiente consulta.
 
-## I. Antecedentes de hecho
+## I. Objeto de la consulta y supuesto de hecho
 
 1. **{{RAZON_SOCIAL}}** se dedica a {{ACTIVIDAD_ECONOMICA}}, actividad registrada en el Registro Único de Contribuyentes. Dentro de esa actividad traslada mercadería de su propiedad hacia sus clientes, con vehículos de su propio parque automotor.
 
-2. En cada operación concurren las siguientes circunstancias, acreditables documentalmente:
+2. La presente consulta se formula sobre el siguiente **supuesto de hecho**, que corresponde al modelo operativo ordinario de la compañía:
 
    a) los vehículos están matriculados a nombre de **{{RAZON_SOCIAL}}**;
 
@@ -50,11 +50,11 @@ De mi consideración:
 
    d) **no se percibe contraprestación económica alguna por el transporte**, ni de los destinatarios ni de terceros.
 
-3. En controles realizados en la provincia del Guayas, agentes de la Comisión de Tránsito del Ecuador y de agencias municipales de tránsito han requerido a nuestros conductores la presentación de **permiso de operación** y de **autorización de operación por cuenta propia**, advirtiendo que su falta daría lugar a la retención del vehículo. En cada caso se exhibió la matrícula, las guías de remisión y las facturas, acreditando lo señalado en el numeral anterior.
+3. En controles realizados en la provincia del Guayas, agentes de la Comisión de Tránsito del Ecuador y de agencias municipales de tránsito han requerido a nuestros conductores la presentación de **permiso de operación** y de **autorización de operación por cuenta propia**, advirtiendo que su falta daría lugar a la retención del vehículo.
 
 4. Respecto de vehículos livianos tipo camioneta provistos de cajón para el traslado de mercadería, se ha advertido a nuestros conductores que el campo **"Tipo"** de la matrícula debería consignar la leyenda **"Camioneta Reparto"**, y que su ausencia constituiría causal de retención del vehículo y de multa equivalente a **dos remuneraciones básicas unificadas**.
 
-5. Estos requerimientos han ocasionado detenciones de unidades y demoras en la distribución.
+5. La presente comunicación **no versa sobre un procedimiento administrativo en curso ni sobre una actuación concreta determinada**. Su objeto es obtener el criterio institucional sobre el régimen jurídico aplicable al supuesto descrito, a fin de ajustar la operación de la compañía a la norma y de contribuir a la uniformidad del criterio de control.
 
 ## II. Disposiciones cuya interpretación motiva la consulta
 
@@ -117,11 +117,8 @@ Solicito a usted se sirva absolver, con criterio institucional expreso y por esc
 ## IV. Documentos que se acompañan
 
 1. Nombramiento del representante legal y RUC de la compañía.
-2. Copia de matrículas de {{NUMERO}} unidades del parque automotor.
-3. Guías de remisión y facturas de muestra correspondientes a {{PERIODO}}.
-4. Registro de eventos de control: {{NUMERO_EVENTOS}} detenciones documentadas entre {{PERIODO_EVENTOS}}, con fecha, lugar, entidad, unidad y requerimiento formulado.
-5. Copia del Oficio Nro. ANT-ANT-2022-0602-OF de 14 de junio de 2022.
-6. {{OTROS_SI_APLICA}}
+2. Copia del Oficio Nro. ANT-ANT-2022-0602-OF de 14 de junio de 2022.
+3. {{OTROS_SI_APLICA}}
 
 ## V. Notificaciones
 
@@ -168,7 +165,4 @@ agente de control no sirve de nada. El artículo 30.4 es el fundamento para pedi
 a los GAD, porque es la norma que subordina el ejercicio de su competencia a las disposiciones
 nacionales de la ANT.
 
-**El anexo 4 es el que da peso al oficio.** Sin el registro de eventos, el oficio es una consulta
-abstracta. Con él, es una consulta respaldada por un patrón documentado. Si aún no existe esa
-bitácora, conviene levantarla antes de enviar: fecha, hora, lugar, entidad, identificación del
-agente, unidad, requerimiento y duración de la demora.
+**El registro de eventos se retiró de los anexos** para mantener el carácter de consulta general. Si en algún momento se decide convertir esto en un reclamo por la actuación de los agentes, ese registro —fecha, hora, lugar, entidad, identificación del agente, unidad, requerimiento y demora— vuelve a ser la pieza central. Conviene levantarlo igual, aunque no se adjunte.

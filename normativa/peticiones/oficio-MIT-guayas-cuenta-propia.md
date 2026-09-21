@@ -28,11 +28,11 @@ De mi consideración:
 
 {{REPRESENTANTE_LEGAL}}, en calidad de {{CARGO}} y representante legal de **{{RAZON_SOCIAL}}**, con RUC {{RUC}} y domicilio en {{DOMICILIO}}, al amparo del derecho de petición reconocido en el artículo 66, numeral 23, de la Constitución de la República, comparezco respetuosamente ante usted para formular la siguiente consulta.
 
-## I. Antecedentes de hecho
+## I. Objeto de la consulta y supuesto de hecho
 
 1. **{{RAZON_SOCIAL}}** es una compañía dedicada a {{ACTIVIDAD_ECONOMICA}}, actividad registrada en el Registro Único de Contribuyentes. Dentro de esa actividad, la compañía traslada mercadería de su propiedad hacia sus clientes mediante vehículos de su propio parque automotor.
 
-2. En dichos traslados concurren las siguientes circunstancias, verificables documentalmente en cada operación:
+2. La presente consulta se formula sobre el siguiente **supuesto de hecho**, que corresponde al modelo operativo ordinario de la compañía:
 
    a) los vehículos se encuentran matriculados a nombre de **{{RAZON_SOCIAL}}**;
 
@@ -44,11 +44,9 @@ De mi consideración:
 
 3. En controles de tránsito realizados en la provincia del Guayas —tanto en operativos como en detenciones en vía— agentes de la Comisión de Tránsito del Ecuador y agentes de agencias municipales de tránsito han requerido a nuestros conductores la presentación de **permiso de operación**, **certificado de pesos y dimensiones** y **autorización de operación por cuenta propia**, advirtiendo que su falta daría lugar a la retención del vehículo.
 
-4. En cada uno de esos controles se ha exhibido a los agentes la matrícula del vehículo, las guías de remisión y las facturas, acreditando las circunstancias descritas en el numeral 2.
+4. Respecto de vehículos livianos tipo camioneta provistos de cajón para el traslado de mercadería, se ha advertido a nuestros conductores que el campo **"Tipo"** de la matrícula debería consignar la leyenda **"Camioneta Reparto"**, y que su ausencia constituiría causal de retención del vehículo y de imposición de una multa equivalente a **dos remuneraciones básicas unificadas**.
 
-5. Adicionalmente, respecto de vehículos livianos tipo camioneta provistos de cajón para el traslado de mercadería, se ha advertido a nuestros conductores que el campo **"Tipo"** de la matrícula debería consignar la leyenda **"Camioneta Reparto"**, y que su ausencia constituiría causal de retención del vehículo y de imposición de una multa equivalente a **dos remuneraciones básicas unificadas**.
-
-6. Estos requerimientos han generado detenciones de unidades y demoras en la cadena de distribución, con la consiguiente afectación al abastecimiento de nuestros clientes.
+5. La presente comunicación **no versa sobre un procedimiento administrativo en curso ni sobre una actuación concreta determinada**. Su objeto es obtener el criterio institucional sobre el régimen jurídico aplicable al supuesto descrito, a fin de ajustar la operación de la compañía a la norma y de contribuir a la uniformidad del criterio de control.
 
 ## II. Marco normativo que motiva la consulta
 
@@ -105,11 +103,9 @@ Con ese antecedente, solicito a usted se sirva absolver, con criterio institucio
 ## IV. Documentos que se acompañan
 
 1. Nombramiento del representante legal y RUC de la compañía.
-2. Copia de matrículas de {{NUMERO}} unidades del parque automotor.
-3. Guías de remisión y facturas de muestra correspondientes a {{PERIODO}}.
-4. Copia del Oficio Nro. ANT-ANT-2022-0602-OF de 14 de junio de 2022.
-5. Copia de la Resolución Nro. 006-DIR-2022-ANT.
-6. {{OTROS_SI_APLICA}}
+2. Copia del Oficio Nro. ANT-ANT-2022-0602-OF de 14 de junio de 2022.
+3. Copia de la Resolución Nro. 006-DIR-2022-ANT.
+4. {{OTROS_SI_APLICA}}
 
 ## V. Notificaciones
 
