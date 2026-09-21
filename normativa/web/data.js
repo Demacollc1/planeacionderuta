@@ -164,6 +164,24 @@ window.CORPUS = {
       "sintesis": "Compete a la ANT otorgar: contratos de operacion de transporte publico de personas o bienes en los ambitos interprovincial, intraprovincial e internacional; PERMISOS DE OPERACION de servicios de transporte COMERCIAL para todos los ambitos EXCEPTO el intracantonal; y autorizaciones de operacion para transporte por cuenta propia de personas en todos los ambitos.",
       "relevancia": "Articulo operativo. Permiso de operacion de carga pesada intercantonal o interprovincial lo da la ANT; el intracantonal lo da el GAD. Nota critica: el texto localizado dice autorizaciones por cuenta propia 'de personas'; no aclara el regimen de la autorizacion por cuenta propia de BIENES, que es el caso de una flota de distribucion. Cotejar el literal vigente.",
       "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "75",
+      "sintesis": "La vigencia de los titulos habilitantes de transporte terrestre es de DIEZ (10) anios, renovables conforme al procedimiento que establezca la ANT o los GAD, segun el caso.",
+      "relevancia": "Plazo de la autorizacion por cuenta propia. Es un titulo de largo plazo, no un tramite anual.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "76",
+      "sintesis": "Contrato de operacion: titulo habilitante para el servicio de transporte PUBLICO de personas o bienes, que ademas confiere el uso de rutas, frecuencias y vias publicas.",
+      "relevancia": "Contrasta con la autorizacion por cuenta propia, que no otorga rutas ni frecuencias: quien transporta lo propio no obtiene derecho de via alguno.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "74 / competencia GAD",
+      "sintesis": "Los GAD que asumieron la competencia otorgan los titulos habilitantes de ambito INTRACANTONAL, incluidos los de transporte publico intracantonal y los de POR CUENTA PROPIA intracantonal. La ANT conserva los demas ambitos.",
+      "relevancia": "Una flota que opera solo dentro de un canton se autoriza ante el GAD; si cruza limites cantonales, ante la ANT. Dos ventanillas distintas para la misma flota segun el radio de reparto.",
+      "verificacion": "secundaria_oficial"
      }
     ]
    },
@@ -524,6 +542,24 @@ window.CORPUS = {
       "sintesis": "Desarrolla la autorizacion de transporte por cuenta propia. PROHIBE prestar mediante esa autorizacion servicios de transporte publico o comercial: turismo, carga pesada, carga liviana, carga mixta, escolar e institucional, tricimotos y taxis. Exige que los vehiculos consten en el patrimonio del titular y esten matriculados a su nombre.",
       "relevancia": "Traza la linea practica: con autorizacion por cuenta propia se mueve carga PROPIA; en el momento en que se transporta carga de un tercero por precio se necesita permiso de operacion de transporte comercial. Un vehiculo arrendado o matriculado a nombre de otro no cumple el requisito patrimonial.",
       "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "por_indexar",
+      "sintesis": "La autorizacion de operacion por cuenta propia se otorga a persona NATURAL o JURIDICA, con requisitos diferenciados: natural (cedula, papeleta de votacion, RUC); juridica (ademas, nombramiento del representante legal y escritura de constitucion legalizada e inscrita).",
+      "relevancia": "Contradice la lectura literal del art. 72 LOTTTSV. Ver hallazgo H-CUENTAPROPIA-SUJETO.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "por_indexar",
+      "sintesis": "Cada vehiculo requiere HABILITACION VEHICULAR individual dentro de la autorizacion: el titulo no cubre automaticamente a la flota.",
+      "relevancia": "Consecuencia operativa: incorporar o dar de baja un camion es un tramite por unidad, no una actualizacion global del titulo.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "por_indexar",
+      "sintesis": "Prestar servicio publico o comercial mediante la autorizacion por cuenta propia acarrea SUSPENSION o REVOCATORIA de la autorizacion.",
+      "relevancia": "El riesgo no es una multa de transito sino perder el titulo, y con el la posibilidad de circular la flota.",
+      "verificacion": "secundaria_oficial"
      }
     ],
     "brecha": "Numero de Registro Oficial y reformas posteriores sin cotejar. Verificar tambien si la reforma de 2025 a la LOTTTSV lo afecta."
@@ -615,6 +651,29 @@ window.CORPUS = {
     ],
     "disposiciones_clave": [],
     "brecha": "PRIORIDAD ALTA. Se sabe que derogo el 028-2022, no que regimen dejo en su lugar ni si sigue vigente."
+   },
+   {
+    "id": "RES-ANT-86-CUENTA-PROPIA",
+    "tipo": "resolucion",
+    "nivel": "nacional",
+    "rango_art425": 8,
+    "emisor": "Agencia Nacional de Transito",
+    "numero": "86 (por confirmar)",
+    "titulo": "Reglamento de Transporte por Cuenta Propia — posible instrumento sucesor de la Resolucion 078-DIR-2017-ANT",
+    "publicacion": {
+     "registro_oficial": "por_verificar",
+     "fecha": null
+    },
+    "estado": "por_verificar",
+    "url_fuente": null,
+    "verificacion": "por_verificar",
+    "requiere_cotejo": true,
+    "materias": [
+     "titulos_habilitantes",
+     "transporte_por_cuenta_propia"
+    ],
+    "disposiciones_clave": [],
+    "brecha": "Aparece en repositorios academicos una 'Resolucion ANT 86' con el mismo titulo que la 078-DIR-2017. No se pudo establecer si la reforma, la sustituye o coexiste. Misma patologia que la cadena de acuerdos de pesos y dimensiones: ver H-PESOS-CADENA."
    }
   ],
   "hallazgos_transversales": [
@@ -625,6 +684,22 @@ window.CORPUS = {
     "descripcion": "Sobre la misma materia coexisten en fuentes institucionales las referencias 018-2016, 032-2020, 028-2022 y 033-2022, sin una consolidacion que indique cual rige. Paginas del propio ministerio siguen citando el 018 y el 032 despues de 2022, y el 028 fue derogado por el 033.",
     "implicacion": "El operador no puede saber con certeza que parametros lo obligan. El deficit de consolidacion normativa no es solo municipal: se reproduce en el nivel nacional, sobre el parametro tecnico mas basico de la operacion de carga. Refuerza la tesis de fragmentacion y debilita el reproche exclusivo a los GAD.",
     "accion": "Numeral 1 de peticiones/plantilla-mtop.md: pedir cual de los acuerdos esta vigente y en que parte."
+   },
+   {
+    "id": "H-CUENTAPROPIA-SUJETO",
+    "titulo": "Contradiccion sobre quien puede ser titular de una autorizacion por cuenta propia",
+    "fecha": "2026-09-21",
+    "descripcion": "El art. 72 de la LOTTTSV dispone que los titulos habilitantes —entre ellos la autorizacion— 'se otorgaran a las PERSONAS JURIDICAS domiciliadas en el Ecuador'. El art. 58, en cambio, define el transporte por cuenta propia por referencia a las actividades comerciales exclusivas de las personas NATURALES y/o juridicas. El Reglamento de Transporte por Cuenta Propia y los tramites publicados de la ANT admiten expresamente a personas naturales, con requisitos diferenciados (cedula, papeleta, RUC).",
+    "implicacion": "La practica administrativa contradice el texto del art. 72, o bien el art. 72 debe leerse referido solo a contratos y permisos de operacion. Afecta a quien decide si constituir sociedad para autorizar su flota.",
+    "accion": "Incluir como consulta expresa en la peticion a la ANT."
+   },
+   {
+    "id": "H-CUENTAPROPIA-BIENES",
+    "titulo": "El regimen de la autorizacion por cuenta propia de BIENES no esta claramente establecido",
+    "fecha": "2026-09-21",
+    "descripcion": "El art. 58 de la LOTTTSV incluye expresamente 'personas o bienes'. Pero el art. 74, al enumerar lo que compete otorgar a la ANT, menciona 'autorizaciones de operacion para el servicio de transporte por cuenta propia DE PERSONAS para todos los ambitos', sin nombrar bienes. Varias fichas de tramite de la ANT repiten la formula 'movilizacion de personas'.",
+    "implicacion": "Es el caso exacto de una flota de distribucion que mueve mercaderia propia. El vacio deja sin certeza cual es el titulo aplicable y ante quien se tramita. Es la consulta de mayor valor practico del expediente.",
+    "accion": "Numeral 4 de peticiones/plantilla-ant.md: pedir criterio institucional expreso."
    }
   ]
  },
