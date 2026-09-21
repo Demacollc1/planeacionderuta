@@ -296,7 +296,7 @@
         "registro_oficial": "por_verificar",
         "fecha": "2016"
       },
-      "estado": "reformado",
+      "estado": "reformada",
       "url_fuente": "https://www.gob.ec/regulaciones/acuerdo-ministerial-nro-018-2016",
       "verificacion": "secundaria_oficial",
       "requiere_cotejo": true,
@@ -325,7 +325,7 @@
         "registro_oficial": "por_verificar",
         "fecha": "2020"
       },
-      "estado": "reformado",
+      "estado": "reformada",
       "url_fuente": null,
       "verificacion": "por_verificar",
       "requiere_cotejo": true,
@@ -346,7 +346,7 @@
         "registro_oficial": "por_verificar",
         "fecha": "2022"
       },
-      "estado": "vigente",
+      "estado": "derogada",
       "url_fuente": "https://vlex.ec/vid/028-2022-expidense-normas-907405938",
       "verificacion": "secundaria_oficial",
       "requiere_cotejo": true,
@@ -359,10 +359,11 @@
         {
           "articulo": "por_indexar",
           "sintesis": "Fija en 3.5 t de PBV el umbral nacional para el control de pesos y dimensiones.",
-          "relevancia": "Referencia normativa contra la cual se mide toda definicion municipal de 'vehiculo pesado'. Cuenca y Guayaquil usan 3.5 t; otras jurisdicciones usan umbrales distintos.",
+          "relevancia": "Fijo en 3.5 t el umbral nacional de control. Norma derogada: citar el Decreto Ejecutivo 1137 y el acuerdo ministerial vigente, no este.",
           "verificacion": "secundaria_oficial"
         }
-      ]
+      ],
+      "brecha": "DEROGADO por el Acuerdo Ministerial 033-2022. El corpus lo registraba como vigente: correccion del 2026-09-21. El umbral de 3.5 t que se le atribuia sigue siendo el parametro nacional, pero su fundamento vigente es el Decreto Ejecutivo 1137, no este acuerdo."
     },
     {
       "id": "OM-QUITO-147",
@@ -523,6 +524,104 @@
         }
       ],
       "brecha": "Numero de Registro Oficial y reformas posteriores sin cotejar. Verificar tambien si la reforma de 2025 a la LOTTTSV lo afecta."
+    },
+    {
+      "id": "LEY-CAMINOS",
+      "tipo": "ley_ordinaria",
+      "nivel": "nacional",
+      "rango_art425": 4,
+      "emisor": "Funcion Legislativa",
+      "numero": "s/n",
+      "titulo": "Ley de Caminos",
+      "publicacion": {
+        "registro_oficial": "por_verificar",
+        "fecha": null
+      },
+      "estado": "vigente_con_reformas",
+      "url_fuente": null,
+      "verificacion": "por_verificar",
+      "requiere_cotejo": true,
+      "materias": [
+        "pesos_dimensiones",
+        "uso_y_conservacion_de_vias"
+      ],
+      "disposiciones_clave": [],
+      "brecha": "Base legal de la que cuelga el Reglamento de Pesos y Dimensiones. Sin numero ni RO localizados."
+    },
+    {
+      "id": "DE-1137-2012",
+      "tipo": "decreto",
+      "nivel": "nacional",
+      "rango_art425": 6,
+      "emisor": "Presidencia de la Republica",
+      "numero": "Decreto Ejecutivo 1137",
+      "titulo": "Reforma a los Capitulos IV y V del Reglamento a la Ley de Caminos: Uso y Conservacion de Caminos Publicos, y Pesos y Dimensiones",
+      "publicacion": {
+        "registro_oficial": "RO 717 (candidato, sin confirmar)",
+        "fecha": "2012"
+      },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.mit.gob.ec/wp-content/uploads/downloads/2016/08/STT_B_Decreto-Ejecutivo_1137_2012_Reglamento-Pesos-y-Dimensiones.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": [
+        "pesos_dimensiones",
+        "documentos_habilitantes",
+        "responsabilidad_solidaria"
+      ],
+      "disposiciones_clave": [
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Objeto: regular y controlar la conservacion de la infraestructura vial nacional mediante procedimientos de control de pesos y dimensiones a vehiculos de carga y unidades de arrastre con PBV igual o superior a 3.5 t, y los procedimientos de circulacion mediante la emision de documentos habilitantes para el transporte de todo tipo de mercancias.",
+          "relevancia": "ESTE es el instrumento de rango reglamentario que hace obligatorios los pesos y dimensiones. Los acuerdos ministeriales solo expiden las normas de aplicacion y la tabla; la obligacion nace aqui.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Los vehiculos y unidades de carga que circulan por la Red Vial Estatal deben ingresar OBLIGATORIAMENTE a los puntos de control de pesos y dimensiones.",
+          "relevancia": "La obligacion no es solo no exceder el peso: es someterse al control. Eludir una bascula es por si mismo un incumplimiento.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "por_indexar",
+          "sintesis": "Cuando existan varios obligados —propietario del vehiculo, transportista y/o GENERADOR DE CARGA— todos responden SOLIDARIAMENTE por el pago de la multa y por los danos causados, distribuidos equitativamente.",
+          "relevancia": "Consecuencia directa para un distribuidor: como generador de carga responde aunque el camion sea de un tercero contratado. Tercerizar el flete no traslada la responsabilidad por exceso de peso.",
+          "verificacion": "secundaria_oficial"
+        }
+      ],
+      "brecha": "Discrepancia de fechas entre fuentes (19-abr-2012 y 11-oct-2012) y RO sin confirmar. Cotejar."
+    },
+    {
+      "id": "AM-MTOP-033-2022",
+      "tipo": "acuerdo_ministerial",
+      "nivel": "nacional",
+      "rango_art425": 8,
+      "emisor": "Ministerio de Transporte y Obras Publicas",
+      "numero": "033-2022",
+      "titulo": "Acuerdo que deroga el Acuerdo Ministerial 028-2022 sobre control de pesos y dimensiones",
+      "publicacion": {
+        "registro_oficial": "por_verificar",
+        "fecha": "2022"
+      },
+      "estado": "por_verificar",
+      "url_fuente": null,
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": [
+        "pesos_dimensiones"
+      ],
+      "disposiciones_clave": [],
+      "brecha": "PRIORIDAD ALTA. Se sabe que derogo el 028-2022, no que regimen dejo en su lugar ni si sigue vigente."
+    }
+  ],
+  "hallazgos_transversales": [
+    {
+      "id": "H-PESOS-CADENA",
+      "titulo": "La norma vigente de pesos y dimensiones no es determinable desde fuentes oficiales",
+      "fecha": "2026-09-21",
+      "descripcion": "Sobre la misma materia coexisten en fuentes institucionales las referencias 018-2016, 032-2020, 028-2022 y 033-2022, sin una consolidacion que indique cual rige. Paginas del propio ministerio siguen citando el 018 y el 032 despues de 2022, y el 028 fue derogado por el 033.",
+      "implicacion": "El operador no puede saber con certeza que parametros lo obligan. El deficit de consolidacion normativa no es solo municipal: se reproduce en el nivel nacional, sobre el parametro tecnico mas basico de la operacion de carga. Refuerza la tesis de fragmentacion y debilita el reproche exclusivo a los GAD.",
+      "accion": "Numeral 1 de peticiones/plantilla-mtop.md: pedir cual de los acuerdos esta vigente y en que parte."
     }
   ]
 }

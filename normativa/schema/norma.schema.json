@@ -91,11 +91,12 @@
       "enum": [
         "vigente",
         "vigente_con_reformas",
-        "reformado",
+        "reformada",
         "derogada",
         "suspendida",
         "por_verificar"
-      ]
+      ],
+      "description": "Estado de vigencia. Formas femeninas por consistencia ('la norma'), cualquiera sea el genero del instrumento concreto."
     },
     "url_fuente": {
       "type": [

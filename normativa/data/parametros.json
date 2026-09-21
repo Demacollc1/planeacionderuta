@@ -7,7 +7,7 @@
       "id": "SBU",
       "descripcion": "Salario Basico Unificado, unidad de cuenta de las multas de transito",
       "anio": 2026,
-      "valor_usd": 482.00,
+      "valor_usd": 482.0,
       "base_legal": "Acuerdo Ministerial MDT-2025-195",
       "verificacion": "secundaria_prensa",
       "requiere_cotejo": true
@@ -16,9 +16,10 @@
       "id": "PBV_UMBRAL_PESADO_NACIONAL",
       "descripcion": "Peso Bruto Vehicular a partir del cual aplica el control nacional de pesos y dimensiones",
       "valor_t": 3.5,
-      "base_legal": "AM-MTOP-028-2022",
+      "base_legal": "DE-1137-2012 (Reglamento a la Ley de Caminos, cap. V)",
       "verificacion": "secundaria_oficial",
-      "requiere_cotejo": true
+      "requiere_cotejo": true,
+      "nota": "El umbral de 3.5 t consta en el Decreto Ejecutivo 1137 y se repetia en el AM 028-2022, hoy derogado. Citar el decreto, no el acuerdo derogado."
     },
     {
       "id": "PBV_MAX_RED_ESTATAL",
@@ -26,7 +27,8 @@
       "valor_t": 48.0,
       "base_legal": "AM-MTOP-018-2016",
       "verificacion": "secundaria_oficial",
-      "requiere_cotejo": true
+      "requiere_cotejo": true,
+      "nota": "Valor atribuido al AM 018-2016. Cadena de acuerdos sin consolidar: ver hallazgo H-PESOS-CADENA en normas.json antes de citarlo."
     },
     {
       "id": "PBV_MAX_OPERACION_ESPECIAL",
@@ -34,7 +36,8 @@
       "valor_t": 60.0,
       "base_legal": "AM-MTOP-018-2016 / tramite MTOP",
       "verificacion": "secundaria_oficial",
-      "requiere_cotejo": true
+      "requiere_cotejo": true,
+      "nota": "Valor atribuido al AM 018-2016. Cadena de acuerdos sin consolidar: ver hallazgo H-PESOS-CADENA en normas.json antes de citarlo."
     }
   ]
 }
