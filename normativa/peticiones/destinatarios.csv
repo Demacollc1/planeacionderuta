@@ -1,9 +1,9 @@
 id,tipo,entidad,canton,plantilla,fecha_envio,canal,numero_tramite,fecha_respuesta,estado,completitud,observacion
 D00,nacional_desconcentrado,MIT - Direccion Distrital de Guayas (Fernando Stay Medina),Guayaquil,oficio-MIT-guayas-cuenta-propia.md,,,,,pendiente_envio,,"Consulta tecnica neutra. 10 consultas cerradas. La n.3 pregunta si el MIT cumplio la instruccion del Oficio ANT-2022-0602-OF, dirigido a la Zonal 5."
-D01,nacional,Agencia Nacional de Tránsito,,plantilla-ant.md,2026-09-16,,,2026-09-24,respondido,,Pedido de mayor rendimiento del paquete
-D02,nacional,Ministerio de Transporte y Obras Públicas,,plantilla-mtop.md,2026-09-16,,,,pendiente_envio,,
-D03,nacional,Consejo Nacional de Competencias,,plantilla-cnc.md,2026-09-16,,,,pendiente_envio,,Cierra la brecha P6: lista cantón-modelo de gestión
-D04,cantonal,GAD DM de Quito,Quito,plantilla-gad-municipal.md,2026-09-16,,,,pendiente_envio,,Umbral de carga pesada de la OM 147 y criterios de salvoconducto AMT
+D01,nacional,Agencia Nacional de Tránsito,,plantilla-ant.md,,,,,pendiente_envio,,Pedido de mayor rendimiento del paquete
+D02,nacional,Ministerio de Transporte y Obras Públicas,,plantilla-mtop.md,,,,,pendiente_envio,,
+D03,nacional,Consejo Nacional de Competencias,,plantilla-cnc.md,,,,,pendiente_envio,,Cierra la brecha P6: lista cantón-modelo de gestión
+D04,cantonal,GAD DM de Quito,Quito,plantilla-gad-municipal.md,,,,,pendiente_envio,,Umbral de carga pesada de la OM 147 y criterios de salvoconducto AMT
 D05,cantonal,GAD Municipal de Guayaquil,Guayaquil,plantilla-gad-municipal.md,,,,,pendiente_envio,,Sustento técnico del umbral de 15 t y de la prohibición de 24 h en puentes
 D06,cantonal,GAD Municipal de Cuenca,Cuenca,plantilla-gad-municipal.md,,,,,pendiente_envio,,
 D07,cantonal,GAD Municipal de Ambato,Ambato,plantilla-gad-municipal.md,,,,,pendiente_envio,,
