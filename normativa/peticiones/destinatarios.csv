@@ -1,6 +1,7 @@
 id,tipo,entidad,canton,plantilla,fecha_envio,canal,numero_tramite,fecha_respuesta,estado,completitud,observacion
 D00,nacional_desconcentrado,MIT - Direccion Distrital de Guayas (Fernando Stay Medina),Guayaquil,oficio-MIT-guayas-cuenta-propia.md,,,,,pendiente_envio,,"Consulta tecnica neutra. 10 consultas cerradas. La n.3 pregunta si el MIT cumplio la instruccion del Oficio ANT-2022-0602-OF, dirigido a la Zonal 5."
 D00B,nacional,ANT - Direccion Ejecutiva (consulta cuenta propia de bienes),,oficio-ANT-cuenta-propia-bienes.md,,,,,pendiente_envio,,Oficio de mayor valor del expediente. 13 consultas cerradas. La 4 y la 5 preguntan por omisiones propias de la ANT; la 13 pide que el criterio se comunique a CTE y ATM por el art. 30.4.
+D00C,nacional,MIT - Subsecretaria de Transporte Terrestre y Ferroviario (remolques livianos),,oficio-MIT-remolques-livianos.md,,,,,pendiente_envio,,"Remolques de 1.5 t PBV, bajo el umbral de 3.5 t. La consulta 3 decide el caso: si el umbral se mide por unidad o por el conjunto tractor+remolque."
 D01,nacional,Agencia Nacional de Tránsito,,plantilla-ant.md,,,,,pendiente_envio,,Pedido de mayor rendimiento del paquete
 D02,nacional,Ministerio de Transporte y Obras Públicas,,plantilla-mtop.md,,,,,pendiente_envio,,
 D03,nacional,Consejo Nacional de Competencias,,plantilla-cnc.md,,,,,pendiente_envio,,Cierra la brecha P6: lista cantón-modelo de gestión

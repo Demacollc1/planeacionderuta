@@ -571,10 +571,10 @@
       "numero": "s/n",
       "titulo": "Ley de Caminos",
       "publicacion": {
-        "registro_oficial": "por_verificar",
-        "fecha": null
+        "registro_oficial": "RO 285",
+        "fecha": "1964-07-07"
       },
-      "estado": "vigente_con_reformas",
+      "estado": "derogada",
       "url_fuente": null,
       "verificacion": "por_verificar",
       "requiere_cotejo": true,
@@ -583,7 +583,7 @@
         "uso_y_conservacion_de_vias"
       ],
       "disposiciones_clave": [],
-      "brecha": "Base legal de la que cuelga el Reglamento de Pesos y Dimensiones. Sin numero ni RO localizados."
+      "brecha": "DEROGADA por la Ley Organica del Sistema Nacional de Infraestructura Vial del Transporte Terrestre. Correccion del 2026-09-21: el corpus la registraba como vigente y como base del regimen de pesos y dimensiones."
     },
     {
       "id": "DE-1137-2012",
@@ -597,7 +597,7 @@
         "registro_oficial": "RO 717 (candidato, sin confirmar)",
         "fecha": "2012"
       },
-      "estado": "vigente_con_reformas",
+      "estado": "derogada",
       "url_fuente": "https://www.mit.gob.ec/wp-content/uploads/downloads/2016/08/STT_B_Decreto-Ejecutivo_1137_2012_Reglamento-Pesos-y-Dimensiones.pdf",
       "verificacion": "secundaria_oficial",
       "requiere_cotejo": true,
@@ -626,7 +626,7 @@
           "verificacion": "secundaria_oficial"
         }
       ],
-      "brecha": "Discrepancia de fechas entre fuentes (19-abr-2012 y 11-oct-2012) y RO sin confirmar. Cotejar."
+      "brecha": "Reformaba el Reglamento a la Ley de Caminos, hoy derogada. Su contenido fue reemplazado por el Reglamento a la LOSNIVTT (Decreto 436). Las reglas que recogia —umbral de 3.5 t, ingreso obligatorio a puntos de control, responsabilidad solidaria del generador de carga— deben re-verificarse en el nuevo reglamento antes de citarse."
     },
     {
       "id": "AM-MTOP-033-2022",
@@ -794,6 +794,102 @@
         }
       ],
       "nota_procedencia": "Documento aportado por el usuario. Es un acto administrativo, no una norma: obliga al MTOP como destinatario y expresa el criterio de la ANT, pero no tiene rango normativo."
+    },
+    {
+      "id": "LOSNIVTT",
+      "tipo": "ley_organica",
+      "nivel": "nacional",
+      "rango_art425": 3,
+      "emisor": "Asamblea Nacional",
+      "numero": "Ley 0",
+      "titulo": "Ley Organica del Sistema Nacional de Infraestructura Vial del Transporte Terrestre",
+      "publicacion": {
+        "registro_oficial": "por_verificar",
+        "fecha": "2018"
+      },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.gob.ec/sites/default/files/regulations/2025-05/Ley%20Sistema%20Nacional%20de%20Infraestructura%20Vial%20Transporte%20Terrestre.pdf",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": [
+        "pesos_dimensiones",
+        "infraestructura_vial",
+        "certificado_operacion"
+      ],
+      "disposiciones_clave": [
+        {
+          "articulo": "disposicion derogatoria",
+          "sintesis": "Deroga la Ley de Caminos publicada en el Registro Oficial No. 285 de 7 de julio de 1964, sus reformas y los reglamentos que se opongan.",
+          "relevancia": "ES LA BASE LEGAL VIGENTE DEL CERTIFICADO DE OPERACION REGULAR. El propio certificado emitido por el MTOP lo dice en su reverso: 'de acuerdo a lo establecido en la Ley Organica del Sistema Nacional de Infraestructura Vial del Transporte Terrestre y su Reglamento Aplicativo Vigente'. Explica por que el regimen de remolques no se encuentra buscando en la LOTTTSV.",
+          "verificacion": "secundaria_oficial"
+        }
+      ]
+    },
+    {
+      "id": "DE-436-RGLTO-LOSNIVTT",
+      "tipo": "decreto",
+      "nivel": "nacional",
+      "rango_art425": 6,
+      "emisor": "Presidencia de la Republica",
+      "numero": "Decreto 436",
+      "titulo": "Reglamento a la Ley Organica del Sistema Nacional de Infraestructura Vial del Transporte Terrestre",
+      "publicacion": {
+        "registro_oficial": "por_verificar",
+        "fecha": null
+      },
+      "estado": "vigente_con_reformas",
+      "url_fuente": "https://www.gob.ec/regulaciones/reglamento-ley-sistema-infraestructura-vial-transporte-terrestre",
+      "verificacion": "por_verificar",
+      "requiere_cotejo": true,
+      "materias": [
+        "pesos_dimensiones",
+        "certificado_operacion",
+        "unidades_de_arrastre"
+      ],
+      "disposiciones_clave": [],
+      "brecha": "PRIORIDAD ALTA. Es el reglamento aplicativo que el certificado invoca. Sin su texto no se puede determinar el regimen de las unidades de arrastre por debajo de 3.5 t."
+    },
+    {
+      "id": "TRAMITE-COR-MIT",
+      "tipo": "resolucion",
+      "nivel": "nacional",
+      "rango_art425": 9,
+      "emisor": "Ministerio de Infraestructura y Transporte - Unidad de Pesos y Dimensiones",
+      "numero": "ficha de tramite gob.ec",
+      "titulo": "Emision y renovacion del Certificado de Operacion Regular",
+      "publicacion": {
+        "registro_oficial": "no aplica",
+        "fecha": null
+      },
+      "estado": "vigente",
+      "url_fuente": "https://www.gob.ec/mit/tramites/emision-certificado-operacion-regular",
+      "verificacion": "secundaria_oficial",
+      "requiere_cotejo": true,
+      "materias": [
+        "certificado_operacion",
+        "unidades_de_arrastre"
+      ],
+      "disposiciones_clave": [
+        {
+          "articulo": "ambito",
+          "sintesis": "Documento de porte obligatorio para propietarios de vehiculos de carga con PBV igual o superior a 3.5 t que realicen transporte comercial O POR CUENTA PROPIA en la Red Vial del pais, conforme a la Tabla Nacional de Pesos y Dimensiones.",
+          "relevancia": "El umbral de 3.5 t delimita la obligacion. Un remolque cuyo PBV sea inferior queda, en lectura literal, fuera del ambito.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "requisitos unidades de carga",
+          "sintesis": "Matricula vigente, factura O DECLARACION JURAMENTADA que especifique propietario, numero de ejes, tipo de semirremolque, anio de fabricacion, marca, peso y dimensiones; copia de cedula y papeleta de votacion; fotografia lateral a color; peso de la unidad vacia; y dimensiones (largo, alto, ancho).",
+          "relevancia": "La declaracion juramentada es la via cuando no hay matricula ni factura local: es la salida para un remolque importado sin placa.",
+          "verificacion": "secundaria_oficial"
+        },
+        {
+          "articulo": "vigencia",
+          "sintesis": "Vigencia de 2 anios desde la emision. El periodo ordinario de renovacion inicia en enero y dura 60 dias. Existe comunicacion institucional que habla de renovacion ANUAL, en contradiccion con la ficha de tramite.",
+          "relevancia": "Contradiccion documentada entre la ficha de tramite y los boletines del ministerio. El certificado observado (CRE-09-111665) fue emitido el 19-05-2025 con vencimiento 19-05-2027, consistente con 2 anios.",
+          "verificacion": "secundaria_oficial"
+        }
+      ],
+      "brecha": "Contacto verificado: Unidad de Pesos y Dimensiones, 02-397-4600 ext. 10010."
     }
   ],
   "hallazgos_transversales": [
@@ -833,6 +929,15 @@
       "descripcion": "La reforma entro en vigencia el 10-08-2021 y elimino la autorizacion por cuenta propia para bienes. El 14-06-2022, diez meses despues, la ANT tuvo que oficiar al MTOP porque sus dependencias provinciales seguian exigiendola, en especial la Zonal 5.",
       "implicacion": "Refuerza y reorienta la tesis del compendio: la fragmentacion no es solo entre niveles de gobierno, ocurre dentro del propio Ejecutivo nacional. Un requisito derogado siguio cobrandose al administrado por desajuste interno, no por mala fe municipal.",
       "accion": "Usar como evidencia documental en la propuesta de armonizacion."
+    },
+    {
+      "id": "H-REMOLQUES-LIVIANOS",
+      "fecha": "2026-09-21",
+      "estado": "abierto",
+      "titulo": "No hay regimen identificable para unidades de arrastre por debajo de 3.5 t",
+      "descripcion": "El regimen de pesos y dimensiones y el Certificado de Operacion Regular se definen por un umbral de PBV igual o superior a 3.5 t. Un remolque de 0.5 t de tara y 1 t de capacidad (PBV 1.5 t) queda por debajo. No se identifico norma que establezca si tales unidades requieren matricula y placa propias, homologacion previa, o certificado; ni si el umbral se mide por unidad o por el conjunto tractor mas remolque.",
+      "implicacion": "El operador no puede determinar que tramite lo regulariza. Un certificado emitido sobre una configuracion generica (caso observado: PBV declarado de 14 t para un remolque de 2.35 t de tara) sugiere que la propia administracion resuelve el vacio con plantillas, no con la especificacion real del bien.",
+      "accion": "Consulta a la Subsecretaria de Transporte Terrestre y Ferroviario y a la ANT."
     }
   ]
 }
