@@ -128,6 +128,42 @@ window.CORPUS = {
       "sintesis": "Desarrollo del ejercicio de la competencia segun el nivel de gobierno; los GAD municipales tienen a su cargo planificar, regular y controlar el transito, transporte y seguridad vial en el territorio cantonal.",
       "relevancia": "Delimita territorialmente. No habilita a regular titulos habilitantes de ambito inter-cantonal, que permanecen en la ANT.",
       "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "51",
+      "sintesis": "Clases de servicio de transporte terrestre: a) publico; b) comercial; c) por cuenta propia; d) particular.",
+      "relevancia": "Articulo de entrada. El titulo habilitante que se necesita depende de la CLASE de servicio, no del vehiculo ni del tonelaje.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "57",
+      "sintesis": "Servicio de transporte comercial: el que se presta a terceras personas a cambio de una contraprestacion economica, sin ser colectivo o masivo. Incluye escolar e institucional, taxis, tricimotos, CARGA PESADA, carga liviana, mixto, turismo y los demas del Reglamento.",
+      "relevancia": "Define el supuesto que obliga a permiso de operacion: prestar el servicio A TERCEROS por precio. Carga pesada esta nombrada expresamente.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "58",
+      "sintesis": "Transporte por cuenta propia: satisface necesidades de movilizacion de personas o bienes dentro del ambito de las actividades comerciales EXCLUSIVAS de la persona natural o juridica, mediante su propio vehiculo o flota privada. Los vehiculos deben constar en el patrimonio de esa persona y estar matriculados a su nombre.",
+      "relevancia": "Es el supuesto de una flota propia de distribucion: mueve bienes propios, no vende transporte. Requiere AUTORIZACION, no permiso de operacion. La exigencia patrimonial y de matricula es la condicion dura: un vehiculo matriculado a nombre de un tercero no sirve.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "72",
+      "sintesis": "Son titulos habilitantes de transporte terrestre los contratos de operacion, los permisos de operacion y las autorizaciones, que se otorgan a PERSONAS JURIDICAS domiciliadas en el Ecuador con capacidad tecnica y financiera que cumplan los requisitos de la Ley y los reglamentos.",
+      "relevancia": "Responde el 'quien' en sentido subjetivo: persona juridica domiciliada en Ecuador. Una persona natural no accede a estos titulos por esta via.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "73",
+      "sintesis": "Los titulos habilitantes los confieren la ANT y los GAD regionales, municipales o metropolitanos, dentro de los ambitos de sus competencias.",
+      "relevancia": "Reparto de competencia por ambito territorial. Sostiene la fila C03 y C04 de la matriz de competencias.",
+      "verificacion": "secundaria_oficial"
+     },
+     {
+      "articulo": "74",
+      "sintesis": "Compete a la ANT otorgar: contratos de operacion de transporte publico de personas o bienes en los ambitos interprovincial, intraprovincial e internacional; PERMISOS DE OPERACION de servicios de transporte COMERCIAL para todos los ambitos EXCEPTO el intracantonal; y autorizaciones de operacion para transporte por cuenta propia de personas en todos los ambitos.",
+      "relevancia": "Articulo operativo. Permiso de operacion de carga pesada intercantonal o interprovincial lo da la ANT; el intracantonal lo da el GAD. Nota critica: el texto localizado dice autorizaciones por cuenta propia 'de personas'; no aclara el regimen de la autorizacion por cuenta propia de BIENES, que es el caso de una flota de distribucion. Cotejar el literal vigente.",
+      "verificacion": "secundaria_oficial"
      }
     ]
    },
@@ -168,15 +204,15 @@ window.CORPUS = {
     "nivel": "nacional",
     "rango_art425": 6,
     "emisor": "Presidencia de la Republica",
-    "numero": "por_verificar",
+    "numero": "Decreto Ejecutivo 1196",
     "titulo": "Reglamento General para la aplicacion de la LOTTTSV",
     "publicacion": {
      "registro_oficial": "por_verificar",
-     "fecha": null
+     "fecha": "2012-06-11"
     },
     "estado": "vigente_con_reformas",
-    "url_fuente": null,
-    "verificacion": "por_verificar",
+    "url_fuente": "https://www.mit.gob.ec/wp-content/uploads/downloads/2015/03/Decreto-Ejecutivo-No.-1196-de-11-06-2012-REGLAMENTO-A-LA-LEY-DE-TRANSPORTE-TERRESTRE-TRANSITO-Y-SEGURIDAD-VIA.pdf",
+    "verificacion": "secundaria_oficial",
     "requiere_cotejo": true,
     "materias": [
      "clases_servicio",
@@ -185,13 +221,19 @@ window.CORPUS = {
     ],
     "disposiciones_clave": [
      {
-      "articulo": "por_indexar",
-      "sintesis": "Clasificacion del servicio de transporte (publico, comercial, por cuenta propia), modalidades de carga liviana, carga pesada y mixto, y requisitos de titulos habilitantes.",
-      "relevancia": "Define si una flota propia de distribucion es 'transporte por cuenta propia' y que autorizacion requiere. Determinante para el costo regulatorio de una operacion logistica.",
+      "articulo": "61",
+      "sintesis": "Permiso de operacion: titulo habilitante mediante el cual el Estado entrega a una persona juridica que cumple los requisitos legales la facultad de establecer y prestar el servicio de transporte terrestre COMERCIAL de personas y/o bienes en los ambitos urbano, intraprovincial e interprovincial.",
+      "relevancia": "Definicion legal del permiso de operacion. La numeracion 61/62 proviene de un resultado de busqueda que no distingue con certeza entre Ley y Reglamento: cotejar en el texto del Decreto 1196 antes de citar.",
+      "verificacion": "por_verificar"
+     },
+     {
+      "articulo": "62",
+      "sintesis": "Autorizacion: facultad que el Estado otorga a una persona juridica que cumple los requisitos legales para prestar servicio de transporte terrestre POR CUENTA PROPIA de personas y/o bienes en los ambitos urbano, intraprovincial e interprovincial.",
+      "relevancia": "Es el titulo que corresponde a una flota propia de distribucion. Misma advertencia de numeracion.",
       "verificacion": "por_verificar"
      }
     ],
-    "brecha": "Prioridad 1 de verificacion. No se pudo acceder al texto en esta sesion."
+    "brecha": "Referencia de publicacion localizada (D.E. 1196, 11-06-2012) pero sin Registro Oficial ni cotejo de reformas posteriores. La numeracion 61/62 requiere verificacion: puede corresponder al Reglamento o a una version distinta de la Ley."
    },
    {
     "id": "CNC-006-2012",
@@ -453,6 +495,37 @@ window.CORPUS = {
       "verificacion": "secundaria_oficial"
      }
     ]
+   },
+   {
+    "id": "RES-078-DIR-2017-ANT",
+    "tipo": "resolucion",
+    "nivel": "nacional",
+    "rango_art425": 8,
+    "emisor": "Directorio de la Agencia Nacional de Transito",
+    "numero": "078-DIR-2017-ANT",
+    "titulo": "Reglamento de Transporte por Cuenta Propia",
+    "publicacion": {
+     "registro_oficial": "por_verificar",
+     "fecha": "2017"
+    },
+    "estado": "vigente_con_reformas",
+    "url_fuente": "https://www.turismo.gob.ec/wp-content/uploads/2019/02/13Reglamento-de-transporte-por-cuenta-propia.pdf",
+    "verificacion": "secundaria_oficial",
+    "requiere_cotejo": true,
+    "materias": [
+     "titulos_habilitantes",
+     "transporte_por_cuenta_propia",
+     "carga"
+    ],
+    "disposiciones_clave": [
+     {
+      "articulo": "por_indexar",
+      "sintesis": "Desarrolla la autorizacion de transporte por cuenta propia. PROHIBE prestar mediante esa autorizacion servicios de transporte publico o comercial: turismo, carga pesada, carga liviana, carga mixta, escolar e institucional, tricimotos y taxis. Exige que los vehiculos consten en el patrimonio del titular y esten matriculados a su nombre.",
+      "relevancia": "Traza la linea practica: con autorizacion por cuenta propia se mueve carga PROPIA; en el momento en que se transporta carga de un tercero por precio se necesita permiso de operacion de transporte comercial. Un vehiculo arrendado o matriculado a nombre de otro no cumple el requisito patrimonial.",
+      "verificacion": "secundaria_oficial"
+     }
+    ],
+    "brecha": "Numero de Registro Oficial y reformas posteriores sin cotejar. Verificar tambien si la reforma de 2025 a la LOTTTSV lo afecta."
    }
   ]
  },
