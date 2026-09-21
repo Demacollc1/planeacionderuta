@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ayuda memoria · Transporte por cuenta propia de bienes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .doc { max-width: 82ch; margin: 0 auto; }
+  .doc > section { margin-top: 26px; }
+  .doc h2 { font-size: 16px; padding-bottom: 6px; border-bottom: 2px solid var(--accent);
+            margin-bottom: 12px; }
+  .doc h3 { font-size: 14px; margin-top: 16px; margin-bottom: 4px; }
+  .doc p { margin: 0 0 10px; }
+
+  .veredicto { border: 2px solid var(--accent); border-radius: var(--r); padding: 18px 20px;
+               background: var(--accent-soft); }
+  .veredicto .no { font-family: var(--slab); font-size: 34px; font-weight: 700;
+                   line-height: 1; color: var(--accent); }
+  .veredicto p { margin: 8px 0 0; font-size: 15px; }
+  .veredicto strong { font-weight: 600; }
+
+  .cita { border-left: 3px solid var(--line-strong); padding: 2px 0 2px 14px; margin: 8px 0 12px;
+          color: var(--ink); font-size: 13px; }
+  .cita em { color: var(--ink-2); font-style: normal; }
+  .fuente { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+  .art { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px;
+         margin-bottom: 12px; background: var(--surface); break-inside: avoid; }
+  .art .cab { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
+  .art .n { font-family: var(--slab); font-weight: 700; font-size: 15px; }
+  .art .q { font-size: 12px; color: var(--ink-2); }
+  .art .lee { margin-top: 8px; font-size: 13px; padding: 8px 10px; background: var(--surface-2);
+              border-radius: 7px; }
+  .art .lee b { color: var(--accent); }
+
+  ol.cond { padding-left: 20px; margin: 0; }
+  ol.cond li { margin-bottom: 7px; }
+  ol.cond b { font-weight: 600; }
+
+  .lleva { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .lleva .it { border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px;
+               background: var(--surface); }
+  .lleva .it b { display: block; font-size: 13px; margin-bottom: 3px; }
+  .lleva .it span { font-size: 12px; color: var(--ink-2); }
+
+  .sello { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2);
+           border-top: 1px solid var(--line); padding-top: 12px; margin-top: 26px; }
+  .noprint { }
+
+  @media print {
+    @page { margin: 14mm; }
+    .topbar, .noprint { display: none !important; }
+    body { background: #fff; color: #000; font-size: 10.5pt; }
+    .wrap { padding: 0; max-width: none; }
+    .panel, .art, .lleva .it { box-shadow: none; border-color: #999; }
+    .veredicto { border-color: #000; background: #fff; }
+    .veredicto .no { color: #000; }
+    .doc h2 { border-bottom-color: #000; }
+    .art .lee { background: #f2f2f2; }
+    .art .lee b { color: #000; }
+    a { color: #000; text-decoration: none; }
+    section { break-inside: avoid-page; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar noprint">
+  <div class="topbar-in">
+    <div>
+      <h1>Compendio normativo de tránsito</h1>
+      <div class="sub">Ecuador · normativa nacional y municipal</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="cantones.html">Normativa por cantón</a>
+      <a href="mapa.html">Mapa y clientes</a>
+      <a href="ayuda-memoria.html" aria-current="page">Ayuda memoria</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="doc">
+
+  <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px">
+    <div style="flex:1;min-width:260px">
+      <h1 style="font-family:var(--slab);font-size:23px">Ayuda memoria</h1>
+      <p style="color:var(--ink-2);margin:4px 0 0">
+        Transporte por cuenta propia de bienes · flota propia, mercadería propia, sin cobro
+      </p>
+    </div>
+    <button class="btn noprint" onclick="window.print()" type="button">Imprimir</button>
+  </div>
+
+  <div class="veredicto">
+    <div class="no">NO</div>
+    <p>Una empresa que transporta <strong>su propia mercadería</strong>, en <strong>vehículos
+    matriculados a su nombre</strong>, <strong>sin cobrar contraprestación</strong>,
+    <strong>no requiere permiso de operación</strong> ni <strong>autorización de operación por
+    cuenta propia</strong>. No requiere ningún título habilitante de transporte ante la ANT.</p>
+  </div>
+
+  <section>
+    <h2>1. Precisión de términos, antes que nada</h2>
+    <p>En Ecuador coexisten tres documentos con nombres parecidos. Esta ayuda memoria se refiere
+    solo a los dos primeros.</p>
+
+    <div class="art">
+      <div class="cab"><span class="n">Permiso de operación</span>
+        <span class="q">ANT o GAD · LOTTTSV art. 57 y 76</span></div>
+      Título para prestar servicio de transporte <b>comercial</b>. <b>No aplica</b> al caso de esta
+      ayuda memoria.
+    </div>
+    <div class="art">
+      <div class="cab"><span class="n">Autorización de operación por cuenta propia</span>
+        <span class="q">ANT · LOTTTSV art. 58 y 74.c</span></div>
+      Título para transporte por cuenta propia <b>de personas</b>. <b>No aplica</b> al traslado de
+      bienes.
+    </div>
+    <div class="art" style="border-color:var(--warn)">
+      <div class="cab"><span class="n">Certificado de operación regular o especial</span>
+        <span class="q">MTOP · pesos y dimensiones</span></div>
+      Documento del control de <b>pesos y dimensiones</b>. <b>Es otra cosa y sí puede aplicarte</b>
+      si el peso bruto vehicular es igual o mayor a 3,5 t. Ver el punto 5.
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Supuestos de hecho sobre los que se sostiene la conclusión</h2>
+    <p>La conclusión vale <strong>únicamente</strong> si se cumplen las cuatro condiciones. Si
+    alguna deja de cumplirse, el análisis cambia.</p>
+    <ol class="cond">
+      <li><b>Los vehículos están matriculados a nombre de la empresa</b>, o son arrendados a una
+        compañía de arrendamiento legalmente autorizada por la ANT, con contrato vigente.</li>
+      <li><b>La mercadería transportada es de propiedad de la empresa</b>, titular de la matrícula
+        o arrendataria.</li>
+      <li><b>El transporte se realiza dentro de la actividad comercial de la empresa</b>, registrada
+        en el SRI.</li>
+      <li><b>No se cobra contraprestación económica a terceros</b> por el transporte, en ninguna
+        forma ni bajo ninguna denominación.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>3. Cadena legal, artículo por artículo</h2>
+
+    <div class="art">
+      <div class="cab"><span class="n">LOTTTSV, art. 57</span>
+        <span class="q">Servicio de transporte comercial · sustituido por el art. 42 de la reforma de 2021</span></div>
+      <div class="cita">
+        «Se denomina servicio de transporte comercial el que se presta <em>a terceras personas a
+        cambio de una contraprestación económica</em>, siempre que no sea servicio de transporte
+        colectivo o masivo. <em>Para operar un servicio comercial de transporte se requerirá de un
+        permiso de operación</em>, en los términos establecidos en la presente Ley.
+        <br><br>
+        Dentro de esta clasificación se encuentran el servicio de transporte escolar e
+        institucional, taxis, alternativo comunitario rural excepcional, tricimotos,
+        <em>carga pesada, carga liviana</em>, mixto de pasajeros y/o bienes; y, turístico […]»
+      </div>
+      <div class="lee"><b>Qué prueba:</b> el permiso de operación se exige para el transporte
+      <b>comercial</b>, y comercial es el que reúne <b>dos condiciones acumulativas</b>: prestarse
+      <b>a terceras personas</b> y <b>a cambio de contraprestación económica</b>. Transportar
+      mercadería propia sin cobro no cumple ninguna de las dos. Que la carga sea pesada o liviana
+      es irrelevante: la clasificación del segundo inciso opera dentro del servicio comercial ya
+      definido en el primero.</div>
+    </div>
+
+    <div class="art">
+      <div class="cab"><span class="n">LOTTTSV, art. 58</span>
+        <span class="q">Transporte por cuenta propia · sustituido por el art. 43 de la reforma de 2021</span></div>
+      <div class="cita">
+        «El transporte por cuenta propia es un servicio que satisface necesidades de movilización
+        de <em>personas o bienes</em>, dentro del ámbito de las actividades comerciales exclusivas
+        de las personas naturales y/o jurídicas, mediante el uso de <em>su(s) propio(s) vehículo(s),
+        o vehículo(s) alquilado(s)</em>. No se incluye en esta clase el servicio particular, personal
+        o familiar.
+        <br><br>
+        En el servicio de transporte por cuenta propia <em>para movilización de personas</em>, la
+        Agencia Nacional […] será el ente encargado de emitir la autorización correspondiente […]
+        <br><br>
+        <em>Para el caso de traslado de bienes, los servidores públicos encargados del control del
+        tránsito y transporte, verificarán que estos sean de propiedad de la persona a cuyo nombre
+        se encuentra la matrícula vehicular</em> o del arrendatario que cuente con el contrato de
+        arrendamiento a compañías legalmente autorizadas por la Agencia Nacional […]
+        <br><br>
+        La habilitación del servicio por cuenta propia no podrá ser utilizada para prestar servicios
+        de transporte público o comercial; su incumplimiento se sancionará con la suspensión o
+        revocatoria de la autorización.»
+      </div>
+      <div class="lee"><b>Qué prueba:</b> es el artículo central. La ley <b>separa dos regímenes</b>.
+      Para <b>personas</b>, la ANT emite autorización. Para <b>bienes</b>, la ley <b>no establece
+      título habilitante alguno</b>: establece una <b>verificación en control</b> de que los bienes
+      sean del titular de la matrícula. Además admite expresamente <b>vehículos alquilados</b> a
+      compañías autorizadas por la ANT.</div>
+    </div>
+
+    <div class="art">
+      <div class="cab"><span class="n">LOTTTSV, art. 74, literal c)</span>
+        <span class="q">Títulos que otorga la ANT · sustituido por el art. 57 de la reforma de 2021</span></div>
+      <div class="cita">
+        «c) Autorizaciones de operación para el servicio de transporte por cuenta propia
+        <em>de personas</em> para todos los ámbitos.»
+      </div>
+      <div class="lee"><b>Qué prueba:</b> la única autorización por cuenta propia que la ley faculta
+      a otorgar a la ANT es <b>de personas</b>. No existe, en la enumeración legal, una autorización
+      por cuenta propia de bienes.</div>
+    </div>
+
+    <div class="art">
+      <div class="cab"><span class="n">LOTTTSV, art. 76, inciso final</span>
+        <span class="q">Definición de la autorización · sustituido por el art. 59 de la reforma de 2021</span></div>
+      <div class="cita">
+        «La autorización de operación para la prestación de servicios de transporte por cuenta
+        propia, es el título habilitante conferido por parte de la Agencia Nacional […] a una
+        persona natural o jurídica para la operación de un servicio <em>de transporte de personas
+        por cuenta propia</em> […]»
+      </div>
+      <div class="lee"><b>Qué prueba:</b> confirmación por tercera vez, ahora en la definición misma
+      del título. La autorización por cuenta propia es un título <b>de transporte de personas</b>.</div>
+    </div>
+
+    <div class="art">
+      <div class="cab"><span class="n">Resolución 006-DIR-2022-ANT, art. 6</span>
+        <span class="q">Suplemento del Registro Oficial N.º 56, 5 de mayo de 2022 · sustituye el numeral 12 del art. 9 del Reglamento de Matriculación</span></div>
+      <div class="cita">
+        «Los vehículos de capacidad de carga <em>igual o mayor a 3.5 toneladas</em> que pretendan
+        ser utilizados para actividades comerciales de transporte de bienes por cuenta propia de la
+        persona natural o jurídica titular del vehículo, <em>no requieren de la obtención de un
+        título habilitante de autorización por cuenta propia</em>, bastando para su matriculación en
+        este requisito <em>la justificación de la actividad económica registrada en el SRI y la
+        propiedad del vehículo</em>.»
+      </div>
+      <div class="lee"><b>Qué prueba:</b> la norma reglamentaria lo dice de forma expresa y además
+      fija <b>qué sí se exige</b>: actividad económica en el SRI y propiedad del vehículo. Nada
+      más.</div>
+    </div>
+
+    <div class="art">
+      <div class="cab"><span class="n">Oficio Nro. ANT-ANT-2022-0602-OF</span>
+        <span class="q">Dirección Ejecutiva de la ANT al Ministro de Transporte y Obras Públicas · 14 de junio de 2022</span></div>
+      <div class="cita">
+        «[…] aquellos vehículos que realizan traslado de bienes, <em>no requieren de la obtención de
+        la autorización por cuenta propia</em>, siendo necesario únicamente la matrícula del vehículo
+        y la documentación en la que permita verificar la actividad económica; por lo que se
+        solicita que se tenga en cuenta estas disposiciones legales y normativas para los procesos
+        que se realizan en el Ministerio de Transporte y Obras Públicas <em>en los que antes se
+        consideraba como requisito la autorización por cuenta propia para transporte de bienes,
+        actualmente ya no es necesario</em>.»
+      </div>
+      <div class="lee"><b>Qué prueba:</b> es el criterio expreso de la <b>autoridad competente en la
+      materia</b>, dirigido al ministerio que estaba exigiendo el requisito. Es el documento más
+      útil frente a un funcionario que insista: acredita que la propia ANT ya instruyó que no se
+      pida.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Qué llevar en cada unidad</h2>
+    <div class="lleva">
+      <div class="it"><b>Matrícula del vehículo</b>
+        <span>A nombre de la empresa. Es el documento que acredita el supuesto del art. 58.</span></div>
+      <div class="it"><b>RUC con la actividad económica</b>
+        <span>Debe reflejar la actividad comercial cuyos bienes se transportan.</span></div>
+      <div class="it"><b>Guía de remisión o documento de respaldo</b>
+        <span>Acredita que la mercadería es de la empresa y no de un tercero.</span></div>
+      <div class="it"><b>Copia de esta ayuda memoria</b>
+        <span>Con el Oficio ANT-ANT-2022-0602-OF y la Resolución 006-DIR-2022-ANT impresos.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Lo que esta ayuda memoria NO cubre</h2>
+    <p>No requerir título habilitante <strong>no exime de otras obligaciones</strong>, que son
+    independientes y sí aplican:</p>
+    <div class="art" style="border-color:var(--warn)">
+      <div class="cab"><span class="n">Pesos y dimensiones</span>
+        <span class="q">MTOP · si el peso bruto vehicular es ≥ 3,5 t</span></div>
+      Cumplir la Tabla Nacional de Pesos y Dimensiones, <b>ingresar obligatoriamente a los puntos de
+      control</b> y portar el certificado de operación regular. El <b>generador de carga responde
+      solidariamente</b> por la multa y los daños junto al propietario y al transportista: tercerizar
+      el flete no traslada la responsabilidad.
+    </div>
+    <div class="art" style="border-color:var(--warn)">
+      <div class="cab"><span class="n">Restricciones municipales de circulación</span>
+        <span class="q">GAD de cada cantón</span></div>
+      Horarios, zonas, corredores vetados, salvoconductos y pico y placa. Son competencia municipal
+      y varían por cantón.
+    </div>
+    <div class="art" style="border-color:var(--warn)">
+      <div class="cab"><span class="n">Matrícula y revisión técnica vehicular</span>
+        <span class="q">GAD o ANT según el modelo de gestión del cantón</span></div>
+      Vigentes, como para cualquier vehículo.
+    </div>
+  </section>
+
+  <section>
+    <h2>6. La línea que no se puede cruzar</h2>
+    <p>El día que se <strong>cobre contraprestación económica a un tercero</strong> por transportar
+    —una sola vez, aunque sea a una empresa relacionada— la operación pasa a ser
+    <strong>transporte comercial</strong> del art. 57 y requiere permiso de operación. Operar sin él
+    se sanciona con <strong>suspensión o revocatoria</strong>, no con una multa de tránsito.</p>
+    <p style="color:var(--ink-2);font-size:13px">Precaución adicional: el art. 82.1 de la LOTTTSV
+    tipifica como infracción de cuenta propia «transportar bienes diferentes […] a los declarados
+    […] según lo establecido en la autorización». Esa redacción presupone una autorización que
+    declara bienes, título que la propia ley no crea para bienes. Un agente puede invocarla; la
+    respuesta es el art. 58 inciso tercero y el oficio de la ANT.</p>
+  </section>
+
+  <div class="sello">
+    <span><strong>Base:</strong> LOTTTSV con las sustituciones de la Ley Orgánica Reformatoria
+    publicada en el Registro Oficial N.º 512, Quinto Suplemento, de 10 de agosto de 2021.</span>
+    <span><strong>Verificación:</strong> texto primario para los arts. 57, 58, 74 y 76 y para la
+    Resolución 006-DIR-2022-ANT y el Oficio ANT-ANT-2022-0602-OF.</span>
+    <span><strong>Fecha de corte:</strong> 21 de septiembre de 2026.</span>
+  </div>
+
+  <p class="foot">
+    Las citas se transcriben de la versión digital del Registro Oficial y se normalizaron errores de
+    reconocimiento óptico (tildes y letras sueltas). Para una presentación formal ante autoridad,
+    cítese el PDF oficial del Registro Oficial. No se ha cotejado el texto de la Ley Orgánica
+    Reformatoria publicada en el Registro Oficial N.º 73, Tercer Suplemento, de 3 de julio de 2025;
+    por su alcance documentado —licencias tipo G para operadores de maquinaria— no modifica los
+    artículos citados aquí, pero ese extremo está pendiente de verificación.
+    Este documento es una ayuda de trabajo interna, no un dictamen jurídico.
+  </p>
+
+</div>
+</div>
+</body>
+</html>

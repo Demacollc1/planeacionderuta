@@ -39,16 +39,18 @@
       <a href="index.html">Inicio</a>
       <a href="cantones.html" aria-current="page">Normativa por cantón</a>
       <a href="mapa.html">Mapa y clientes</a>
+      <a href="ayuda-memoria.html">Ayuda memoria</a>
     </nav>
   </div>
 </header>
 
 <div class="wrap">
   <div class="aviso warn" style="margin-bottom:18px">
-    <strong>Ningún registro está cotejado en fuente primaria.</strong>
-    Las cifras sirven para priorizar y dimensionar, no para litigar ni presentar formalmente.
-    Los campos marcados <em>por verificar</em> son brechas conocidas, no ausencia de regulación:
-    ver <code>docs/04-brechas-y-verificacion.md</code>.
+    <strong>Verificación desigual.</strong> Solo el régimen de títulos habilitantes está
+    cotejado en fuente primaria (reforma de 2021, RO 512-5S). Ninguna norma municipal lo está:
+    esas cifras sirven para priorizar y dimensionar, no para litigar ni presentar formalmente.
+    La columna de verificación lo indica fila por fila. Los campos marcados <em>por verificar</em>
+    son brechas conocidas, no ausencia de regulación: ver <code>docs/04-brechas-y-verificacion.md</code>.
   </div>
 
   <div class="filtros">
@@ -264,7 +266,7 @@
         return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
       }).join(",");
     }).join("\n");
-    var url = URL.createObjectURL(new Blob(["﻿" + txt], { type: "text/csv;charset=utf-8" }));
+    var url = URL.createObjectURL(new Blob(["" + txt], { type: "text/csv;charset=utf-8" }));
     var a = document.createElement("a");
     a.href = url; a.download = "restricciones-por-canton.csv";
     document.body.appendChild(a); a.click(); a.remove();
