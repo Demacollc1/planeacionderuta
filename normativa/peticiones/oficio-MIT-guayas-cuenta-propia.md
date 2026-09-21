@@ -1,0 +1,155 @@
+# Oficio de consulta — Dirección Distrital de Guayas, MIT
+
+> **Antes de enviar:** reemplazar los campos `{{ENTRE_LLAVES}}`. Las citas normativas están
+> verificadas contra el texto de la Ley Orgánica Reformatoria publicada en el Registro Oficial
+> N.º 512, Quinto Suplemento, de 10 de agosto de 2021, con normalización de errores de OCR;
+> para el envío formal conviene cotejar contra el PDF oficial del Registro Oficial.
+> Tono: consulta técnica neutra — expone hechos sin calificarlos y pide criterio institucional.
+
+---
+
+**Guayaquil, {{FECHA}}**
+
+**Oficio Nro. {{NUMERO_OFICIO}}**
+
+Señor
+**Fernando Stay Medina**
+**DIRECTOR DISTRITAL DE GUAYAS**
+**MINISTERIO DE INFRAESTRUCTURA Y TRANSPORTE**
+Presente.-
+
+Con copia a:
+- Subsecretaría de Transporte Terrestre y Ferroviario, MIT
+- Agencia Nacional de Regulación y Control del Transporte Terrestre, Tránsito y Seguridad Vial
+
+**Asunto:** Consulta sobre los requisitos exigibles al transporte por cuenta propia de bienes y sobre los documentos habilitantes de control de pesos y dimensiones.
+
+De mi consideración:
+
+{{REPRESENTANTE_LEGAL}}, en calidad de {{CARGO}} y representante legal de **{{RAZON_SOCIAL}}**, con RUC {{RUC}} y domicilio en {{DOMICILIO}}, al amparo del derecho de petición reconocido en el artículo 66, numeral 23, de la Constitución de la República, comparezco respetuosamente ante usted para formular la siguiente consulta.
+
+## I. Antecedentes de hecho
+
+1. **{{RAZON_SOCIAL}}** es una compañía dedicada a {{ACTIVIDAD_ECONOMICA}}, actividad registrada en el Registro Único de Contribuyentes. Dentro de esa actividad, la compañía traslada mercadería de su propiedad hacia sus clientes mediante vehículos de su propio parque automotor.
+
+2. En dichos traslados concurren las siguientes circunstancias, verificables documentalmente en cada operación:
+
+   a) los vehículos se encuentran matriculados a nombre de **{{RAZON_SOCIAL}}**;
+
+   b) las guías de remisión y las facturas correspondientes a la mercadería transportada se emiten a nombre de **{{RAZON_SOCIAL}}**;
+
+   c) la mercadería transportada es de propiedad de la compañía; y,
+
+   d) **no se percibe contraprestación económica alguna por el transporte**, ni de los destinatarios ni de terceros. El traslado forma parte de la entrega de mercadería propia.
+
+3. En controles de tránsito realizados en la provincia del Guayas —tanto en operativos como en detenciones en vía— agentes de la Comisión de Tránsito del Ecuador y agentes de agencias municipales de tránsito han requerido a nuestros conductores la presentación de **permiso de operación**, **certificado de pesos y dimensiones** y **autorización de operación por cuenta propia**, advirtiendo que su falta daría lugar a la retención del vehículo.
+
+4. En cada uno de esos controles se ha exhibido a los agentes la matrícula del vehículo, las guías de remisión y las facturas, acreditando las circunstancias descritas en el numeral 2.
+
+5. Adicionalmente, respecto de vehículos livianos tipo camioneta provistos de cajón para el traslado de mercadería, se ha advertido a nuestros conductores que el campo **"Tipo"** de la matrícula debería consignar la leyenda **"Camioneta Reparto"**, y que su ausencia constituiría causal de retención del vehículo y de imposición de una multa equivalente a **dos remuneraciones básicas unificadas**.
+
+6. Estos requerimientos han generado detenciones de unidades y demoras en la cadena de distribución, con la consiguiente afectación al abastecimiento de nuestros clientes.
+
+## II. Marco normativo que motiva la consulta
+
+Sin ánimo de sustituir el criterio de esta Cartera de Estado, y únicamente para precisar el objeto de la consulta, exponemos las disposiciones cuya interpretación nos genera duda:
+
+**Artículo 57 de la LOTTTSV**, sustituido por el artículo 42 de la Ley Orgánica Reformatoria publicada en el Registro Oficial N.º 512, Quinto Suplemento, de 10 de agosto de 2021:
+
+> «Se denomina servicio de transporte comercial el que se presta **a terceras personas a cambio de una contraprestación económica**, siempre que no sea servicio de transporte colectivo o masivo. **Para operar un servicio comercial de transporte se requerirá de un permiso de operación**, en los términos establecidos en la presente Ley.»
+
+**Artículo 58 de la LOTTTSV**, sustituido por el artículo 43 de la misma Ley Reformatoria:
+
+> «El transporte por cuenta propia es un servicio que satisface necesidades de movilización de personas o bienes, dentro del ámbito de las actividades comerciales exclusivas de las personas naturales y/o jurídicas, mediante el uso de su(s) propio(s) vehículo(s), o vehículo(s) alquilado(s). […]
+>
+> En el servicio de transporte por cuenta propia **para movilización de personas**, la Agencia Nacional […] será el ente encargado de emitir la autorización correspondiente […]
+>
+> **Para el caso de traslado de bienes, los servidores públicos encargados del control del tránsito y transporte, verificarán que estos sean de propiedad de la persona a cuyo nombre se encuentra la matrícula vehicular** o del arrendatario que cuente con el contrato de arrendamiento a compañías legalmente autorizadas por la Agencia Nacional […]»
+
+**Artículo 74, literal c), de la LOTTTSV**, sustituido por el artículo 57 de la misma Ley Reformatoria, que atribuye a la Agencia Nacional el otorgamiento de «Autorizaciones de operación para el servicio de transporte por cuenta propia **de personas** para todos los ámbitos».
+
+**Artículo 76, inciso final, de la LOTTTSV**, sustituido por el artículo 59 de la misma Ley Reformatoria, que define la autorización de operación por cuenta propia como el título conferido por la Agencia Nacional «para la operación de un servicio **de transporte de personas** por cuenta propia».
+
+**Resolución Nro. 006-DIR-2022-ANT**, publicada en el Suplemento del Registro Oficial N.º 56 de 5 de mayo de 2022, cuyo artículo 6 sustituye el numeral 12 del artículo 9 del Reglamento de Procedimientos y Requisitos para la Matriculación Vehicular:
+
+> «Los vehículos de capacidad de carga igual o mayor a 3.5 toneladas que pretendan ser utilizados para actividades comerciales de transporte de bienes por cuenta propia de la persona natural o jurídica titular del vehículo, **no requieren de la obtención de un título habilitante de autorización por cuenta propia**, bastando para su matriculación en este requisito la justificación de la actividad económica registrada en el SRI y la propiedad del vehículo.»
+
+**Oficio Nro. ANT-ANT-2022-0602-OF**, de 14 de junio de 2022, mediante el cual la Dirección Ejecutiva de la Agencia Nacional de Tránsito comunicó a esta Cartera de Estado —entonces Ministerio de Transporte y Obras Públicas—, con destinatarios entre los que consta la **Subsecretaría de Transporte y Obras Zonal 5**, que los vehículos que realizan traslado de bienes «no requieren de la obtención de la autorización por cuenta propia, siendo necesario únicamente la matrícula del vehículo y la documentación en la que permita verificar la actividad económica», solicitando la adecuación de los procesos institucionales.
+
+**Artículos 102 y 103 de la LOTTTSV**, sustituidos por los artículos 99 y 100 de la misma Ley Reformatoria, conforme a los cuales la matrícula consigna el nombre del propietario, las características y especificaciones generales del vehículo y el servicio para el cual está autorizado, y su emisión se sujeta a los requisitos previstos en el Reglamento y en las ordenanzas correspondientes.
+
+## III. Consulta
+
+Con ese antecedente, solicito a usted se sirva absolver, con criterio institucional expreso y por escrito, las siguientes consultas:
+
+**1.** ¿El traslado de mercadería de propiedad de la compañía, en vehículos matriculados a su nombre, sin percepción de contraprestación económica de terceros, configura **servicio de transporte comercial** en los términos del artículo 57 de la LOTTTSV y, por tanto, requiere **permiso de operación**?
+
+**2.** ¿Dicho traslado requiere **autorización de operación por cuenta propia**, considerando que los artículos 58, 74 literal c) y 76 de la LOTTTSV circunscriben ese título habilitante al transporte de personas?
+
+**3.** ¿Mantiene vigencia y aplicación el criterio contenido en el Oficio Nro. ANT-ANT-2022-0602-OF y en la Resolución Nro. 006-DIR-2022-ANT? De ser afirmativo, ¿las dependencias de esta Cartera de Estado en la provincia del Guayas han sido instruidas en ese sentido, y mediante qué instrumento?
+
+**4.** ¿Cuáles son, en concreto, los **documentos que debe portar el conductor** para acreditar ante un control de tránsito la condición de transporte por cuenta propia de bienes, conforme al inciso tercero del artículo 58 de la LOTTTSV?
+
+**5.** En materia de pesos y dimensiones: ¿cuál es el **acuerdo ministerial actualmente vigente** que expide las normas de aplicación y la Tabla Nacional de Pesos y Dimensiones? Solicito precisión expresa sobre la vigencia de los Acuerdos Ministeriales 018-2016, 032-2020, 028-2022 y 033-2022, indicando cuál rige y en qué parte los anteriores fueron reformados o derogados.
+
+**6.** ¿A partir de qué **peso bruto vehicular** resulta exigible el certificado de operación regular, y cuál es el procedimiento y el costo para su obtención?
+
+**7.** ¿Se aplica alguna exigencia distinta, en materia de documentos habilitantes de control, a los **vehículos livianos cuyo peso bruto vehicular sea inferior a 3,5 toneladas** destinados al traslado de bienes propios?
+
+**8.** ¿Existe norma vigente que exija que el campo **"Tipo"** de la matrícula consigne la leyenda **"Camioneta Reparto"** para vehículos livianos destinados al traslado de bienes propios, y que su ausencia constituya causal de retención del vehículo o de imposición de multa? De no ser materia de competencia de esta Cartera, solicito se sirva indicar la autoridad competente.
+
+**9.** ¿Existe en la normativa de transporte terrestre alguna infracción sancionada con multa equivalente a **dos remuneraciones básicas unificadas**, considerando que los artículos 80, 81 y 82 de la LOTTTSV establecen multas de cuatro, seis y ocho remuneraciones básicas unificadas, respectivamente?
+
+**10.** Finalmente, solicito que el criterio que se emita sea **comunicado al personal de control** de esta Dirección Distrital y, de estimarlo pertinente, puesto en conocimiento de la Comisión de Tránsito del Ecuador y de las agencias municipales de tránsito que operan en la provincia, a fin de uniformar la aplicación de la norma.
+
+## IV. Documentos que se acompañan
+
+1. Nombramiento del representante legal y RUC de la compañía.
+2. Copia de matrículas de {{NUMERO}} unidades del parque automotor.
+3. Guías de remisión y facturas de muestra correspondientes a {{PERIODO}}.
+4. Copia del Oficio Nro. ANT-ANT-2022-0602-OF de 14 de junio de 2022.
+5. Copia de la Resolución Nro. 006-DIR-2022-ANT.
+6. {{OTROS_SI_APLICA}}
+
+## V. Notificaciones
+
+Recibiré notificaciones en el correo electrónico **{{EMAIL}}** y en la dirección **{{DOMICILIO}}**.
+
+Agradezco de antemano la atención que se sirva dar a la presente, y quedo atento al pronunciamiento institucional, conforme a los términos previstos en el Código Orgánico Administrativo.
+
+Atentamente,
+
+<br><br><br>
+
+**{{REPRESENTANTE_LEGAL}}**
+{{CARGO}} — **{{RAZON_SOCIAL}}**
+C.C. {{CEDULA}} · RUC {{RUC}}
+
+---
+
+## Notas de uso — no forman parte del oficio
+
+**Por qué las preguntas son cerradas.** Una consulta abierta produce una respuesta genérica
+inservible. Las diez consultas están redactadas para que la respuesta sea un sí o un no, o un
+dato concreto. Una respuesta favorable a las consultas 1, 2 y 4 se convierte en el documento
+que los conductores exhiben en cada control.
+
+**La consulta 3 es la de mayor valor.** No pregunta por una interpretación: pregunta si la
+propia institución cumplió una instrucción que recibió en 2022, cuyo destinatario incluyó a la
+Zonal 5. Cualquier respuesta sirve. Si dice que sí, se pide el instrumento. Si dice que no, se
+acredita el incumplimiento.
+
+**Las consultas 8 y 9 están construidas para que el "no" sea la respuesta esperada.** La 9 cita
+las escalas legales de 4, 6 y 8 RBU justamente para que el destinatario tenga que confirmar que
+no existe una multa de 2 RBU. Un funcionario no afirma por escrito lo que no consta en la norma.
+
+**Lo que este oficio no cubre.** La conducta de los agentes de la CTE y de las agencias
+municipales de tránsito no es materia del MIT, y el campo "Tipo" de la matrícula corresponde a
+la ANT. Por eso la consulta 8 incluye la remisión a la autoridad competente y la 10 pide la
+difusión del criterio. Para cerrar el frente completo hacen falta oficios paralelos a la ANT,
+a la CTE y a cada agencia municipal de tránsito.
+
+**Registro de eventos.** Conviene llevar, desde ya, una bitácora de cada detención: fecha, hora,
+lugar, entidad, identificación del agente, unidad detenida, requerimiento formulado y duración
+de la demora. Sin ese registro, cualquier reclamo posterior carece de sustento fáctico. Con él,
+un patrón documentado vale más que diez argumentos jurídicos.
