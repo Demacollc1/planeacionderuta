@@ -192,7 +192,7 @@ window.CORPUS = {
     "rango_art425": 3,
     "emisor": "Asamblea Nacional",
     "numero": "Ley Organica Reformatoria a la LOTTTSV",
-    "titulo": "Reforma integral: seguridad vial, micromovilidad, plataformas digitales, licencias, maquinaria agricola",
+    "titulo": "Reforma sobre licencias tipo G para operadores de maquinaria de construccion, equipo caminero y tractores agricolas, y requisitos de licencias de conducir",
     "publicacion": {
      "registro_oficial": "RO 73, Tercer Suplemento",
      "fecha": "2025-07-03"
@@ -210,11 +210,12 @@ window.CORPUS = {
     "disposiciones_clave": [
      {
       "articulo": "por_indexar",
-      "sintesis": "Reconoce y regula a nivel nacional bicicletas, scooters y vehiculos de micromovilidad; crea el Registro Nacional de repartidores; fija responsabilidades de plataformas digitales; mantiene competencias de la ANT.",
-      "relevancia": "Es la ventana legislativa abierta: si el objetivo es una normativa conjunta, la via natural es el reglamento de esta reforma y no una ley nueva.",
+      "sintesis": "Elimina el requisito de licencia tipo C para obtener la licencia especial tipo G de operadores de maquinaria de construccion, equipo caminero y tractores agricolas, y dispone que la capacitacion la impartan instituciones acreditadas. Aprobada en segundo debate el 01-04-2025; objecion parcial del Ejecutivo dada por allanada tacitamente.",
+      "relevancia": "REFORMA DE ALCANCE ESTRECHO, 20 paginas. No toca titulos habilitantes ni transporte por cuenta propia. El texto del art. 58 vigente sigue siendo el de la reforma de 2021.",
       "verificacion": "secundaria_oficial"
      }
-    ]
+    ],
+    "brecha": "CORRECCION: este registro describia una 'reforma integral' con micromovilidad, plataformas digitales y Registro Nacional de repartidores. Eso corresponde a un proyecto distinto, que segun la Asamblea fue ARCHIVADO con 108 votos. Confundir ambos llevo a recomendar como 'ventana legislativa abierta' una reforma que no existe. Pendiente: obtener el texto de RO 73 para cotejo articulo por articulo."
    },
    {
     "id": "RGLTO-LOTTTSV",
@@ -674,6 +675,128 @@ window.CORPUS = {
     ],
     "disposiciones_clave": [],
     "brecha": "Aparece en repositorios academicos una 'Resolucion ANT 86' con el mismo titulo que la 078-DIR-2017. No se pudo establecer si la reforma, la sustituye o coexiste. Misma patologia que la cadena de acuerdos de pesos y dimensiones: ver H-PESOS-CADENA."
+   },
+   {
+    "id": "LOTTTSV-REF-2021",
+    "tipo": "ley_organica",
+    "nivel": "nacional",
+    "rango_art425": 3,
+    "emisor": "Asamblea Nacional",
+    "numero": "Ley Organica Reformatoria a la LOTTTSV",
+    "titulo": "Ley Organica Reformatoria de la Ley Organica de Transporte Terrestre, Transito y Seguridad Vial",
+    "publicacion": {
+     "registro_oficial": "RO 512, Quinto Suplemento",
+     "fecha": "2021-08-10"
+    },
+    "estado": "vigente",
+    "url_fuente": "fuentes/LOTTTSV-reforma-2021-RO-512-5S.txt",
+    "verificacion": "primaria",
+    "requiere_cotejo": false,
+    "materias": [
+     "titulos_habilitantes",
+     "transporte_por_cuenta_propia",
+     "competencias",
+     "infracciones"
+    ],
+    "disposiciones_clave": [
+     {
+      "articulo": "43 (sustituye art. 58 LOTTTSV)",
+      "sintesis": "Transporte por cuenta propia: servicio que satisface necesidades de movilizacion de personas o bienes, dentro del ambito de las actividades comerciales exclusivas de las personas naturales y/o juridicas, mediante el uso de su(s) propio(s) vehiculo(s), O VEHICULO(S) ALQUILADO(S). No incluye el servicio particular, personal o familiar. Para movilizacion de PERSONAS la ANT emite la autorizacion. Para TRASLADO DE BIENES, los servidores publicos de control verificaran que los bienes sean de propiedad de la persona a cuyo nombre consta la matricula vehicular, o del arrendatario con contrato de arrendamiento a companias legalmente autorizadas por la ANT. La habilitacion por cuenta propia no puede usarse para prestar servicio publico o comercial; su incumplimiento se sanciona con suspension o revocatoria.",
+      "relevancia": "Norma central para una flota de distribucion. Dos consecuencias: (1) el vehiculo NO tiene que ser propio, se admite alquilado a companias autorizadas por la ANT; (2) para bienes la ley no establece un titulo habilitante sino una VERIFICACION EN CONTROL de correspondencia entre propiedad de los bienes y titularidad de la matricula.",
+      "verificacion": "primaria"
+     },
+     {
+      "articulo": "54 (sustituye art. 72 LOTTTSV)",
+      "sintesis": "Son titulos habilitantes los contratos de operacion, permisos de operacion y autorizaciones, que se otorgaran a las personas juridicas domiciliadas en el Ecuador con capacidad tecnica y financiera; Y TAMBIEN A PERSONAS NATURALES para el servicio por cuenta propia y alternativo comunitario rural excepcional.",
+      "relevancia": "Resuelve la supuesta contradiccion del hallazgo H-CUENTAPROPIA-SUJETO: el texto vigente admite expresamente a personas naturales para cuenta propia. La contradiccion era con el texto pre-2021.",
+      "verificacion": "primaria"
+     },
+     {
+      "articulo": "57 (sustituye art. 74 LOTTTSV)",
+      "sintesis": "Competen a la ANT: a) contratos de operacion de transporte publico de personas o bienes en los ambitos interprovincial, intraprovincial e internacional; b) permisos de operacion de transporte comercial para todos los ambitos EXCEPTO el intracantonal; c) autorizaciones de operacion para transporte por cuenta propia DE PERSONAS para todos los ambitos.",
+      "relevancia": "El literal c) sigue diciendo solo 'de personas'. Coherente con el art. 58: no existe autorizacion de cuenta propia de bienes.",
+      "verificacion": "primaria"
+     },
+     {
+      "articulo": "58 (sustituye art. 75 LOTTTSV)",
+      "sintesis": "Corresponde a los GAD, dentro de su jurisdiccion y competencia, otorgar: a) contratos de operacion de transporte publico de personas o bienes en el ambito intracantonal. Donde el GAD no ejerza la competencia de transito, los titulos los otorga la ANT.",
+      "relevancia": "CORRECCION: el corpus afirmaba que el GAD otorga el por cuenta propia intracantonal. El texto verificado no lo dice. El OCR de la fuente muestra un posible salto de linea tras el literal a); cotejar si existe un literal b) sobre permisos de operacion intracantonales.",
+      "verificacion": "primaria"
+     },
+     {
+      "articulo": "59 (sustituye art. 76 LOTTTSV)",
+      "sintesis": "Contrato de operacion (transporte publico de personas, animales y/o bienes): a persona juridica; confiere ademas el uso de rutas, frecuencias y vias publicas. Permiso de operacion (transporte comercial de personas, animales y/o bienes): otorgado por la ANT o los GAD segun su ambito, a una PERSONA JURIDICA con capacidad legal, tecnica y financieramente solvente; excepcionalmente tambien a personas naturales en el transporte alternativo comunitario rural. Autorizacion de operacion por cuenta propia: conferida por la ANT a una PERSONA NATURAL O JURIDICA para la operacion de un servicio de transporte DE PERSONAS por cuenta propia.",
+      "relevancia": "Confirma por tercera vez que la autorizacion por cuenta propia es de personas. Y que el permiso de operacion exige persona juridica, salvo la excepcion comunitaria rural.",
+      "verificacion": "primaria"
+     },
+     {
+      "articulo": "73 (sustituye art. 82.1 LOTTTSV)",
+      "sintesis": "Infracciones de transporte por cuenta propia: a) prestar servicio publico o comercial; b) transportar bienes diferentes o prestar servicios diferentes a los declarados en su actividad comercial segun la autorizacion; c) ejecutar el titular actividades diferentes a las de la autorizacion; d) cambiar titular, domicilio o razon social sin reportarlo; e) incumplimiento de la Ley, el Reglamento y demas normativa.",
+      "relevancia": "INCONSISTENCIA INTERNA QUE PERSISTE: los literales b) y c) presuponen una autorizacion que declara bienes y actividades, pero los arts. 74.c y 76 solo contemplan autorizacion de cuenta propia de PERSONAS. El regimen sancionatorio quedo redactado para un titulo que la propia ley no crea para bienes.",
+      "verificacion": "primaria"
+     }
+    ]
+   },
+   {
+    "id": "RES-006-DIR-2022-ANT",
+    "tipo": "resolucion",
+    "nivel": "nacional",
+    "rango_art425": 8,
+    "emisor": "Directorio de la Agencia Nacional de Transito",
+    "numero": "006-DIR-2022-ANT",
+    "titulo": "Reforma al Reglamento de Procedimientos y Requisitos para la Matriculacion Vehicular",
+    "publicacion": {
+     "registro_oficial": "RO 56, Suplemento",
+     "fecha": "2022-05-05"
+    },
+    "estado": "vigente",
+    "url_fuente": null,
+    "verificacion": "primaria",
+    "requiere_cotejo": false,
+    "materias": [
+     "matriculacion",
+     "transporte_por_cuenta_propia",
+     "carga"
+    ],
+    "disposiciones_clave": [
+     {
+      "articulo": "6 (sustituye num. 12 del art. 9)",
+      "sintesis": "Vehiculos NUEVOS DESDE 12 PASAJEROS destinados a actividades comerciales de movilizacion de personas por personas naturales y/o juridicas: previo a su matriculacion deben obtener titulo habilitante de autorizacion por cuenta propia para transporte de personas. Vehiculos de CAPACIDAD DE CARGA IGUAL O MAYOR A 3.5 TONELADAS destinados a actividades comerciales de transporte de BIENES por cuenta propia del titular: NO REQUIEREN titulo habilitante de autorizacion por cuenta propia; basta para la matriculacion la justificacion de la actividad economica registrada en el SRI y la propiedad del vehiculo.",
+      "relevancia": "Regla operativa concreta. Para una flota de carga propia el requisito se reduce a dos documentos: actividad economica en el RUC y propiedad del vehiculo.",
+      "verificacion": "primaria"
+     }
+    ]
+   },
+   {
+    "id": "OF-ANT-2022-0602",
+    "tipo": "resolucion",
+    "nivel": "nacional",
+    "rango_art425": 9,
+    "emisor": "Direccion Ejecutiva de la Agencia Nacional de Transito",
+    "numero": "ANT-ANT-2022-0602-OF",
+    "titulo": "Oficio de la ANT al MTOP sobre el proceso de transporte por cuenta propia de bienes",
+    "publicacion": {
+     "registro_oficial": "acto administrativo, no publicado en RO",
+     "fecha": "2022-06-14"
+    },
+    "estado": "vigente",
+    "url_fuente": null,
+    "verificacion": "primaria",
+    "requiere_cotejo": false,
+    "materias": [
+     "transporte_por_cuenta_propia",
+     "carga",
+     "criterio_institucional"
+    ],
+    "disposiciones_clave": [
+     {
+      "articulo": "pronunciamiento",
+      "sintesis": "La ANT informa al MTOP que, conforme al art. 58 inciso tercero de la LOTTTSV reformada y a la Resolucion 006-DIR-2022-ANT, los vehiculos que realizan traslado de bienes NO REQUIEREN obtener la autorizacion por cuenta propia: basta la matricula del vehiculo y la documentacion que permita verificar la actividad economica. Solicita expresamente que el MTOP adecue sus procesos, porque sus dependencias provinciales —en especial la Zonal 5— seguian exigiendo ese requisito ya inexistente.",
+      "relevancia": "Zanja la duda de H-CUENTAPROPIA-BIENES con criterio de la autoridad competente. Ademas documenta un hallazgo de fragmentacion INTRA-ESTATAL: dos entidades nacionales aplicando criterios distintos sobre el mismo requisito, durante al menos 10 meses tras la reforma.",
+      "verificacion": "primaria"
+     }
+    ],
+    "nota_procedencia": "Documento aportado por el usuario. Es un acto administrativo, no una norma: obliga al MTOP como destinatario y expresa el criterio de la ANT, pero no tiene rango normativo."
    }
   ],
   "hallazgos_transversales": [
@@ -691,7 +814,9 @@ window.CORPUS = {
     "fecha": "2026-09-21",
     "descripcion": "El art. 72 de la LOTTTSV dispone que los titulos habilitantes —entre ellos la autorizacion— 'se otorgaran a las PERSONAS JURIDICAS domiciliadas en el Ecuador'. El art. 58, en cambio, define el transporte por cuenta propia por referencia a las actividades comerciales exclusivas de las personas NATURALES y/o juridicas. El Reglamento de Transporte por Cuenta Propia y los tramites publicados de la ANT admiten expresamente a personas naturales, con requisitos diferenciados (cedula, papeleta, RUC).",
     "implicacion": "La practica administrativa contradice el texto del art. 72, o bien el art. 72 debe leerse referido solo a contratos y permisos de operacion. Afecta a quien decide si constituir sociedad para autorizar su flota.",
-    "accion": "Incluir como consulta expresa en la peticion a la ANT."
+    "accion": "Incluir como consulta expresa en la peticion a la ANT.",
+    "estado": "resuelto",
+    "resolucion": "Falso positivo. El art. 72 vigente (reforma 2021, verificado en fuente primaria) admite expresamente a personas naturales para el servicio por cuenta propia. La contradiccion provenia de comparar el texto pre-2021 con la practica actual."
    },
    {
     "id": "H-CUENTAPROPIA-BIENES",
@@ -699,7 +824,18 @@ window.CORPUS = {
     "fecha": "2026-09-21",
     "descripcion": "El art. 58 de la LOTTTSV incluye expresamente 'personas o bienes'. Pero el art. 74, al enumerar lo que compete otorgar a la ANT, menciona 'autorizaciones de operacion para el servicio de transporte por cuenta propia DE PERSONAS para todos los ambitos', sin nombrar bienes. Varias fichas de tramite de la ANT repiten la formula 'movilizacion de personas'.",
     "implicacion": "Es el caso exacto de una flota de distribucion que mueve mercaderia propia. El vacio deja sin certeza cual es el titulo aplicable y ante quien se tramita. Es la consulta de mayor valor practico del expediente.",
-    "accion": "Numeral 4 de peticiones/plantilla-ant.md: pedir criterio institucional expreso."
+    "accion": "Numeral 4 de peticiones/plantilla-ant.md: pedir criterio institucional expreso.",
+    "estado": "resuelto_con_reserva",
+    "resolucion": "Resuelto por el Oficio ANT-ANT-2022-0602-OF y la Resolucion 006-DIR-2022-ANT: el transporte por cuenta propia de BIENES no requiere autorizacion. Reserva: el art. 82.1 tipifica infracciones que presuponen una autorizacion con bienes y actividades declarados, titulo que la ley no crea. La inconsistencia de redaccion persiste."
+   },
+   {
+    "id": "H-FRAGMENTACION-ESTATAL",
+    "titulo": "Dos entidades nacionales aplicaron criterios opuestos sobre el mismo requisito",
+    "fecha": "2026-09-21",
+    "estado": "abierto",
+    "descripcion": "La reforma entro en vigencia el 10-08-2021 y elimino la autorizacion por cuenta propia para bienes. El 14-06-2022, diez meses despues, la ANT tuvo que oficiar al MTOP porque sus dependencias provinciales seguian exigiendola, en especial la Zonal 5.",
+    "implicacion": "Refuerza y reorienta la tesis del compendio: la fragmentacion no es solo entre niveles de gobierno, ocurre dentro del propio Ejecutivo nacional. Un requisito derogado siguio cobrandose al administrado por desajuste interno, no por mala fe municipal.",
+    "accion": "Usar como evidencia documental en la propuesta de armonizacion."
    }
   ]
  },
