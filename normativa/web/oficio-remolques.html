@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oficio · Remolques livianos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .hoja { max-width: 80ch; margin: 0 auto; background: var(--surface);
+          border: 1px solid var(--line); border-radius: var(--r);
+          padding: 40px 46px; box-shadow: var(--shadow); }
+  .membrete { height: 86px; border-bottom: 1px dashed var(--line-strong); margin-bottom: 26px;
+              display: flex; align-items: center; justify-content: center;
+              color: var(--ink-3); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+
+  .of p { margin: 0 0 11px; text-align: justify; }
+  .of .lugar { font-weight: 600; margin-bottom: 4px; text-align: left; }
+  .of .num { font-weight: 600; margin-bottom: 22px; text-align: left; }
+  .of .dest { margin-bottom: 18px; line-height: 1.45; }
+  .of .dest .cargo { font-weight: 600; text-transform: uppercase; }
+  .of .copias { font-size: 12.5px; color: var(--ink-2); margin-bottom: 18px; }
+  .of .copias ul { margin: 3px 0 0; padding-left: 18px; }
+  .of .asunto { margin-bottom: 20px; }
+
+  .of h2 { font-family: var(--slab); font-size: 14px; margin: 24px 0 10px;
+           padding-bottom: 5px; border-bottom: 1px solid var(--line-strong); }
+  .of ol { padding-left: 22px; margin: 0 0 12px; }
+  .of ol > li { margin-bottom: 9px; text-align: justify; }
+  .of ol.lit { list-style: lower-alpha; margin-top: 7px; }
+  .of ol.lit > li { margin-bottom: 5px; }
+  .of ol.consultas { list-style: none; padding-left: 0; counter-reset: c; }
+  .of ol.consultas > li { counter-increment: c; margin-bottom: 11px; padding-left: 30px;
+                          position: relative; }
+  .of ol.consultas > li::before { content: counter(c) "."; position: absolute; left: 0;
+                                  font-weight: 700; font-family: var(--slab); }
+
+  table.specs { width: 100%; border-collapse: collapse; margin: 10px 0 12px; font-size: 13px; }
+  table.specs th, table.specs td { border: 1px solid var(--line-strong); padding: 6px 10px;
+                                   text-align: left; }
+  table.specs th { background: var(--surface-2); font-weight: 600; width: 52%; }
+  table.specs td { font-variant-numeric: tabular-nums; }
+  table.specs tr.destacada th, table.specs tr.destacada td { font-weight: 700; background: var(--surface-2); }
+
+  .firma { margin-top: 44px; }
+  .firma .linea { border-top: 1px solid var(--ink); width: 280px; margin-bottom: 5px; }
+  .firma p { margin: 0; text-align: left; font-size: 13px; }
+  .firma .nom { font-weight: 700; font-size: 14px; }
+
+  .campo { border: 0; border-bottom: 1px dotted var(--accent); background: transparent;
+           font: inherit; color: inherit; padding: 0 2px; min-width: 60px; }
+  .campo:focus { outline: none; background: var(--accent-soft); }
+
+  .barra { max-width: 80ch; margin: 0 auto 16px; display: flex; gap: 10px; align-items: center;
+           flex-wrap: wrap; }
+  .barra .nota { font-size: 12.5px; color: var(--ink-2); }
+
+  @media print {
+    @page { size: A4; margin: 18mm 20mm; }
+    .topbar, .noprint { display: none !important; }
+    body { background: #fff; color: #000; font-size: 11pt; line-height: 1.45; }
+    .wrap { padding: 0; max-width: none; }
+    .hoja { max-width: none; border: 0; border-radius: 0; padding: 0; box-shadow: none;
+            background: #fff; }
+    .membrete { border-bottom: 0; color: transparent; }
+    .campo { border-bottom: 0; color: #000; }
+    .of h2 { border-bottom-color: #000; }
+    table.specs th, table.specs td { border-color: #000; }
+    table.specs th, table.specs tr.destacada th, table.specs tr.destacada td { background: #eee; }
+    .of h2, table.specs, .firma { break-inside: avoid; }
+    li { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar noprint">
+  <div class="topbar-in">
+    <div>
+      <h1>Compendio normativo de tránsito</h1>
+      <div class="sub">Ecuador · normativa nacional y municipal</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="cantones.html">Normativa por cantón</a>
+      <a href="mapa.html">Mapa y clientes</a>
+      <a href="ayuda-memoria.html">Ayuda memoria</a>
+      <a href="oficio-remolques.html" aria-current="page">Oficio remolques</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="barra noprint">
+    <button class="btn btn-pri" onclick="window.print()" type="button">Imprimir</button>
+    <span class="nota">Completa los tres campos punteados antes de imprimir. El espacio superior
+    queda reservado para el membrete y no se imprime con marcas.</span>
+  </div>
+
+  <div class="hoja">
+    <div class="membrete">espacio reservado para membrete</div>
+
+    <div class="of">
+
+      <p class="lugar">Guayaquil, <input class="campo" id="f-fecha" size="26"
+        value="22 de septiembre de 2026" aria-label="Fecha"></p>
+      <p class="num">Oficio Nro. <input class="campo" id="f-num" size="22"
+        placeholder="MIT-22092026-003" aria-label="Número de oficio"></p>
+
+      <div class="dest">
+        Señor<br>
+        <input class="campo" id="f-autoridad" size="42"
+          placeholder="Nombre del Subsecretario(a)" aria-label="Nombre de la autoridad"><br>
+        <span class="cargo">Subsecretario(a) de Transporte Terrestre y Ferroviario</span><br>
+        <span class="cargo">Ministerio de Infraestructura y Transporte</span><br>
+        Presente.-
+      </div>
+
+      <div class="copias">
+        Con copia a:
+        <ul>
+          <li>Unidad de Pesos y Dimensiones, MIT</li>
+          <li>Dirección Distrital de Guayas, MIT</li>
+          <li>Agencia Nacional de Regulación y Control del Transporte Terrestre, Tránsito y Seguridad Vial</li>
+        </ul>
+      </div>
+
+      <p class="asunto"><strong>Asunto:</strong> Consulta sobre el régimen de regularización
+      aplicable a unidades de arrastre (remolques) cuyo peso bruto vehicular es inferior a
+      3,5 toneladas.</p>
+
+      <p>De mi consideración:</p>
+
+      <p>Arq. Raúl Ernesto Gómez López, en calidad de Gerente General y representante legal de
+      <strong>DEMACO DISTRIBUIDORA DE EQUIPOS Y MATERIALES DE CONSTRUCCIÓN GÓMEZ C. LTDA.</strong>,
+      con RUC 0990621691001 y domicilio en Urbanización Santa Leonor, Mz. 6, Solar 13, Guayaquil,
+      Ecuador 090505, al amparo del derecho de petición reconocido en el artículo 66, numeral 23,
+      de la Constitución de la República, comparezco ante usted para formular la siguiente consulta.</p>
+
+      <h2>I. Antecedentes</h2>
+      <ol>
+        <li>La compañía ha adquirido <strong>tres (3) remolques livianos</strong> destinados al
+        traslado de mercadería de su propiedad, con las siguientes características técnicas según
+        la especificación del fabricante:
+
+          <table class="specs">
+            <tr><th>Dimensiones de la cubierta</th><td>3,00 m × 1,80 m</td></tr>
+            <tr><th>Altura de la valla</th><td>0,30 m</td></tr>
+            <tr><th>Tara (peso en vacío)</th><td>500 kg</td></tr>
+            <tr><th>Capacidad de carga</th><td>1.000 kg</td></tr>
+            <tr class="destacada"><th>Peso bruto vehicular resultante</th><td>1.500 kg — 1,5 toneladas</td></tr>
+            <tr><th>Número de ejes</th><td>Uno (1)</td></tr>
+            <tr><th>Neumáticos</th><td>185R14C × 2</td></tr>
+            <tr><th>Enganche</th><td>2-5/16" o 2", conector de 7 pines</td></tr>
+            <tr><th>Partida arancelaria</th><td>8716.90.00.00</td></tr>
+          </table>
+        </li>
+
+        <li>Con anterioridad, esta Cartera de Estado emitió a favor de la compañía el
+        <strong>Certificado de Operación Regular Nro. CRE-09-111665</strong>, serie H-0014488, de
+        19 de mayo de 2025, con vencimiento al 19 de mayo de 2027, correspondiente a una unidad
+        identificada como tipo B2, clase furgón, modelo remolque, año 2023.</li>
+
+        <li>Dicho certificado consigna un <strong>peso bruto vehicular de 14,00 toneladas</strong>
+        y un <strong>peso en vacío de 2,35 toneladas</strong>, valores que no corresponden a la
+        especificación técnica descrita en el numeral 1. Asimismo, el campo <strong>«Placa»</strong>
+        consta en blanco y los campos de motor y chasis constan como «N/A».</li>
+
+        <li>Al gestionar la renovación se nos ha informado verbalmente que
+        <strong>los requisitos han cambiado</strong>, sin que se nos haya indicado cuál es el
+        procedimiento vigente ni la norma que lo establece.</li>
+
+        <li>El certificado emitido señala en su reverso que se expide «de acuerdo a lo establecido
+        en la <strong>Ley Orgánica del Sistema Nacional de Infraestructura Vial del Transporte
+        Terrestre</strong> y su Reglamento Aplicativo Vigente». Hemos revisado la Ley Orgánica de
+        Transporte Terrestre, Tránsito y Seguridad Vial sin encontrar un régimen específico para
+        unidades de arrastre de las características descritas, ya que sus disposiciones se refieren
+        a vehículos de carga pesada.</li>
+
+        <li>La ficha del trámite publicada en el portal gob.ec establece que el Certificado de
+        Operación Regular es documento de porte obligatorio para propietarios de vehículos de carga
+        con <strong>peso bruto vehicular igual o superior a 3,5 toneladas</strong>. Los remolques
+        descritos en el numeral 1 se ubican por debajo de ese umbral.</li>
+
+        <li>El interés de la compañía es <strong>regularizar la operación de estas unidades</strong>,
+        no eludir una obligación. La ausencia de certeza sobre el trámite aplicable expone a la
+        compañía a detenciones y sanciones en carretera.</li>
+      </ol>
+
+      <h2>II. Consulta</h2>
+      <p>Solicito a usted se sirva absolver, con criterio institucional expreso y por escrito, las
+      siguientes consultas:</p>
+
+      <ol class="consultas">
+        <li>¿Una unidad de arrastre cuyo <strong>peso bruto vehicular es inferior a 3,5
+        toneladas</strong> —en el caso consultado, 1,5 toneladas— se encuentra dentro del ámbito de
+        aplicación del control de pesos y dimensiones y, por tanto, <strong>requiere Certificado de
+        Operación Regular</strong>?</li>
+
+        <li>De ser la respuesta negativa, ¿<strong>qué documento acredita</strong> ante un control
+        de vía la situación regular de dicha unidad, y qué debe portar el conductor?</li>
+
+        <li>El umbral de 3,5 toneladas, ¿se mide sobre el <strong>peso bruto vehicular de la unidad
+        de arrastre considerada individualmente</strong>, o sobre el <strong>conjunto conformado por
+        el vehículo tractor y el remolque</strong>? Solicito precisión expresa, por ser determinante
+        en el caso consultado.</li>
+
+        <li>¿Cuál es la <strong>norma vigente</strong> que regula la emisión y renovación del
+        Certificado de Operación Regular? Solicito se indique el instrumento, su publicación y, de
+        ser el caso, las reformas aplicables, considerando que el certificado emitido invoca la Ley
+        Orgánica del Sistema Nacional de Infraestructura Vial del Transporte Terrestre y su
+        Reglamento Aplicativo.</li>
+
+        <li>¿Cuáles son, en concreto, los <strong>requisitos vigentes</strong> para la renovación del
+        Certificado de Operación Regular de una unidad de arrastre? En particular, solicito se
+        confirme si subsiste la posibilidad de acreditar las características mediante
+        <strong>declaración juramentada</strong> cuando la unidad no cuenta con matrícula ni factura
+        emitida en el país, y si se mantiene la exigencia de fotografía lateral a color, peso en
+        vacío y dimensiones.</li>
+
+        <li>¿Cuál es la <strong>vigencia</strong> del Certificado de Operación Regular? La ficha del
+        trámite indica dos (2) años, mientras que comunicaciones institucionales de este Ministerio
+        se refieren a renovación <strong>anual</strong>. El certificado emitido a esta compañía
+        consigna dos años. Solicito se precise cuál es el plazo aplicable y cuál es el
+        <strong>período ordinario de renovación</strong>.</li>
+
+        <li>Respecto del Certificado Nro. CRE-09-111665: los valores de peso bruto vehicular
+        (14,00 t) y peso en vacío (2,35 t) allí consignados <strong>no corresponden</strong> a la
+        especificación técnica de las unidades descritas. ¿Cuál es el <strong>procedimiento para
+        rectificar</strong> esos datos, y qué efectos tiene la discrepancia frente a un control de
+        pesos y dimensiones en vía?</li>
+
+        <li>El campo <strong>«Placa»</strong> del certificado consta en blanco. ¿Requieren estas
+        unidades de arrastre <strong>matrícula y placa propias</strong>? De ser materia de
+        competencia de la Agencia Nacional de Tránsito, solicito se sirva indicarlo, a fin de dirigir
+        la consulta a esa entidad.</li>
+
+        <li>¿Se requiere <strong>certificado de homologación</strong> para la importación,
+        comercialización o matriculación de unidades de arrastre de estas características? De ser
+        materia de la Agencia Nacional de Tránsito, solicito igual indicación.</li>
+
+        <li>Finalmente, solicito se indique la <strong>dependencia y el canal</strong> ante los
+        cuales debe gestionarse el trámite aplicable en la provincia del Guayas, y el plazo estimado
+        de resolución.</li>
+      </ol>
+
+      <h2>III. Documentos que se acompañan</h2>
+      <ol>
+        <li>Nombramiento del representante legal y Registro Único de Contribuyentes de la compañía.</li>
+        <li>Copia del Certificado de Operación Regular Nro. CRE-09-111665, serie H-0014488.</li>
+        <li>Especificación técnica del fabricante de las unidades adquiridas.</li>
+        <li>Fotografías laterales a color de las unidades.</li>
+      </ol>
+
+      <h2>IV. Notificaciones</h2>
+      <p>Recibiré notificaciones en el correo electrónico <strong>raul.gomez@demaco.ec</strong> y en
+      la dirección Urbanización Santa Leonor, Mz. 6, Solar 13, Guayaquil.</p>
+
+      <p>Agradezco la atención que se sirva dar a la presente, y quedo atento al pronunciamiento
+      institucional, conforme a los términos previstos en el Código Orgánico Administrativo.</p>
+
+      <p>Atentamente,</p>
+
+      <div class="firma">
+        <div class="linea"></div>
+        <p class="nom">Arq. Raúl Ernesto Gómez López</p>
+        <p>Gerente General</p>
+        <p>DEMACO DISTRIBUIDORA DE EQUIPOS Y MATERIALES DE CONSTRUCCIÓN GÓMEZ C. LTDA.</p>
+        <p>C.C. 1702792100 · RUC 0990621691001</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  // Los campos editables se conservan en este navegador entre visitas, para no
+  // reescribirlos en cada impresión. No salen del equipo.
+  var ids = ["f-fecha", "f-num", "f-autoridad"];
+  ids.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    try {
+      var v = localStorage.getItem("oficio.remolques." + id);
+      if (v !== null) el.value = v;
+    } catch (e) {}
+    el.addEventListener("input", function () {
+      try { localStorage.setItem("oficio.remolques." + id, el.value); } catch (e) {}
+      ajustar(el);
+    });
+    ajustar(el);
+  });
+  // El input crece con el contenido para que no se corte al imprimir
+  function ajustar(el) {
+    el.size = Math.max((el.value || el.placeholder || "").length + 1, 10);
+  }
+})();
+</script>
+</body>
+</html>
